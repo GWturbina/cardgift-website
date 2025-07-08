@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlRoot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">🎁 CardGift - Get Card Generator</title>
+    
+    <!-- PWA Meta tags -->
+    <meta name="description" content="Get free golden greeting card generator with referral system">
+    <meta name="theme-color" content="#FFD700">
+    
+    <!-- Icons -->
+    <link rel="icon" href="/assets/icons/icon-32x32.png" sizes="32x32">
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- WEB3 библиотеки -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Золотые частицы фона */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* ЯЗЫКОВОЙ ПЕРЕКЛЮЧАТЕЛЬ */
+        .language-switcher {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            display: flex;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 4px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: #FFD700;
+            padding: 6px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            min-width: 30px;
+        }
+
+        .lang-btn.active {
+            background: rgba(255, 215, 0, 0.3);
+            color: #FFF;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        .registration-container {
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            z-index: 1;
+            margin-top: 50px;
+        }
+
+        .registration-box {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ffd700;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(20px);
+        }
+
+        .registration-box h2 {
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: clamp(24px, 6vw, 32px);
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .referral-info {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+            display: none;
+        }
+
+        .referral-info.show {
+            display: block;
+        }
+
+        .referral-info .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            color: #ffd700;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            background: rgba(26, 26, 26, 0.8);
+            border: 2px solid #444;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            background: rgba(26, 26, 26, 0.9);
+        }
+
+        .hint {
+            color: #888;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .consent-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .consent-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .consent-text {
+            color: #CCC;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .consent-text strong {
+            color: #FFD700;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: #666;
+            color: #333;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: not-allowed;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:disabled {
+            background: #666;
+            color: #333;
+            cursor: not-allowed;
+        }
+
+        .submit-btn:enabled {
+            background: linear-gradient(45deg, #ffd700, #ffa500);
+            color: #1a1a1a;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+        }
+
+        .submit-btn:enabled:hover {
+            background: linear-gradient(45deg, #ffed4e, #ffb84d);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .submit-btn:enabled:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn.loading {
+            pointer-events: none;
+        }
+
+        .submit-btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top-color: #1a1a1a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* НЕПРИМЕТНАЯ КНОПКА ПОДКЛЮЧЕНИЯ КОШЕЛЬКА */
+        .wallet-connect-small {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        .wallet-btn-small {
+            background: rgba(30, 136, 229, 0.1);
+            border: 1px solid rgba(30, 136, 229, 0.3);
+            color: #1E88E5;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .wallet-btn-small:hover {
+            opacity: 1;
+            background: rgba(30, 136, 229, 0.2);
+            border-color: #1E88E5;
+        }
+
+        .wallet-btn-small:disabled {
+            background: #666;
+            color: #999;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .wallet-status-small {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #4CAF50;
+            display: none;
+            opacity: 0.8;
+        }
+
+        .wallet-status-small.show {
+            display: block;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            text-align: center;
+            color: #4CAF50;
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .success-message .icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .success-message h3 {
+            color: #4CAF50;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .success-message p {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #CCC;
+        }
+
+        .countdown {
+            font-size: 24px;
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        /* НОВОЕ: WEB3 ПРЕДЛОЖЕНИЕ ПОСЛЕ РЕГИСТРАЦИИ */
+        .web3-offer {
+            margin-top: 25px;
+            padding: 25px;
+            border: 2px solid #FFD700;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,165,0,0.1) 100%);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            display: none;
+            animation: fadeInUp 1s ease;
+        }
+
+        .web3-offer.show {
+            display: block;
+        }
+
+        .web3-offer .offer-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        .web3-offer h3 {
+            color: #FFD700;
+            font-size: clamp(18px, 5vw, 24px);
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .web3-offer p {
+            color: #CCC;
+            margin-bottom: 20px;
+            font-size: clamp(14px, 3.5vw, 16px);
+            line-height: 1.5;
+        }
+
+        .web3-offer-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .web3-offer-btn {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            padding: 15px 25px;
+            font-size: clamp(14px, 3.5vw, 16px);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 180px;
+        }
+
+        .web3-offer-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+            background: linear-gradient(45deg, #ffed4e, #ffb84d);
+        }
+
+        .web3-offer-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #CCC;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .web3-offer-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #FFF;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .web3-offer .benefits {
+            margin-top: 20px;
+            text-align: left;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .web3-offer .benefits h4 {
+            color: #FFD700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .web3-offer .benefits ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .web3-offer .benefits li {
+            color: #CCC;
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+            font-size: 14px;
+        }
+
+        .web3-offer .benefits li:before {
+            content: '✨';
+            position: absolute;
+            left: 0;
+            color: #FFD700;
+        }
+
+        .web3-offer .requirement {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(30, 136, 229, 0.1);
+            border: 1px solid rgba(30, 136, 229, 0.3);
+            border-radius: 8px;
+            font-size: 12px;
+            color: #1E88E5;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        option {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        .error-message {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid #ff4444;
+            color: #ff6666;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Адаптив */
+        @media (max-width: 600px) {
+            .registration-container {
+                padding: 10px;
+            }
+            
+            .registration-box {
+                padding: 25px;
+            }
+            
+            .registration-box h2 {
+                font-size: 22px;
+                margin-bottom: 25px;
+            }
+            
+            .form-group input,
+            .form-group select {
+                padding: 12px;
+            }
+            
+            .submit-btn {
+                padding: 15px;
+                font-size: 16px;
+            }
+
+            .language-switcher {
+                top: 5px;
+                right: 5px;
+                padding: 3px;
+            }
+
+            .lang-btn {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+
+            .web3-offer-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .web3-offer-btn {
+                min-width: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .registration-container {
+                margin-top: 45px;
+            }
+
+            .web3-offer {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ЯЗЫКОВОЙ ПЕРЕКЛЮЧАТЕЛЬ -->
+    <div class="language-switcher">
+        <button class="lang-btn active" onclick="switchLanguage('en')" id="langEn">EN</button>
+        <button class="lang-btn" onclick="switchLanguage('ru')" id="langRu">RU</button>
+        <button class="lang-btn" onclick="switchLanguage('ua')" id="langUa">UA</button>
+    </div>
+
+    <div class="registration-container">
+        <div class="registration-box">
+            <!-- Информация о реферере -->
+            <div id="referralInfo" class="referral-info">
+                <div class="icon">🎁</div>
+                <div style="color: #FFD700; font-weight: bold; margin-bottom: 5px;" id="referralText">
+                    You were invited by user <span id="referrerDisplay">ID</span>
+                </div>
+                <div style="color: #CCC; font-size: 14px;" id="referralSubtext">
+                    Get free greeting card generator!
+                </div>
+            </div>
+
+            <h2 id="mainTitle">🎁 Get Generator as Gift</h2>
+            
+            <!-- Сообщение об ошибке -->
+            <div id="errorMessage" class="error-message"></div>
+            
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label id="nameLabel">👤 Your Name:</label>
+                    <input type="text" id="userName" placeholder="" required maxlength="50">
+                    <small class="hint" id="nameHint">Enter your name or nickname</small>
+                </div>
+
+                <div class="form-group">
+                    <label id="messengerLabel">📱 Where to find you:</label>
+                    <select id="messengerSelect" required>
+                        <option value="" id="messengerPlaceholder">Choose messenger</option>
+                        <option value="telegram">📱 Telegram</option>
+                        <option value="whatsapp">💬 WhatsApp</option>
+                        <option value="email">📧 Email</option>
+                        <option value="instagram">📷 Instagram</option>
+                        <option value="viber">💜 Viber</option>
+                        <option value="facebook">👤 Facebook</option>
+                        <option value="tiktok">🎵 TikTok</option>
+                        <option value="twitter">🐦 Twitter/X</option>
+                    </select>
+                    <small class="hint" id="messengerHint">Choose convenient way to contact</small>
+                </div>
+
+                <div class="form-group" id="contactInputGroup" style="display: none;">
+                    <label id="contactLabel">📞 Your Contact:</label>
+                    <input type="text" id="contactInput" placeholder="" required maxlength="100">
+                    <small id="contactHint" class="hint"></small>
+                </div>
+
+                <!-- Согласие на push-уведомления -->
+                <div class="consent-checkbox">
+                    <input type="checkbox" id="pushConsent" required>
+                    <div class="consent-text">
+                        <span id="consentText">I consent to receive <strong>push notifications</strong> and informational messages in the selected messenger. This will help stay updated on new features and CardGift opportunities.</span>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="submit-btn" disabled>
+                    🎁 <span id="submitBtnText">GET GENERATOR AS GIFT!</span>
+                </button>
+
+                <!-- НЕПРИМЕТНАЯ КНОПКА ПОДКЛЮЧЕНИЯ КОШЕЛЬКА -->
+                <div class="wallet-connect-small">
+                    <button type="button" id="walletBtnSmall" class="wallet-btn-small" onclick="connectWallet()">
+                        <span id="walletBtnText">🔗 Connect Wallet</span>
+                    </button>
+                    <div id="walletStatusSmall" class="wallet-status-small">
+                        <span id="walletConnectedText">✅ Wallet Connected</span>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Сообщение об успехе -->
+            <div id="successMessage" class="success-message">
+                <div class="icon">✅</div>
+                <h3 id="successTitle">Congratulations!</h3>
+                <p id="successDesc">Greeting card generator is ready to use</p>
+                <p id="successId">Your unique ID: <strong id="newUserId"></strong></p>
+                <p id="walletInfo" style="display: none;">Wallet: <strong id="userWallet"></strong></p>
+                <p id="countdownText">Redirecting in <span class="countdown" id="countdown">5</span> seconds...</p>
+            </div>
+
+            <!-- НОВОЕ: WEB3 ПРЕДЛОЖЕНИЕ ЗАРАБОТКА -->
+            <div id="web3Offer" class="web3-offer">
+                <div class="offer-icon">💰</div>
+                <h3 id="web3OfferTitle">Want to Earn Money?</h3>
+                <p id="web3OfferDesc">Invite friends and earn cryptocurrency rewards for each activation!</p>
+                
+                <div class="benefits">
+                    <h4 id="web3BenefitsTitle">💎 Benefits of Web3 Activation:</h4>
+                    <ul>
+                        <li id="web3Benefit1">Earn 0.015 opBNB for each friend who activates</li>
+                        <li id="web3Benefit2">Get access to 5-level referral system</li>
+                        <li id="web3Benefit3">Unlimited card storage in blockchain</li>
+                        <li id="web3Benefit4">Advanced analytics and team management</li>
+                        <li id="web3Benefit5">Push notifications to your referrals</li>
+                    </ul>
+                </div>
+
+                <div class="web3-offer-buttons">
+                    <button onclick="goToWeb3Dashboard()" class="web3-offer-btn" id="startEarningBtn">
+                        🚀 START EARNING NOW
+                    </button>
+                    <button onclick="skipWeb3Offer()" class="web3-offer-btn secondary" id="maybeLaterBtn">
+                        Maybe Later
+                    </button>
+                </div>
+
+                <div class="requirement">
+                    <span id="requirementText">💡 Requires SafePal or MetaMask wallet connection</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/wallet.js"></script>
+    <script src="/js/api.js"></script>
+    <script>
+        // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+        let currentLanguage = 'en';
+        let referralId = null;
+        let walletConnected = false;
+        let userWalletAddress = null;
+        let registeredUserId = null;
+
+        // МУЛЬТИЯЗЫЧНОСТЬ (расширенная для WEB3 предложения)
+        const translations = {
+            en: {
+                pageTitle: "🎁 CardGift - Get Card Generator",
+                referralText: "You were invited by user",
+                referralSubtext: "Get free greeting card generator!",
+                mainTitle: "🎁 Get Generator as Gift",
+                nameLabel: "👤 Your Name:",
+                namePlaceholder: "How should we address you?",
+                nameHint: "Enter your name or nickname",
+                messengerLabel: "📱 Where to find you:",
+                messengerPlaceholder: "Choose messenger",
+                messengerHint: "Choose convenient way to contact",
+                contactLabel: "📞 Your Contact:",
+                consentText: "I consent to receive <strong>push notifications</strong> and informational messages in the selected messenger. This will help stay updated on new features and CardGift opportunities.",
+                submitBtnText: "GET GENERATOR AS GIFT!",
+                walletBtnText: "🔗 Connect Wallet",
+                walletConnectedText: "✅ Wallet Connected",
+                successTitle: "Congratulations!",
+                successDesc: "Greeting card generator is ready to use",
+                successId: "Your unique ID:",
+                walletInfoText: "Wallet:",
+                countdownText: "Redirecting in",
+                seconds: "seconds...",
+                // WEB3 ПРЕДЛОЖЕНИЕ
+                web3OfferTitle: "Want to Earn Money?",
+                web3OfferDesc: "Invite friends and earn cryptocurrency rewards for each activation!",
+                web3BenefitsTitle: "💎 Benefits of Web3 Activation:",
+                web3Benefit1: "Earn 0.015 opBNB for each friend who activates",
+                web3Benefit2: "Get access to 5-level referral system",
+                web3Benefit3: "Unlimited card storage in blockchain",
+                web3Benefit4: "Advanced analytics and team management", 
+                web3Benefit5: "Push notifications to your referrals",
+                startEarningBtn: "🚀 START EARNING NOW",
+                maybeLaterBtn: "Maybe Later",
+                requirementText: "💡 Requires SafePal or MetaMask wallet connection",
+                messengers: {
+                    telegram: { placeholder: "@username or +380123456789", hint: "Enter your Telegram username (with @) or phone number" },
+                    whatsapp: { placeholder: "+380123456789", hint: "Enter phone number with country code (e.g.: +380123456789)" },
+                    email: { placeholder: "your@email.com", hint: "Enter your email address" },
+                    instagram: { placeholder: "@username", hint: "Enter your Instagram username (with @)" },
+                    viber: { placeholder: "+380123456789", hint: "Enter phone number with country code" },
+                    facebook: { placeholder: "facebook.com/username or full name", hint: "Enter profile link or your full name on Facebook" },
+                    tiktok: { placeholder: "@username", hint: "Enter your TikTok username (with @)" },
+                    twitter: { placeholder: "@username", hint: "Enter your Twitter/X username (with @)" }
+                }
+            },
+            ru: {
+                pageTitle: "🎁 CardGift - Получить генератор открыток",
+                referralText: "Вас пригласил пользователь",
+                referralSubtext: "Получите бесплатный генератор открыток!",
+                mainTitle: "🎁 Получить генератор в подарок",
+                nameLabel: "👤 Ваше имя:",
+                namePlaceholder: "Как к вам обращаться?",
+                nameHint: "Введите ваше имя или никнейм",
+                messengerLabel: "📱 Где вас найти:",
+                messengerPlaceholder: "Выберите мессенджер",
+                messengerHint: "Выберите удобный способ связи",
+                contactLabel: "📞 Ваш контакт:",
+                consentText: "Я даю согласие на получение <strong>push-уведомлений</strong> и информационных сообщений в выбранном мессенджере. Это поможет быть в курсе новых функций и возможностей CardGift.",
+                submitBtnText: "ПОЛУЧИТЬ ГЕНЕРАТОР В ПОДАРОК!",
+                walletBtnText: "🔗 Подключить кошелек",
+                walletConnectedText: "✅ Кошелек подключен",
+                successTitle: "Поздравляем!",
+                successDesc: "Генератор открыток готов к использованию",
+                successId: "Ваш уникальный ID:",
+                walletInfoText: "Кошелек:",
+                countdownText: "Перенаправление через",
+                seconds: "секунды...",
+                // WEB3 ПРЕДЛОЖЕНИЕ
+                web3OfferTitle: "Хотите зарабатывать деньги?",
+                web3OfferDesc: "Приглашайте друзей и получайте вознаграждения в криптовалюте за каждую активацию!",
+                web3BenefitsTitle: "💎 Преимущества Web3 активации:",
+                web3Benefit1: "Зарабатывайте 0.015 opBNB за каждого активированного друга",
+                web3Benefit2: "Получите доступ к 5-уровневой реферальной системе",
+                web3Benefit3: "Безлимитное хранение открыток в блокчейне",
+                web3Benefit4: "Продвинутая аналитика и управление командой",
+                web3Benefit5: "Push-уведомления для ваших рефералов",
+                startEarningBtn: "🚀 НАЧАТЬ ЗАРАБАТЫВАТЬ",
+                maybeLaterBtn: "Возможно позже",
+                requirementText: "💡 Требуется подключение кошелька SafePal или MetaMask",
+                messengers: {
+                    telegram: { placeholder: "@username или +380123456789", hint: "Введите ваш Telegram username (с @) или номер телефона" },
+                    whatsapp: { placeholder: "+380123456789", hint: "Введите номер телефона с кодом страны (например: +380123456789)" },
+                    email: { placeholder: "ваш@email.com", hint: "Введите ваш email адрес" },
+                    instagram: { placeholder: "@username", hint: "Введите ваш Instagram username (с @)" },
+                    viber: { placeholder: "+380123456789", hint: "Введите номер телефона с кодом страны" },
+                    facebook: { placeholder: "facebook.com/username или полное имя", hint: "Введите ссылку на профиль или ваше полное имя в Facebook" },
+                    tiktok: { placeholder: "@username", hint: "Введите ваш TikTok username (с @)" },
+                    twitter: { placeholder: "@username", hint: "Введите ваш Twitter/X username (с @)" }
+                }
+            },
+            ua: {
+                pageTitle: "🎁 CardGift - Отримати генератор листівок",
+                referralText: "Вас запросив користувач",
+                referralSubtext: "Отримайте безкоштовний генератор листівок!",
+                mainTitle: "🎁 Отримати генератор в подарунок",
+                nameLabel: "👤 Ваше ім'я:",
+                namePlaceholder: "Як до вас звертатися?",
+                nameHint: "Введіть ваше ім'я або нікнейм",
+                messengerLabel: "📱 Де вас знайти:",
+                messengerPlaceholder: "Оберіть месенджер",
+                messengerHint: "Оберіть зручний спосіб зв'язку",
+                contactLabel: "📞 Ваш контакт:",
+                consentText: "Я даю згоду на отримання <strong>push-сповіщень</strong> та інформаційних повідомлень у вибраному месенджері. Це допоможе бути в курсі нових функцій та можливостей CardGift.",
+                submitBtnText: "ОТРИМАТИ ГЕНЕРАТОР В ПОДАРУНОК!",
+                walletBtnText: "🔗 Підключити гаманець",
+                walletConnectedText: "✅ Гаманець підключено",
+                successTitle: "Вітаємо!",
+                successDesc: "Генератор листівок готовий до використання",
+                successId: "Ваш унікальний ID:",
+                walletInfoText: "Гаманець:",
+                countdownText: "Перенаправлення через",
+                seconds: "секунди...",
+                // WEB3 ПРЕДЛОЖЕНИЕ
+                web3OfferTitle: "Хочете заробляти гроші?",
+                web3OfferDesc: "Запрошуйте друзів та отримуйте винагороди в криптовалюті за кожну активацію!",
+                web3BenefitsTitle: "💎 Переваги Web3 активації:",
+                web3Benefit1: "Заробляйте 0.015 opBNB за кожного активованого друга",
+                web3Benefit2: "Отримайте доступ до 5-рівневої реферальної системи",
+                web3Benefit3: "Безлімітне зберігання листівок у блокчейні",
+                web3Benefit4: "Прогресивна аналітика та управління командою",
+                web3Benefit5: "Push-сповіщення для ваших рефералів",
+                startEarningBtn: "🚀 ПОЧАТИ ЗАРОБЛЯТИ",
+                maybeLaterBtn: "Можливо пізніше",
+                requirementText: "💡 Потрібне підключення гаманця SafePal або MetaMask",
+                messengers: {
+                    telegram: { placeholder: "@username або +380123456789", hint: "Введіть ваш Telegram username (з @) або номер телефону" },
+                    whatsapp: { placeholder: "+380123456789", hint: "Введіть номер телефону з кодом країни (наприклад: +380123456789)" },
+                    email: { placeholder: "ваш@email.com", hint: "Введіть вашу email адресу" },
+                    instagram: { placeholder: "@username", hint: "Введіть ваш Instagram username (з @)" },
+                    viber: { placeholder: "+380123456789", hint: "Введіть номер телефону з кодом країни" },
+                    facebook: { placeholder: "facebook.com/username або повне ім'я", hint: "Введіть посилання на профіль або ваше повне ім'я в Facebook" },
+                    tiktok: { placeholder: "@username", hint: "Введіть ваш TikTok username (з @)" },
+                    twitter: { placeholder: "@username", hint: "Введіть ваш Twitter/X username (з @)" }
+                }
+            }
+        };
+
+        // ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация языка
+            initializeLanguage();
+            
+            // Проверка реферальной ссылки
+            checkReferralLink();
+            
+            // Инициализация формы
+            initializeForm();
+            
+            // Проверка подключенного кошелька
+            checkWalletConnection();
+        });
+
+        // ФУНКЦИИ ПЕРЕКЛЮЧЕНИЯ ЯЗЫКА
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('preferredLanguage', lang);
+            updateLanguageButtons();
+            updatePageContent();
+        }
+
+        function initializeLanguage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const langFromUrl = urlParams.get('lang');
+            const savedLang = localStorage.getItem('preferredLanguage');
+            
+            currentLanguage = langFromUrl || savedLang || 'en';
+            updateLanguageButtons();
+            updatePageContent();
+        }
+
+        function updateLanguageButtons() {
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang${currentLanguage.charAt(0).toUpperCase() + currentLanguage.slice(1)}`).classList.add('active');
+        }
+
+        function updatePageContent() {
+            const trans = translations[currentLanguage];
+            
+            // Основной контент
+            document.getElementById('pageTitle').textContent = trans.pageTitle;
+            document.title = trans.pageTitle;
+            document.getElementById('referralText').innerHTML = `${trans.referralText} <span id="referrerDisplay">ID</span>`;
+            document.getElementById('referralSubtext').textContent = trans.referralSubtext;
+            document.getElementById('mainTitle').textContent = trans.mainTitle;
+            document.getElementById('nameLabel').textContent = trans.nameLabel;
+            document.getElementById('userName').placeholder = trans.namePlaceholder;
+            document.getElementById('nameHint').textContent = trans.nameHint;
+            document.getElementById('messengerLabel').textContent = trans.messengerLabel;
+            document.getElementById('messengerPlaceholder').textContent = trans.messengerPlaceholder;
+            document.getElementById('messengerHint').textContent = trans.messengerHint;
+            document.getElementById('contactLabel').textContent = trans.contactLabel;
+            document.getElementById('consentText').innerHTML = trans.consentText;
+            document.getElementById('submitBtnText').textContent = trans.submitBtnText;
+            document.getElementById('walletBtnText').textContent = trans.walletBtnText;
+            document.getElementById('walletConnectedText').textContent = trans.walletConnectedText;
+            document.getElementById('successTitle').textContent = trans.successTitle;
+            document.getElementById('successDesc').textContent = trans.successDesc;
+            document.getElementById('successId').innerHTML = `${trans.successId} <strong id="newUserId"></strong>`;
+            document.getElementById('countdownText').innerHTML = `${trans.countdownText} <span class="countdown" id="countdown">5</span> ${trans.seconds}`;
+            
+            // WEB3 ПРЕДЛОЖЕНИЕ
+            document.getElementById('web3OfferTitle').textContent = trans.web3OfferTitle;
+            document.getElementById('web3OfferDesc').textContent = trans.web3OfferDesc;
+            document.getElementById('web3BenefitsTitle').textContent = trans.web3BenefitsTitle;
+            document.getElementById('web3Benefit1').textContent = trans.web3Benefit1;
+            document.getElementById('web3Benefit2').textContent = trans.web3Benefit2;
+            document.getElementById('web3Benefit3').textContent = trans.web3Benefit3;
+            document.getElementById('web3Benefit4').textContent = trans.web3Benefit4;
+            document.getElementById('web3Benefit5').textContent = trans.web3Benefit5;
+            document.getElementById('startEarningBtn').textContent = trans.startEarningBtn;
+            document.getElementById('maybeLaterBtn').textContent = trans.maybeLaterBtn;
+            document.getElementById('requirementText').textContent = trans.requirementText;
+
+            // Обновление placeholder и hint для контакта при смене языка
+            const messengerSelect = document.getElementById('messengerSelect');
+            if (messengerSelect.value) {
+                updateContactField(messengerSelect.value);
+            }
+        }
+
+        // ФУНКЦИЯ ПРОВЕРКИ РЕФЕРАЛЬНОЙ ССЫЛКИ
+        function checkReferralLink() {
+            const urlParams = new URLSearchParams(window.location.search);
+            referralId = urlParams.get('ref') || urlParams.get('referral') || urlParams.get('r');
+            
+            if (referralId) {
+                document.getElementById('referrerDisplay').textContent = referralId;
+                document.getElementById('referralInfo').classList.add('show');
+            }
+        }
+
+        // ИНИЦИАЛИЗАЦИЯ ФОРМЫ
+        function initializeForm() {
+            const form = document.getElementById('registrationForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const nameInput = document.getElementById('userName');
+            const messengerSelect = document.getElementById('messengerSelect');
+            const contactInput = document.getElementById('contactInput');
+            const consentCheckbox = document.getElementById('pushConsent');
+
+            // Обработчик выбора мессенджера
+            messengerSelect.addEventListener('change', function() {
+                const selectedMessenger = this.value;
+                if (selectedMessenger) {
+                    updateContactField(selectedMessenger);
+                    document.getElementById('contactInputGroup').style.display = 'block';
+                } else {
+                    document.getElementById('contactInputGroup').style.display = 'none';
+                }
+                checkFormValidity();
+            });
+
+            // Обработчики проверки валидности формы
+            [nameInput, messengerSelect, contactInput, consentCheckbox].forEach(element => {
+                element.addEventListener('input', checkFormValidity);
+                element.addEventListener('change', checkFormValidity);
+            });
+
+            // Обработчик отправки формы
+            form.addEventListener('submit', handleFormSubmit);
+        }
+
+        function updateContactField(messenger) {
+            const trans = translations[currentLanguage];
+            const contactInput = document.getElementById('contactInput');
+            const contactHint = document.getElementById('contactHint');
+            
+            if (trans.messengers[messenger]) {
+                contactInput.placeholder = trans.messengers[messenger].placeholder;
+                contactHint.textContent = trans.messengers[messenger].hint;
+            }
+        }
+
+        function checkFormValidity() {
+            const name = document.getElementById('userName').value.trim();
+            const messenger = document.getElementById('messengerSelect').value;
+            const contact = document.getElementById('contactInput').value.trim();
+            const consent = document.getElementById('pushConsent').checked;
+            
+            const isValid = name && messenger && contact && consent;
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (isValid) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        // ОБРАБОТЧИК ОТПРАВКИ ФОРМЫ
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            try {
+                const userData = {
+                    name: document.getElementById('userName').value.trim(),
+                    messenger: document.getElementById('messengerSelect').value,
+                    contact: document.getElementById('contactInput').value.trim(),
+                    language: currentLanguage,
+                    referredBy: referralId,
+                    walletAddress: userWalletAddress,
+                    registrationDate: new Date().toISOString()
+                };
+
+                // Сохранение пользователя
+                const result = await saveUser(userData);
+                
+                if (result.success) {
+                    registeredUserId = result.userId;
+                    showSuccess(result.userId, userData.walletAddress);
+                } else {
+                    throw new Error(result.error || 'Registration failed');
+                }
+
+            } catch (error) {
+                console.error('Registration error:', error);
+                showError('Registration failed. Please try again.');
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }
+        }
+
+        // ФУНКЦИЯ ПОКАЗА УСПЕХА
+        function showSuccess(userId, walletAddress) {
+            document.getElementById('registrationForm').style.display = 'none';
+            
+            const successMessage = document.getElementById('successMessage');
+            document.getElementById('newUserId').textContent = userId;
+            
+            if (walletAddress) {
+                document.getElementById('userWallet').textContent = 
+                    walletAddress.substring(0, 6) + '...' + walletAddress.substring(walletAddress.length - 4);
+                document.getElementById('walletInfo').style.display = 'block';
+            }
+            
+            successMessage.classList.add('show');
+            
+            // НОВОЕ: Показываем WEB3 предложение через 3 секунды (если кошелек не подключен)
+            if (!walletAddress) {
+                setTimeout(() => {
+                    showWeb3Offer();
+                }, 3000);
+            } else {
+                // Если кошелек уже подключен, переходим сразу на дашборд
+                startCountdown(userId);
+            }
+        }
+
+        // НОВАЯ ФУНКЦИЯ: ПОКАЗ WEB3 ПРЕДЛОЖЕНИЯ
+        function showWeb3Offer() {
+            const web3Offer = document.getElementById('web3Offer');
+            web3Offer.classList.add('show');
+            
+            // Останавливаем обычный countdown
+            clearInterval(window.countdownInterval);
+            document.getElementById('countdownText').style.display = 'none';
+        }
+
+        // НОВАЯ ФУНКЦИЯ: ПЕРЕХОД НА WEB3 ДАШБОРД
+        function goToWeb3Dashboard() {
+            // Сохраняем флаг для активации WEB3
+            localStorage.setItem('pendingWeb3Activation', 'true');
+            localStorage.setItem('registeredUserId', registeredUserId);
+            
+            // Перенаправляем на дашборд с параметрами
+            const params = new URLSearchParams({
+                userId: registeredUserId,
+                upgrade: 'true',
+                lang: currentLanguage
+            });
+            
+            window.location.href = `/dashboard.html?${params.toString()}`;
+        }
+
+        // НОВАЯ ФУНКЦИЯ: ПРОПУСК WEB3 ПРЕДЛОЖЕНИЯ
+        function skipWeb3Offer() {
+            // Скрываем предложение и запускаем обычный countdown
+            document.getElementById('web3Offer').classList.remove('show');
+            document.getElementById('countdownText').style.display = 'block';
+            startCountdown(registeredUserId);
+        }
+
+        function startCountdown(userId) {
+            let timeLeft = 5;
+            const countdownElement = document.getElementById('countdown');
+            
+            window.countdownInterval = setInterval(() => {
+                timeLeft--;
+                countdownElement.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(window.countdownInterval);
+                    // Переход на обычный генератор (без WEB3)
+                    window.location.href = `/generator.html?userId=${userId}&lang=${currentLanguage}`;
+                }
+            }, 1000);
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+            
+            setTimeout(() => {
+                errorElement.classList.remove('show');
+            }, 5000);
+        }
+
+        // ФУНКЦИИ ПОДКЛЮЧЕНИЯ КОШЕЛЬКА
+        async function connectWallet() {
+            const walletBtn = document.getElementById('walletBtnSmall');
+            walletBtn.disabled = true;
+            walletBtn.innerHTML = '<span>🔄 Connecting...</span>';
+
+            try {
+                if (typeof window.ethereum !== 'undefined') {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    if (accounts.length > 0) {
+                        userWalletAddress = accounts[0];
+                        walletConnected = true;
+                        showWalletConnected();
+                    }
+                } else {
+                    throw new Error('Wallet not found');
+                }
+            } catch (error) {
+                console.error('Wallet connection error:', error);
+                walletBtn.disabled = false;
+                walletBtn.innerHTML = '<span id="walletBtnText">🔗 Connect Wallet</span>';
+                updatePageContent();
+                showError('Failed to connect wallet. Please install SafePal or MetaMask.');
+            }
+        }
+
+        function showWalletConnected() {
+            document.getElementById('walletBtnSmall').style.display = 'none';
+            document.getElementById('walletStatusSmall').classList.add('show');
+        }
+
+        async function checkWalletConnection() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        userWalletAddress = accounts[0];
+                        walletConnected = true;
+                        showWalletConnected();
+                    }
+                } catch (error) {
+                    console.log('Wallet not connected');
+                }
+            }
+        }
+
+        // ФУНКЦИЯ СОХРАНЕНИЯ ПОЛЬЗОВАТЕЛЯ (ЗАГЛУШКА - заменить на реальную)
+        async function saveUser(userData) {
+            return new Promise((resolve) => {
+                // Имитация API вызова
+                setTimeout(() => {
+                    const userId = 'CG' + Date.now().toString().slice(-6);
+                    resolve({
+                        success: true,
+                        userId: userId
+                    });
+                }, 1000);
+            });
+        }
+    </script>
+</body>
+</html>
