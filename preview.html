@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta property="og:title" content="Красивая открытка от CardGift">
+    <meta property="og:description" content="Персональная поздравительная открытка">
+    <meta property="og:image" content="" id="previewImage">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="">
+    <meta name="twitter:card" content="summary_large_image">
+    <title>Открытка CardGift</title>
+    <style>
+        body { margin: 0; background: #000; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        img { max-width: 100%; max-height: 100vh; border-radius: 10px; }
+        .loading { color: white; font-family: Arial; }
+    </style>
+</head>
+<body>
+    <div class="loading">Загрузка открытки...</div>
+    
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const cardId = urlParams.get('id');
+        const imgData = urlParams.get('img');
+        
+        if (imgData) {
+            // Показываем превью
+            document.body.innerHTML = `<img src="${decodeURIComponent(imgData)}" alt="Greeting Card">`;
+            
+            // Обновляем meta теги
+            document.getElementById('previewImage').content = decodeURIComponent(imgData);
+        } else if (cardId) {
+            // Перенаправляем на viewer
+            window.location.href = `/card-viewer.html?id=${cardId}`;
+        }
+    </script>
+</body>
+</html>
