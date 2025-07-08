@@ -2215,7 +2215,7 @@ async saveCardWithPreview(cardData) {
         console.log('💾 Сохраняем карту с превью...');
         
         const previewImage = await this.generatePreviewImage(cardData);
-        const cardUrl = `${window.location.origin}/card-viewer.html?id=${cardData.cardId}`;
+        const cardUrl = `https://cardgift.bnb/card-viewer.html?id=${cardData.cardId}`;
         
         // ТОЛЬКО локальное сохранение
         await saveCard(cardData);
@@ -2237,7 +2237,7 @@ async saveCardWithPreview(cardData) {
 generateMetaTags(cardData, previewImageUrl) {
     const title = this.extractTitle(cardData.greeting) || 'Поздравительная открытка - CardGift';
     const description = this.extractDescription(cardData.greeting) || 'Красивая персональная открытка создана с помощью CardGift';
-    const url = `${window.location.origin}/card-viewer.html?id=${cardData.cardId}`;
+    const url = `https://cardgift.bnb/card-viewer.html?id=${cardData.cardId}`;
     
     return {
         'og:title': this.escapeHTML(title),
@@ -2871,17 +2871,13 @@ function checkArchiveAccess() {
 const saveBtn = document.getElementById('saveToArchiveBtn');
 const lockedSection = document.getElementById('archiveLocked');
 
-if (!currentUser || currentUser.level === 0) {
-   saveBtn.style.display = 'none';
-   lockedSection.style.display = 'block';
-} else {
-   saveBtn.style.display = 'block';
-   saveBtn.disabled = false;
-   saveBtn.style.background = 'linear-gradient(45deg, #FFD700, #FFA500)';
-   saveBtn.style.color = '#000';
-   saveBtn.style.cursor = 'pointer';
-   lockedSection.style.display = 'none';
-}
+// Всегда разрешаем доступ к архиву
+saveBtn.style.display = 'block';
+saveBtn.disabled = false;
+saveBtn.style.background = 'linear-gradient(45deg, #FFD700, #FFA500)';
+saveBtn.style.color = '#000';
+saveBtn.style.cursor = 'pointer';
+lockedSection.style.display = 'none';
 }
 
 // ==================== WEB3 ПОДКЛЮЧЕНИЕ КОШЕЛЬКА ====================
@@ -3093,7 +3089,7 @@ async function sendToPreviewAPI(cardMetadata) {
 }
    
    // 🔗 ИСПРАВЛЕННАЯ ГЕНЕРАЦИЯ ССЫЛКИ
-   const shareableLink = `${window.location.origin}/card-viewer.html?id=${cardMetadata.cardId}`;
+   const shareableLink = `https://cardgift.bnb/card-viewer.html?id=${cardMetadata.cardId}`;
    
    // WEB3 сохранение в блокчейн (опционально)
    let txResult = null;
