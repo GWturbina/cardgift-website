@@ -1415,7 +1415,7 @@ animation: neonGradient 3s ease infinite;
   </div>
   <div style="display: flex; gap: 8px;">
       <button onclick="showInstructions()" style="background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; border: none; border-radius: 8px; padding: 8px 16px; cursor: pointer; font-weight: 600; box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3); transition: all 0.3s ease;">
-          <span id="instructionsBtn">📋 Инструкции</span>
+          <span id="instructionsBtn">📋 Instructions</span>
       </button>
       <button onclick="goToReferrals()" style="background: linear-gradient(45deg, #1E88E5, #1565C0); color: white; border: none; border-radius: 8px; padding: 8px 16px; cursor: pointer;">
           <span id="statsBtn">📊 Stats</span>
@@ -1424,7 +1424,7 @@ animation: neonGradient 3s ease infinite;
 </div>
 </div>
 
-<!-- WEB3 ПОДКЛЮЧЕНИЕ КОШЕЛЬКА -->
+<!-- WEB3 ПОДКЛЮЧЕНИЕ КОШЕЛЬКА - ПРИОРИТЕТ SafePal -->
 <div class="section">
 <div class="section-header">
   <span class="icon">🔗</span> <span id="blockchainConnection">Blockchain Connection</span>
@@ -1440,84 +1440,84 @@ animation: neonGradient 3s ease infinite;
 <!-- МОДАЛЬНОЕ ОКНО ИНСТРУКЦИЙ -->
 <div id="instructionsModal" class="instructions-modal">
 <div class="instructions-content">
-  <div class="instructions-header" id="instructionsHeader">📋 Руководство CardGift</div>
+  <div class="instructions-header" id="instructionsHeader">📋 CardGift Guide</div>
   
   <div class="instructions-section">
-      <h3 id="quickStartTitle">🚀 Быстрый старт</h3>
+      <h3 id="quickStartTitle">🚀 Quick Start</h3>
       
       <div style="margin-bottom: 15px;">
-          <strong id="addPhotoTitle">1. 📸 Добавление фото</strong>
+          <strong id="addPhotoTitle">1. 📸 Adding Photo</strong>
           <ul class="instructions-list">
-              <li id="instruction1">Нажмите на область "📸 Фото"</li>
-              <li id="instruction2">Выберите изображение с устройства</li>
-              <li id="instruction3"><em>Важно: Используйте вертикальные фото для мобильных (пропорции 9:16)</em></li>
-              <li id="instruction4"><em>Избегайте: Горизонтальные фото — они плохо смотрятся на мобильных открытках</em></li>
+              <li id="instruction1">Click on the '📸 Photo' area</li>
+              <li id="instruction2">Select an image from your device</li>
+              <li id="instruction3"><em>Important: Use vertical photos for mobile (9:16 ratio)</em></li>
+              <li id="instruction4"><em>Avoid: Horizontal photos — they look bad on mobile cards</em></li>
           </ul>
       </div>
 
       <div style="margin-bottom: 15px;">
-          <strong id="addTextTitle">2. ✍️ Добавление текста</strong>
+          <strong id="addTextTitle">2. ✍️ Adding Text</strong>
           <ul class="instructions-list">
-              <li id="instruction5">Введите поздравление в поле текста</li>
-              <li id="instruction6">Добавьте персональное сообщение (появляется по таймеру)</li>
-              <li id="instruction7">Можете использовать эмодзи 🎉💕🎂</li>
+              <li id="instruction5">Enter your greeting in the text field</li>
+              <li id="instruction6">Add personal message (appears by timer)</li>
+              <li id="instruction7">You can use emojis 🎉💕🎂</li>
           </ul>
       </div>
 
       <div style="margin-bottom: 15px;">
-          <strong id="timersTitle">3. ⏱️ Настройка таймеров</strong>
+          <strong id="timersTitle">3. ⏱️ Timer Settings</strong>
           <ul class="instructions-list">
-              <li id="instruction8">Таймер личного сообщения: Когда появляется персональное текст (1–30 сек)</li>
-              <li id="instruction9">Таймер кнопки предложения: Когда показывается кнопка "Получить генератор" (1–60 сек)</li>
-              <li id="instruction10">Таймер баннера: Когда появляется рекламный баннер (если включен)</li>
+              <li id="instruction8">Personal message timer: When personal text appears (1–30 sec)</li>
+              <li id="instruction9">Button offer timer: When 'Get generator' button shows (1–60 sec)</li>
+              <li id="instruction10">Banner timer: When advertising banner appears (if enabled)</li>
           </ul>
       </div>
 
       <div style="margin-bottom: 15px;">
-          <strong id="buttonPositionTitle">4. 📍 Позиционирование кнопки</strong>
+          <strong id="buttonPositionTitle">4. 📍 Button Positioning</strong>
           <ul class="instructions-list">
-              <li id="instruction11">Выберите из 9 позиций для кнопки "Понравилась открытка?"</li>
-              <li id="instruction12">Избегайте позиций, которые закрывают важный контент</li>
-              <li id="instruction13">Кнопка составляет 1/3 ширины экрана для аккуратного вида</li>
+              <li id="instruction11">Choose from 9 positions for 'Liked the card?' button</li>
+              <li id="instruction12">Avoid positions that cover important content</li>
+              <li id="instruction13">Button is 1/3 screen width for neat appearance</li>
           </ul>
       </div>
 
       <div style="margin-bottom: 15px;">
-          <strong id="styleTitle">5. 🎨 Выбор стиля</strong>
+          <strong id="styleTitle">5. 🎨 Style Selection</strong>
           <ul class="instructions-list">
-              <li id="instruction14">✨ Золото (классический)</li>
-              <li id="instruction15">🌅 Закат (романтичный)</li>
-              <li id="instruction16">🌊 Океан (свежий)</li>
-              <li id="instruction17">🌌 Космос (современный)</li>
+              <li id="instruction14">✨ Gold (classic)</li>
+              <li id="instruction15">🌅 Sunset (romantic)</li>
+              <li id="instruction16">🌊 Ocean (fresh)</li>
+              <li id="instruction17">🌌 Space (modern)</li>
           </ul>
       </div>
   </div>
 
   <div class="instructions-section">
-      <h3 id="additionalFeaturesTitle">📢 Дополнительные функции</h3>
+      <h3 id="additionalFeaturesTitle">📢 Additional Features</h3>
       <ul class="instructions-list">
-          <li id="instruction18"><strong>🎨 Демо-шаблоны:</strong> Готовые тексты для разных случаев. Отлично подходят для вдохновения.</li>
-          <li id="instruction19"><strong>📢 Рекламный баннер:</strong> Добавьте HTML-код для своего баннера. Идеально для рекламы бизнеса или мероприятий. Настройте таймер появления.</li>
-          <li id="instruction20"><strong>🔗 Реферальная система:</strong> Ваш уникальный 7-значный ID. Делитесь реферальной ссылкой. Отслеживание новых пользователей (будущая функция).</li>
+          <li id="instruction18"><strong>🎨 Demo Templates:</strong> Ready texts for different occasions. Perfect for inspiration.</li>
+          <li id="instruction19"><strong>📢 Advertising Banner:</strong> Add HTML code for your banner. Perfect for business or event advertising. Set appearance timer.</li>
+          <li id="instruction20"><strong>🔗 Referral System:</strong> Your unique 7-digit ID. Share referral link. Track new users (future feature).</li>
       </ul>
   </div>
 
   <div class="instructions-section">
-      <h3 id="mobileOptimizationTitle">🎯 Советы для мобильной оптимизации</h3>
+      <h3 id="mobileOptimizationTitle">🎯 Mobile Optimization Tips</h3>
       <div style="margin-bottom: 10px;">
-          <strong id="bestPhotoFormatsTitle">Лучшие форматы фото:</strong>
+          <strong id="bestPhotoFormatsTitle">Best Photo Formats:</strong>
           <ul class="instructions-list">
-              <li id="instruction21">Вертикальные фото → идеальны для мобильных открыток</li>
-              <li id="instruction22">Квадратные фото → покажутся с фоном</li>
-              <li id="instruction23">Избегайте горизонтальных → плохо работают на мобильных</li>
+              <li id="instruction21">Vertical photos → perfect for mobile cards</li>
+              <li id="instruction22">Square photos → will show with background</li>
+              <li id="instruction23">Avoid horizontal → work poorly on mobile</li>
           </ul>
       </div>
       <div style="text-align: center; background: rgba(255, 215, 0, 0.1); padding: 15px; border-radius: 10px; border: 1px solid #ffd700;">
-          <strong id="mainRule">📱 Главное правило: Всегда думайте о мобильных! Ваши открытки будут просматривать на телефонах. ✨</strong>
+          <strong id="mainRule">📱 Main Rule: Always think mobile! Your cards will be viewed on phones. ✨</strong>
       </div>
   </div>
 
-  <button class="close-instructions" onclick="hideInstructions()" id="closeInstructionsBtn">Закрыть</button>
+  <button class="close-instructions" onclick="hideInstructions()" id="closeInstructionsBtn">Close</button>
 </div>
 </div>
 
@@ -1781,29 +1781,18 @@ animation: neonGradient 3s ease infinite;
 <script src="/js/api.js"></script>
 
 <script>
-// 🛡️ СИСТЕМА ФИЛЬТРАЦИИ КОНТЕНТА - БЕЗ ИЗМЕНЕНИЙ
+// 🛡️ СИСТЕМА ФИЛЬТРАЦИИ КОНТЕНТА
 const forbiddenWords = [
-// Нецензурная лексика
 'блядь', 'сука', 'хуй', 'пизда', 'ебать', 'ублюдок', 'мудак', 'гавно',
 'говно', 'дерьмо', 'срать', 'срака', 'жопа', 'пидор', 'педик',
-
-// Порнография и разврат
 'порно', 'секс', 'трах', 'ебля', 'минет', 'оргия', 'мастурбация',
 'porn', 'sex', 'fuck', 'pussy', 'dick', 'cock', 'bitch', 'whore',
-
-// Жестокость и насилие
 'убить', 'убийство', 'смерть', 'кровь', 'расстрел', 'повесить',
 'зарезать', 'kill', 'murder', 'death', 'blood', 'violence',
-
-// Наркотики
 'героин', 'кокаин', 'марихуана', 'наркотик', 'наркота', 'трава',
 'drugs', 'cocaine', 'heroin', 'marijuana', 'weed',
-
-// ЛГБТ пропаганда 
 'гей', 'лесбиянка', 'трансгендер', 'гомосексуал', 'лгбт', 'квир',
 'gay', 'lesbian', 'transgender', 'homosexual', 'lgbt', 'queer',
-
-// Экстремизм и вражда
 'фашист', 'нацист', 'расизм', 'экстремизм', 'терроризм',
 'fascist', 'nazi', 'racism', 'extremism', 'terrorism'
 ];
@@ -1852,7 +1841,7 @@ return input
    .replace(/<embed/gi, '');
 }
 
-// 🎬 ИСПРАВЛЕННЫЙ КЛАСС ДЛЯ УЛУЧШЕННОЙ РАБОТЫ С ВИДЕО
+// 🎬 ИСПРАВЛЕННЫЙ КЛАСС ДЛЯ ВИДЕО ПРОЦЕССОРА С ПРАВИЛЬНЫМ CORS
 class VideoProcessor {
  constructor() {
      this.supportedPlatforms = {
@@ -1862,7 +1851,7 @@ class VideoProcessor {
                  /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
                  /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/
              ],
-             embed: (id) => `https://www.youtube-nocookie.com/embed/${id}?enablejsapi=1&controls=1&rel=0&modestbranding=1&playsinline=1&origin=${window.location.origin}`
+             embed: (id) => `https://www.youtube-nocookie.com/embed/${id}?enablejsapi=1&controls=1&rel=0&modestbranding=1&playsinline=1&origin=${encodeURIComponent(window.location.origin)}`
          }
      };
  }
@@ -1945,7 +1934,7 @@ class VideoProcessor {
      iframe.onerror = () => {
          iframe.style.display = 'none';
          const fallback = document.createElement('div');
-         fallback.innerHTML = `<a href="${videoData.originalUrl}" target="_blank" style="color: #FFD700;">▶️ Открыть на YouTube</a>`;
+         fallback.innerHTML = `<a href="${videoData.originalUrl}" target="_blank" style="color: #FFD700;">▶️ Open on YouTube</a>`;
          iframe.parentNode.appendChild(fallback);
      };
      
@@ -2002,12 +1991,11 @@ class VideoProcessor {
 // Создаем глобальный экземпляр видео процессора
 const videoProcessor = new VideoProcessor();
 
-// 🎨 ИСПРАВЛЕННЫЙ КЛАСС ДЛЯ ГЕНЕРАЦИИ ПРЕВЬЮ
+// 🎨 ИСПРАВЛЕННЫЙ КЛАСС ДЛЯ ГЕНЕРАЦИИ ПРЕВЬЮ С ПРАВИЛЬНЫМ CORS
 class SocialPreviewGenerator {
 constructor() {
     this.canvasWidth = 1200;
     this.canvasHeight = 630;
-    this.serverEndpoint = null;
 }
 
 async generatePreviewImage(cardData) {
@@ -2019,14 +2007,21 @@ async generatePreviewImage(cardData) {
         canvas.height = this.canvasHeight;
         const ctx = canvas.getContext('2d');
 
+        // Рисуем фон
         this.drawBackground(ctx, cardData.style);
         
+        // Рисуем изображение если есть
         if (cardData.mediaUrl && cardData.mediaType === 'image') {
             await this.drawMainImage(ctx, cardData.mediaUrl);
         }
         
+        // Добавляем оверлей
         this.drawTextOverlay(ctx);
+        
+        // Рисуем текст поздравления
         this.drawGreetingText(ctx, cardData.greeting);
+        
+        // Добавляем брендинг
         this.drawBranding(ctx);
         
         const imageData = canvas.toDataURL('image/jpeg', 0.9);
@@ -2066,24 +2061,41 @@ drawBackground(ctx, style) {
 async drawMainImage(ctx, imageData) {
     return new Promise((resolve) => {
         const img = new Image();
+        img.crossOrigin = "anonymous";
+        
         img.onload = () => {
-            const scale = Math.max(
-                this.canvasWidth / img.width,
-                this.canvasHeight / img.height
-            );
-            
-            const newWidth = img.width * scale;
-            const newHeight = img.height * scale;
-            const x = (this.canvasWidth - newWidth) / 2;
-            const y = (this.canvasHeight - newHeight) / 2;
-            
-            ctx.globalAlpha = 0.7;
-            ctx.drawImage(img, x, y, newWidth, newHeight);
-            ctx.globalAlpha = 1.0;
-            
+            try {
+                const scale = Math.max(
+                    this.canvasWidth / img.width,
+                    this.canvasHeight / img.height
+                );
+                
+                const newWidth = img.width * scale;
+                const newHeight = img.height * scale;
+                const x = (this.canvasWidth - newWidth) / 2;
+                const y = (this.canvasHeight - newHeight) / 2;
+                
+                ctx.globalAlpha = 0.7;
+                ctx.drawImage(img, x, y, newWidth, newHeight);
+                ctx.globalAlpha = 1.0;
+                
+                resolve();
+            } catch (error) {
+                console.warn('CORS error drawing image:', error);
+                // Рисуем цветной прямоугольник как fallback
+                ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+                ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+                resolve();
+            }
+        };
+        
+        img.onerror = () => {
+            console.warn('Image load error, using fallback');
+            ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+            ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
             resolve();
         };
-        img.onerror = () => resolve();
+        
         img.src = imageData;
     });
 }
@@ -2146,7 +2158,7 @@ drawBranding(ctx) {
     ctx.font = 'bold 32px Arial, sans-serif';
     ctx.fillStyle = '#000000';
     ctx.textAlign = 'center';
-    ctx.fillText('🎁 ПОСМОТРЕТЬ ОТКРЫТКУ', this.canvasWidth / 2, buttonY + 45);
+    ctx.fillText('🎁 VIEW GREETING CARD', this.canvasWidth / 2, buttonY + 45);
     
     const logoX = this.canvasWidth - 150;
     const logoY = 30;
@@ -2200,24 +2212,22 @@ generateFallbackPreview(cardData) {
     ctx.font = 'bold 48px Arial, sans-serif';
     ctx.fillStyle = '#FFFFFF';
     ctx.textAlign = 'center';
-    ctx.fillText('🎉 Поздравительная открытка', this.canvasWidth / 2, this.canvasHeight / 2);
+    ctx.fillText('🎉 Greeting Card', this.canvasWidth / 2, this.canvasHeight / 2);
     
     ctx.font = '32px Arial, sans-serif';
     ctx.fillStyle = '#FFD700';
-    ctx.fillText('CardGift - генератор открыток', this.canvasWidth / 2, this.canvasHeight / 2 + 60);
+    ctx.fillText('CardGift - Card Generator', this.canvasWidth / 2, this.canvasHeight / 2 + 60);
     
     return canvas.toDataURL('image/jpeg');
 }
 
-// ИСПРАВЛЕННЫЙ МЕТОД БЕЗ ВНЕШНИХ ВЫЗОВОВ
 async saveCardWithPreview(cardData) {
     try {
         console.log('💾 Сохраняем карту с превью...');
         
         const previewImage = await this.generatePreviewImage(cardData);
-        const cardUrl = `https://cardgift.bnb/card-viewer.html?id=${cardData.cardId}`;
+        const cardUrl = `${window.location.origin}/card-viewer.html?id=${cardData.cardId}`;
         
-        // ТОЛЬКО локальное сохранение
         await saveCard(cardData);
         
         return {
@@ -2235,9 +2245,9 @@ async saveCardWithPreview(cardData) {
 }
 
 generateMetaTags(cardData, previewImageUrl) {
-    const title = this.extractTitle(cardData.greeting) || 'Поздравительная открытка - CardGift';
-    const description = this.extractDescription(cardData.greeting) || 'Красивая персональная открытка создана с помощью CardGift';
-    const url = `https://cardgift.bnb/card-viewer.html?id=${cardData.cardId}`;
+    const title = this.extractTitle(cardData.greeting) || 'Greeting Card - CardGift';
+    const description = this.extractDescription(cardData.greeting) || 'Beautiful personal card created with CardGift';
+    const url = `${window.location.origin}/card-viewer.html?id=${cardData.cardId}`;
     
     return {
         'og:title': this.escapeHTML(title),
@@ -2245,7 +2255,7 @@ generateMetaTags(cardData, previewImageUrl) {
         'og:image': previewImageUrl,
         'og:image:width': '1200',
         'og:image:height': '630',
-        'og:image:alt': this.escapeHTML(`Превью: ${title}`),
+        'og:image:alt': this.escapeHTML(`Preview: ${title}`),
         'og:type': 'website',
         'og:url': url,
         'og:site_name': 'CardGift',
@@ -2292,7 +2302,7 @@ let uploadedMedia = null;
 let currentUser = null;
 let walletConnected = false;
 
-// ПЕРЕВОДЫ - БЕЗ ИЗМЕНЕНИЙ
+// ПЕРЕВОДЫ
 const translations = {
 en: {
    pageTitle: "CardGift - Digital Card Generator",
@@ -2340,7 +2350,7 @@ en: {
    media: "Photo/Video",
    uploadMedia: "Click to upload photo or video",
    uploadRecommendation: "Recommended: vertical format (9:16)",
-   orInsertVideo: "Or insert video URL from YouTube/TikTok:",
+   orInsertVideo: "Or insert video URL:",
    text: "Text",
    addEmoji: "Add Emoji",
    textPosition: "Text Position",
@@ -2438,7 +2448,7 @@ ru: {
    media: "Фото/Видео",
    uploadMedia: "Нажмите, чтобы загрузить фото или видео",
    uploadRecommendation: "Рекомендуется: вертикальный формат (9:16)",
-   orInsertVideo: "Или вставьте URL видео с YouTube/TikTok:",
+   orInsertVideo: "Или вставьте URL видео:",
    text: "Текст",
    addEmoji: "Добавить эмодзи",
    textPosition: "Позиция текста",
@@ -2536,7 +2546,7 @@ ua: {
    media: "Фото/Відео",
    uploadMedia: "Натисніть, щоб завантажити фото або відео",
    uploadRecommendation: "Рекомендується: вертикальний формат (9:16)",
-   orInsertVideo: "Або вставте URL відео з YouTube/TikTok:",
+   orInsertVideo: "Або вставте URL відео:",
    text: "Текст",
    addEmoji: "Додати емодзі",
    textPosition: "Позиція тексту",
@@ -2590,7 +2600,7 @@ ua: {
 }
 };
 
-// ШАБЛОНЫ ТЕКСТОВ - БЕЗ ИЗМЕНЕНИЙ
+// ШАБЛОНЫ ТЕКСТОВ
 const templates = {
 birthday: {
    en: {
@@ -2664,7 +2674,7 @@ congrats: {
 }
 };
 
-// ЭМОДЗИ ПО КАТЕГОРИЯМ - БЕЗ ИЗМЕНЕНИЙ
+// ЭМОДЗИ ПО КАТЕГОРИЯМ
 const emojis = {
 smileys: ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '🙄', '😏', '😪', '😴', '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '🤯', '🤠', '🥳', '😎', '🤓', '🧐'],
 animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🙈', '🙉', '🙊', '🐒', '🐔', '🐧', '🐦', '🐤', '🐣', '🐥', '🦆', '🦅', '🦉', '🦇', '🐺', '🐗', '🐴', '🦄', '🐝', '🐛', '🦋', '🐌', '🐞', '🐜', '🦟'],
@@ -2678,9 +2688,9 @@ flags: ['🏁', '🚩', '🎌', '🏴', '🏳️', '🏳️‍🌈', '🏳️‍
 
 // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
 
-window.onload = function() {
-initializeWeb3App();
-};
+window.addEventListener('DOMContentLoaded', function() {
+    initializeWeb3App();
+});
 
 // WEB3: Инициализация приложения
 async function initializeWeb3App() {
@@ -2717,6 +2727,7 @@ try {
    await autoConnectWallet();
    initializeToggles();
    checkCreateButtonState();
+   setupEventListeners();
    
    console.log('✅ WEB3 Generator fully initialized');
    
@@ -2785,8 +2796,13 @@ if (greetingTextarea) {
 
 // Инициализация переключателей
 function initializeToggles() {
-document.getElementById('ctaToggle').checked = true;
-document.getElementById('ctaSettings').style.display = 'block';
+const ctaToggle = document.getElementById('ctaToggle');
+const ctaSettings = document.getElementById('ctaSettings');
+
+if (ctaToggle && ctaSettings) {
+    ctaToggle.checked = true;
+    ctaSettings.style.display = 'block';
+}
 
 console.log('✅ Toggles initialized: CTA enabled by default');
 }
@@ -2806,6 +2822,7 @@ try {
            isActive: false,
            cardCount: 0
        };
+       localStorage.setItem('currentUser', JSON.stringify(currentUser));
        updateUserInterface();
    }
    
@@ -2842,7 +2859,10 @@ if (typeof walletManager !== 'undefined' && walletManager && walletManager.isWal
 function updateUserInterface() {
 if (!currentUser) return;
 
-document.getElementById('currentUserId').textContent = currentUser.userId;
+const userIdElement = document.getElementById('currentUserId');
+if (userIdElement) {
+    userIdElement.textContent = currentUser.userId;
+}
 
 const levelNames = {
    0: currentLanguage === 'en' ? 'Free User' : currentLanguage === 'ru' ? 'Бесплатный пользователь' : 'Безкоштовний користувач',
@@ -2851,7 +2871,10 @@ const levelNames = {
    3: currentLanguage === 'en' ? 'Super Admin' : currentLanguage === 'ru' ? 'Супер админ' : 'Супер адмін'
 };
 
-document.getElementById('userLevel').textContent = levelNames[currentUser.level] || levelNames[0];
+const userLevelElement = document.getElementById('userLevel');
+if (userLevelElement) {
+    userLevelElement.textContent = levelNames[currentUser.level] || levelNames[0];
+}
 
 const limits = {
    0: 5,   // FREE
@@ -2863,7 +2886,10 @@ const limits = {
 const currentLimit = limits[currentUser.level] || limits[0];
 const currentCount = currentUser.cardCount || 0;
 
-document.getElementById('userCards').textContent = `Cards: ${currentCount}/${currentLimit}`;
+const userCardsElement = document.getElementById('userCards');
+if (userCardsElement) {
+    userCardsElement.textContent = `Cards: ${currentCount}/${currentLimit}`;
+}
 }
 
 // WEB3: Проверка доступа к архиву
@@ -2871,20 +2897,23 @@ function checkArchiveAccess() {
 const saveBtn = document.getElementById('saveToArchiveBtn');
 const lockedSection = document.getElementById('archiveLocked');
 
-// Всегда разрешаем доступ к архиву
-saveBtn.style.display = 'block';
-saveBtn.disabled = false;
-saveBtn.style.background = 'linear-gradient(45deg, #FFD700, #FFA500)';
-saveBtn.style.color = '#000';
-saveBtn.style.cursor = 'pointer';
-lockedSection.style.display = 'none';
+if (saveBtn && lockedSection) {
+    saveBtn.style.display = 'block';
+    saveBtn.disabled = false;
+    saveBtn.style.background = 'linear-gradient(45deg, #FFD700, #FFA500)';
+    saveBtn.style.color = '#000';
+    saveBtn.style.cursor = 'pointer';
+    lockedSection.style.display = 'none';
+}
 }
 
-// ==================== WEB3 ПОДКЛЮЧЕНИЕ КОШЕЛЬКА ====================
+// ==================== WEB3 ПОДКЛЮЧЕНИЕ КОШЕЛЬКА - ПРИОРИТЕТ SafePal ====================
 
 async function connectWallet() {
 try {
    const walletBtn = document.getElementById('walletConnectBtn');
+   if (!walletBtn) return;
+   
    walletBtn.textContent = currentLanguage === 'en' ? '🔄 Connecting...' : 
                          currentLanguage === 'ru' ? '🔄 Подключение...' : 
                          '🔄 Підключення...';
@@ -2917,8 +2946,10 @@ try {
    showNotification(message, 'error');
    
    const walletBtn = document.getElementById('walletConnectBtn');
-   walletBtn.textContent = translations[currentLanguage].connectSafePalWallet;
-   walletBtn.disabled = false;
+   if (walletBtn) {
+       walletBtn.textContent = translations[currentLanguage].connectSafePalWallet;
+       walletBtn.disabled = false;
+   }
 }
 }
 
@@ -2952,22 +2983,27 @@ try {
 function showWalletConnected(address) {
 walletConnected = true;
 
-document.getElementById('walletStatus').innerHTML = `
-   <div style="background: rgba(76, 175, 80, 0.1); color: #4CAF50; padding: 10px; border-radius: 10px; margin-top: 10px; text-align: center;">
-       <div style="font-weight: bold;">✅ ${currentLanguage === 'en' ? 'SafePal connected' : currentLanguage === 'ru' ? 'SafePal подключен' : 'SafePal підключено'}</div>
-       <div style="font-size: 12px; color: #CCC; margin-top: 5px;">${address.substring(0, 6)}...${address.substring(address.length - 4)}</div>
-   </div>
-`;
-
-document.getElementById('walletConnectBtn').style.display = 'none';
+const walletStatusElement = document.getElementById('walletStatus');
+if (walletStatusElement) {
+    walletStatusElement.innerHTML = `
+       <div style="background: rgba(76, 175, 80, 0.1); color: #4CAF50; padding: 10px; border-radius: 10px; margin-top: 10px; text-align: center;">
+           <div style="font-weight: bold;">✅ ${currentLanguage === 'en' ? 'SafePal connected' : currentLanguage === 'ru' ? 'SafePal подключен' : 'SafePal підключено'}</div>
+           <div style="font-size: 12px; color: #CCC; margin-top: 5px;">${address.substring(0, 6)}...${address.substring(address.length - 4)}</div>
+       </div>
+    `;
 }
 
-// ==================== СОЗДАНИЕ КАРТЫ С ПРЕВЬЮ ====================
+const walletBtn = document.getElementById('walletConnectBtn');
+if (walletBtn) {
+    walletBtn.style.display = 'none';
+}
+}
+
+// ==================== СОЗДАНИЕ КАРТЫ С ИСПРАВЛЕННЫМ ПРЕВЬЮ ====================
 
 async function createCard() {
 const greetingText = document.getElementById('greetingText').value.trim();
 const videoUrl = document.getElementById('videoUrl').value.trim();
-console.log('🎬 DEBUG videoUrl:', videoUrl);
 
 // 🛡️ ПРОВЕРКА КОНТЕНТА ПЕРЕД СОЗДАНИЕМ
 const contentCheck = checkContent(greetingText);
@@ -2977,10 +3013,9 @@ if (!contentCheck.isClean) {
    return;
 }
 
-// 🎬 НОВАЯ ПРОВЕРКА ВИДЕО URL
+// 🎬 ПРОВЕРКА ВИДЕО URL
 if (videoUrl) {
    const videoData = videoProcessor.parseVideoUrl(videoUrl);
-   console.log('🎬 DEBUG videoData:', videoData);
    if (!videoData.isValid) {
        showNotification(
            currentLanguage === 'en' ? `Video error: ${videoData.error}` :
@@ -3016,80 +3051,26 @@ if (!currentUser || !currentUser.userId) {
 }
 
 const createBtn = document.getElementById('createCardBtn');
-createBtn.classList.add('loading');
-createBtn.disabled = true;
+if (createBtn) {
+    createBtn.classList.add('loading');
+    createBtn.disabled = true;
+}
 
 try {
    console.log('🎨 Creating Web3 card with preview...');
    
    const cardMetadata = await prepareCardMetadata();
    
-   // 🎨 ОТПРАВЛЯЕМ НА API ДЛЯ ГЕНЕРАЦИИ ПРЕВЬЮ
-   console.log('🖼️ Отправляем на сервер для генерации превью...');
-   const previewResult = await sendToPreviewAPI(cardMetadata);
+   // 🎨 ГЕНЕРИРУЕМ ПРЕВЬЮ
+   console.log('🖼️ Генерируем превью...');
+   const previewResult = await generateCardPreview(cardMetadata);
    
    console.log('✅ Карта сохранена с превью');
    cardMetadata.previewImageUrl = previewResult.previewImageUrl;
    cardMetadata.shareUrl = previewResult.cardViewUrl;
    
-   // 🌐 ОТПРАВКА НА API ДЛЯ ГЕНЕРАЦИИ ПРЕВЬЮ
-async function sendToPreviewAPI(cardMetadata) {
-    try {
-        console.log('🚀 Отправляем данные на API...');
-        
-        // Генерируем превью локально для отправки
-        const localPreview = await socialPreviewGenerator.generatePreviewImage(cardMetadata);
-        
-        const apiData = {
-            cardId: cardMetadata.cardId,
-            cardData: cardMetadata,
-            previewImage: localPreview
-        };
-        
-        // ЗДЕСЬ УКАЖИ РЕАЛЬНЫЙ URL ТВОЕГО API
-        const apiUrl = 'https://cardgift.bnb/api/generate-preview';
-        // Для локального тестирования: 'http://localhost:3000/api/generate-preview'
-        
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(apiData)
-        });
-        
-        if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        console.log('✅ API ответил:', result);
-        
-        // Сохраняем локально
-        await saveCard(cardMetadata);
-        
-        return {
-            success: true,
-            previewImageUrl: result.imageUrl,
-            cardViewUrl: result.shareUrl,
-            shareUrl: result.shareUrl,
-            fallback: false
-        };
-        
-    } catch (error) {
-        console.error('❌ Ошибка API, используем локальный режим:', error);
-        
-        // Запасной вариант - локальное сохранение
-        const fallbackResult = await socialPreviewGenerator.saveCardWithPreview(cardMetadata);
-        return {
-            ...fallbackResult,
-            fallback: true
-        };
-    }
-}
-   
-   // 🔗 ИСПРАВЛЕННАЯ ГЕНЕРАЦИЯ ССЫЛКИ
-   const shareableLink = `https://cardgift.bnb/card-viewer.html?id=${cardMetadata.cardId}`;
+   // 🔗 ГЕНЕРИРУЕМ ССЫЛКУ
+   const shareableLink = `${window.location.origin}/card-viewer.html?id=${cardMetadata.cardId}`;
    
    // WEB3 сохранение в блокчейн (опционально)
    let txResult = null;
@@ -3107,7 +3088,7 @@ async function sendToPreviewAPI(cardMetadata) {
        }
    }
    
-   // 🎉 ИСПРАВЛЕННОЕ ПОКАЗ РЕЗУЛЬТАТА С ПРЕВЬЮ
+   // 🎉 ПОКАЗ РЕЗУЛЬТАТА С ПРЕВЬЮ
    showEnhancedCardResult(cardMetadata, { 
        ...previewResult, 
        shareUrl: shareableLink 
@@ -3126,8 +3107,48 @@ async function sendToPreviewAPI(cardMetadata) {
    showNotification(message, 'error');
    
 } finally {
-   createBtn.classList.remove('loading');
-   createBtn.disabled = false;
+   if (createBtn) {
+       createBtn.classList.remove('loading');
+       createBtn.disabled = false;
+   }
+}
+}
+
+// 🎨 ИСПРАВЛЕННАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ПРЕВЬЮ
+async function generateCardPreview(cardMetadata) {
+try {
+    console.log('🎨 Generating card preview...');
+    
+    const previewImage = await socialPreviewGenerator.generatePreviewImage(cardMetadata);
+    const cardUrl = `${window.location.origin}/card-viewer.html?id=${cardMetadata.cardId}`;
+    
+    // Сохраняем локально
+    await saveCard(cardMetadata);
+    
+    return {
+        success: true,
+        previewImageUrl: previewImage,
+        cardViewUrl: cardUrl,
+        shareUrl: cardUrl,
+        fallback: false
+    };
+    
+} catch (error) {
+    console.error('❌ Preview generation error:', error);
+    
+    // Запасной вариант
+    const fallbackPreview = socialPreviewGenerator.generateFallbackPreview(cardMetadata);
+    const cardUrl = `${window.location.origin}/card-viewer.html?id=${cardMetadata.cardId}`;
+    
+    await saveCard(cardMetadata);
+    
+    return {
+        success: true,
+        previewImageUrl: fallbackPreview,
+        cardViewUrl: cardUrl,
+        shareUrl: cardUrl,
+        fallback: true
+    };
 }
 }
 
@@ -3173,7 +3194,7 @@ if (uploadedMedia && uploadedMedia.file) {
    metadata.mediaUrl = mediaBase64;
 }
 
-// 🎬 НОВОЕ! Обработка видео URL
+// 🎬 Обработка видео URL
 if (videoUrl) {
    const videoData = videoProcessor.parseVideoUrl(videoUrl);
    if (videoData.isValid) {
@@ -3188,7 +3209,7 @@ if (videoUrl) {
 return metadata;
 }
 
-// 🎉 ИСПРАВЛЕННАЯ ФУНКЦИЯ! ПОКАЗ РЕЗУЛЬТАТА С ПРЕВЬЮ (БЕЗ СКАЧИВАНИЯ!)
+// 🎉 ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОКАЗА РЕЗУЛЬТАТА С ПРЕВЬЮ
 function showEnhancedCardResult(cardMetadata, previewResult) {
 const t = translations[currentLanguage];
 
@@ -3281,7 +3302,7 @@ overlay.addEventListener('click', function(e) {
 });
 }
 
-// 🎨 ИСПРАВЛЕННЫЕ ФУНКЦИИ ДЛЯ ШЕРИНГА (БЕЗ СКАЧИВАНИЯ!)
+// 🎨 ИСПРАВЛЕННЫЕ ФУНКЦИИ ДЛЯ ШЕРИНГА
 
 function sharePreviewDirectly(cardId, shareUrl) {
     const messages = {
@@ -3314,35 +3335,6 @@ function sharePreviewDirectly(cardId, shareUrl) {
             'info', 4000
         );
     }
-}
-
-// Запасной вариант - копируем ссылку
-function fallbackToTextShare(shareUrl) {
-    const messages = {
-        en: "🎉 Look at this beautiful greeting card!",
-        ru: "🎉 Посмотрите на эту красивую открытку!", 
-        ua: "🎉 Подивіться на цю красиву листівку!"
-    };
-    
-    const message = `${messages[currentLanguage] || messages.ru} ${shareUrl}`;
-    
-    copyToClipboard(message);
-    showNotification(
-        currentLanguage === 'en' ? '📋 Link copied! Paste in messenger to share with preview' :
-        currentLanguage === 'ru' ? '📋 Ссылка скопирована! Вставьте в мессенджер для превью' :
-        '📋 Посилання скопійовано! Вставте в месенджер для превью',
-        'info', 4000
-    );
-}
-
-function getShareMessage() {
-    const messages = {
-        en: "🎉 Look at this beautiful greeting card!",
-        ru: "🎉 Посмотрите на эту красивую открытку!", 
-        ua: "🎉 Подивіться на цю красиву листівку!"
-    };
-    
-    return messages[currentLanguage] || messages.ru;
 }
 
 function shareToMessenger(platform, shareUrl) {
@@ -3491,7 +3483,11 @@ reader.onload = function(e) {
    displayMediaPreview();
    checkCreateButtonState();
    
-   document.getElementById('videoUrl').value = '';
+   // Очищаем поле видео URL при загрузке файла
+   const videoUrlField = document.getElementById('videoUrl');
+   if (videoUrlField) {
+       videoUrlField.value = '';
+   }
 };
 reader.readAsDataURL(file);
 }
@@ -3499,9 +3495,10 @@ reader.readAsDataURL(file);
 // Отображение предпросмотра медиа
 function displayMediaPreview() {
 const preview = document.getElementById('mediaPreview');
+if (!preview) return;
+
 preview.style.display = 'block';
 preview.style.position = 'relative';
-
 preview.innerHTML = '';
 
 if (uploadedMedia.type === 'image') {
@@ -3537,8 +3534,15 @@ if (uploadedMedia.type === 'image') {
 // Удаление медиа
 function removeMedia() {
 uploadedMedia = null;
-document.getElementById('mediaPreview').style.display = 'none';
-document.getElementById('mediaUpload').value = '';
+const preview = document.getElementById('mediaPreview');
+const mediaUpload = document.getElementById('mediaUpload');
+
+if (preview) {
+    preview.style.display = 'none';
+}
+if (mediaUpload) {
+    mediaUpload.value = '';
+}
 checkCreateButtonState();
 }
 
@@ -3560,6 +3564,8 @@ document.querySelectorAll('.emoji-categories button').forEach(btn => {
 // Переключение эмодзи пикера
 function toggleEmojiPicker() {
 const emojiPicker = document.getElementById('emojiPicker');
+if (!emojiPicker) return;
+
 if (emojiPicker.style.display === 'block') {
    emojiPicker.style.display = 'none';
 } else {
@@ -3571,24 +3577,34 @@ if (emojiPicker.style.display === 'block') {
 // Загрузка эмодзи по категории
 function loadEmojis(category) {
 const container = document.querySelector('.emoji-container');
+if (!container) return;
+
 container.innerHTML = '';
 
 document.querySelectorAll('.emoji-categories button').forEach(btn => {
    btn.classList.remove('active');
 });
-document.querySelector(`.emoji-categories button[data-category="${category}"]`).classList.add('active');
 
-emojis[category].forEach(emoji => {
-   const button = document.createElement('button');
-   button.textContent = emoji;
-   button.onclick = () => insertEmoji(emoji);
-   container.appendChild(button);
-});
+const activeBtn = document.querySelector(`.emoji-categories button[data-category="${category}"]`);
+if (activeBtn) {
+    activeBtn.classList.add('active');
+}
+
+if (emojis[category]) {
+    emojis[category].forEach(emoji => {
+        const button = document.createElement('button');
+        button.textContent = emoji;
+        button.onclick = () => insertEmoji(emoji);
+        container.appendChild(button);
+    });
+}
 }
 
 // Вставка эмодзи в текстовое поле
 function insertEmoji(emoji) {
 const textarea = document.getElementById('greetingText');
+if (!textarea) return;
+
 const start = textarea.selectionStart;
 const end = textarea.selectionEnd;
 const text = textarea.value;
@@ -3597,7 +3613,10 @@ textarea.value = text.substring(0, start) + emoji + text.substring(end);
 textarea.focus();
 textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
 
-document.getElementById('emojiPicker').style.display = 'none';
+const emojiPicker = document.getElementById('emojiPicker');
+if (emojiPicker) {
+    emojiPicker.style.display = 'none';
+}
 }
 
 // ==================== ПОЗИЦИОНИРОВАНИЕ ====================
@@ -3609,7 +3628,11 @@ selectedTextPosition = position;
 document.querySelectorAll('.position-btn').forEach(btn => {
    btn.classList.remove('active');
 });
-document.querySelector(`.position-btn[data-position="${position}"]`).classList.add('active');
+
+const targetBtn = document.querySelector(`.position-btn[data-position="${position}"]`);
+if (targetBtn) {
+    targetBtn.classList.add('active');
+}
 }
 
 // Выбор стиля
@@ -3618,13 +3641,21 @@ selectedStyle = style;
 document.querySelectorAll('.style-option').forEach(opt => {
    opt.classList.remove('active');
 });
-document.querySelector(`[data-style="${style}"]`).classList.add('active');
+
+const targetStyle = document.querySelector(`[data-style="${style}"]`);
+if (targetStyle) {
+    targetStyle.classList.add('active');
+}
 }
 
 // Переключение CTA
 function toggleCTA() {
+const ctaToggle = document.getElementById('ctaToggle');
 const settings = document.getElementById('ctaSettings');
-settings.style.display = document.getElementById('ctaToggle').checked ? 'block' : 'none';
+
+if (ctaToggle && settings) {
+    settings.style.display = ctaToggle.checked ? 'block' : 'none';
+}
 }
 
 // Установка позиции CTA кнопки
@@ -3634,8 +3665,6 @@ selectedCTAPosition = position;
 const ctaPositionBtns = document.querySelectorAll('#ctaSettings .position-btn');
 ctaPositionBtns.forEach(btn => {
    btn.classList.remove('active');
-});
-ctaPositionBtns.forEach(btn => {
    if (btn.dataset.position === position) {
        btn.classList.add('active');
    }
@@ -3644,30 +3673,45 @@ ctaPositionBtns.forEach(btn => {
 
 // Переключение бегущей строки
 function toggleMarquee() {
+const marqueeToggle = document.getElementById('marqueeToggle');
 const settings = document.getElementById('marqueeSettings');
-settings.style.display = document.getElementById('marqueeToggle').checked ? 'block' : 'none';
+
+if (marqueeToggle && settings) {
+    settings.style.display = marqueeToggle.checked ? 'block' : 'none';
+}
 }
 
 // Переключение баннера
 function toggleBanner() {
+const bannerToggle = document.getElementById('bannerToggle');
 const settings = document.getElementById('bannerSettings');
-settings.style.display = document.getElementById('bannerToggle').checked ? 'block' : 'none';
+
+if (bannerToggle && settings) {
+    settings.style.display = bannerToggle.checked ? 'block' : 'none';
+}
 }
 
 // ==================== ШАБЛОНЫ И ПРЕДПРОСМОТР ====================
 
 // Использование шаблона
 function useTemplate(templateName) {
+const greetingTextarea = document.getElementById('greetingText');
+if (!greetingTextarea || !templates[templateName] || !templates[templateName][currentLanguage]) {
+    return;
+}
+
 const template = templates[templateName][currentLanguage];
-document.getElementById('greetingText').value = template.greeting;
+greetingTextarea.value = template.greeting;
 checkCreateButtonState();
 }
 
 // Проверка состояния кнопки создания
 function checkCreateButtonState() {
-const greetingText = document.getElementById('greetingText').value.trim();
-const videoUrl = document.getElementById('videoUrl').value.trim();
+const greetingText = document.getElementById('greetingText')?.value?.trim() || '';
+const videoUrl = document.getElementById('videoUrl')?.value?.trim() || '';
 const createBtn = document.getElementById('createCardBtn');
+
+if (!createBtn) return;
 
 if (greetingText || uploadedMedia || videoUrl) {
    createBtn.disabled = false;
@@ -3682,8 +3726,8 @@ if (greetingText || uploadedMedia || videoUrl) {
 
 // 🎬 ИСПРАВЛЕННАЯ ФУНКЦИЯ ПРЕДПРОСМОТРА С ПОДДЕРЖКОЙ ВСЕХ ВИДЕО
 function showPreview() {
-const greetingText = document.getElementById('greetingText').value.trim();
-const videoUrl = document.getElementById('videoUrl').value.trim();
+const greetingText = document.getElementById('greetingText')?.value?.trim() || '';
+const videoUrl = document.getElementById('videoUrl')?.value?.trim() || '';
 
 if (!greetingText && !uploadedMedia && !videoUrl) {
    showNotification(
@@ -3696,15 +3740,20 @@ if (!greetingText && !uploadedMedia && !videoUrl) {
 }
 
 createPreview();
-document.getElementById('previewModal').style.display = 'flex';
-document.body.style.overflow = 'hidden';
+const previewModal = document.getElementById('previewModal');
+if (previewModal) {
+    previewModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
 }
 
 // 🎬 ИСПРАВЛЕННАЯ ФУНКЦИЯ СОЗДАНИЯ ПРЕДПРОСМОТРА
 function createPreview() {
 const container = document.getElementById('previewContainer');
-const greetingText = document.getElementById('greetingText').value.trim();
-const videoUrl = document.getElementById('videoUrl').value.trim();
+if (!container) return;
+
+const greetingText = document.getElementById('greetingText')?.value?.trim() || '';
+const videoUrl = document.getElementById('videoUrl')?.value?.trim() || '';
 
 container.innerHTML = '';
 
@@ -3787,28 +3836,32 @@ if (greetingText) {
 
 container.appendChild(mainDiv);
 
-if (document.getElementById('ctaToggle').checked) {
-   const ctaTitle = document.getElementById('ctaTitle').value.trim();
-   const ctaButton = document.getElementById('ctaButton').value.trim();
-   const ctaUrl = document.getElementById('ctaUrl').value.trim();
+// Добавляем CTA, бегущую строку и баннер
+const ctaToggle = document.getElementById('ctaToggle');
+if (ctaToggle && ctaToggle.checked) {
+   const ctaTitle = document.getElementById('ctaTitle')?.value?.trim() || '';
+   const ctaButton = document.getElementById('ctaButton')?.value?.trim() || '';
+   const ctaUrl = document.getElementById('ctaUrl')?.value?.trim() || '';
    
    if (ctaTitle && ctaButton) {
        displayCTAButton(ctaTitle, ctaButton, ctaUrl, selectedCTAPosition);
    }
 }
 
-if (document.getElementById('marqueeToggle').checked) {
-   const marqueeText = document.getElementById('marqueeTextInput').value.trim();
-   const marqueeUrl = document.getElementById('marqueeUrl').value.trim();
+const marqueeToggle = document.getElementById('marqueeToggle');
+if (marqueeToggle && marqueeToggle.checked) {
+   const marqueeText = document.getElementById('marqueeTextInput')?.value?.trim() || '';
+   const marqueeUrl = document.getElementById('marqueeUrl')?.value?.trim() || '';
    
    if (marqueeText) {
        displayMarquee(marqueeText, marqueeUrl);
    }
 }
 
-if (document.getElementById('bannerToggle').checked) {
-   const bannerHtml = document.getElementById('bannerHtml').value.trim();
-   const bannerUrl = document.getElementById('bannerUrl').value.trim();
+const bannerToggle = document.getElementById('bannerToggle');
+if (bannerToggle && bannerToggle.checked) {
+   const bannerHtml = document.getElementById('bannerHtml')?.value?.trim() || '';
+   const bannerUrl = document.getElementById('bannerUrl')?.value?.trim() || '';
    
    if (bannerHtml || bannerUrl) {
        displayBanner(bannerHtml, bannerUrl);
@@ -3870,7 +3923,10 @@ if (ctaUrl && ctaUrl.trim()) {
 ctaEl.appendChild(titleDiv);
 ctaEl.appendChild(button);
 
-document.getElementById('previewContainer').appendChild(ctaEl);
+const previewContainer = document.getElementById('previewContainer');
+if (previewContainer) {
+    previewContainer.appendChild(ctaEl);
+}
 }
 
 // Функция displayMarquee для бегущей строки
@@ -3892,7 +3948,10 @@ if (marqueeUrl && marqueeUrl.trim()) {
    };
 }
 
-document.getElementById('previewContainer').appendChild(marqueeEl);
+const previewContainer = document.getElementById('previewContainer');
+if (previewContainer) {
+    previewContainer.appendChild(marqueeEl);
+}
 }
 
 // Функция displayBanner
@@ -3920,31 +3979,45 @@ if (bannerUrl) {
    bannerEl.onclick = () => window.open(bannerUrl, '_blank');
 }
 
-document.getElementById('previewContainer').appendChild(bannerEl);
+const previewContainer = document.getElementById('previewContainer');
+if (previewContainer) {
+    previewContainer.appendChild(bannerEl);
+}
 }
 
 // Закрыть предпросмотр
 function closePreview() {
-document.getElementById('previewModal').style.display = 'none';
-document.body.style.overflow = 'auto';
+const previewModal = document.getElementById('previewModal');
+if (previewModal) {
+    previewModal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
 }
 
 // ==================== ИНСТРУКЦИИ И МОДАЛЬНЫЕ ОКНА ====================
 
 function showInstructions() {
-document.getElementById('instructionsModal').style.display = 'block';
-document.body.style.overflow = 'hidden';
+const instructionsModal = document.getElementById('instructionsModal');
+if (instructionsModal) {
+    instructionsModal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
 }
 
 function hideInstructions() {
-document.getElementById('instructionsModal').style.display = 'none';
-document.body.style.overflow = 'auto';
+const instructionsModal = document.getElementById('instructionsModal');
+if (instructionsModal) {
+    instructionsModal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
 }
 
 // Сохранение в архив
 async function saveCurrentToArchive() {
-const greetingText = document.getElementById('greetingText').value.trim();
-if (!greetingText && !uploadedMedia && !document.getElementById('videoUrl').value.trim()) {
+const greetingText = document.getElementById('greetingText')?.value?.trim() || '';
+const videoUrl = document.getElementById('videoUrl')?.value?.trim() || '';
+
+if (!greetingText && !uploadedMedia && !videoUrl) {
    showNotification('Сначала создайте открытку', 'error');
    return;
 }
@@ -4142,44 +4215,49 @@ if (firstSection) {
 }
 }
 
-// 🎬 НОВЫЙ ОБРАБОТЧИК ИЗМЕНЕНИЯ VIDEO URL
-document.addEventListener('DOMContentLoaded', function() {
-  const videoUrlField = document.getElementById('videoUrl');
-  if (videoUrlField) {
-      videoUrlField.addEventListener('input', function() {
-          checkCreateButtonState();
-          
-          if (this.value.trim() && uploadedMedia) {
-              removeMedia();
-          }
-          
-          const url = this.value.trim();
-          if (url) {
-              const videoData = videoProcessor.parseVideoUrl(url);
-              
-              if (videoData.isValid) {
-                  this.style.borderColor = '#4CAF50';
-                  this.style.background = 'rgba(76, 175, 80, 0.05)';
-              } else {
-                  this.style.borderColor = '#f44336';
-                  this.style.background = 'rgba(244, 67, 54, 0.05)';
-              }
-          } else {
-              this.style.borderColor = '#444';
-              this.style.background = '#333';
-          }
-      });
-  }
-});
+// ==================== ОБРАБОТЧИКИ СОБЫТИЙ ====================
 
-// Слушатели событий
-document.getElementById('greetingText').addEventListener('input', checkCreateButtonState);
+// Настройка всех обработчиков событий
+function setupEventListeners() {
+// Обработчик изменения текста
+const greetingTextarea = document.getElementById('greetingText');
+if (greetingTextarea) {
+    greetingTextarea.addEventListener('input', checkCreateButtonState);
+}
+
+// 🎬 НОВЫЙ ОБРАБОТЧИК ИЗМЕНЕНИЯ VIDEO URL
+const videoUrlField = document.getElementById('videoUrl');
+if (videoUrlField) {
+    videoUrlField.addEventListener('input', function() {
+        checkCreateButtonState();
+        
+        // Очищаем загруженное медиа при вводе URL
+        if (this.value.trim() && uploadedMedia) {
+            removeMedia();
+        }
+        
+        const url = this.value.trim();
+        if (url) {
+            const videoData = videoProcessor.parseVideoUrl(url);
+            
+            if (videoData.isValid) {
+                this.style.borderColor = '#4CAF50';
+                this.style.background = 'rgba(76, 175, 80, 0.05)';
+            } else {
+                this.style.borderColor = '#f44336';
+                this.style.background = 'rgba(244, 67, 54, 0.05)';
+            }
+        } else {
+            this.style.borderColor = '#444';
+            this.style.background = '#333';
+        }
+    });
+}
 
 // Закрытие модальных окон по клику вне области
-document.addEventListener('DOMContentLoaded', function() {
-const modal = document.getElementById('instructionsModal');
-if (modal) {
-    modal.addEventListener('click', function(e) {
+const instructionsModal = document.getElementById('instructionsModal');
+if (instructionsModal) {
+    instructionsModal.addEventListener('click', function(e) {
         if (e.target === this) {
             hideInstructions();
         }
@@ -4195,10 +4273,70 @@ if (previewModal) {
     });
 }
 
+// Обработчик нажатия клавиш
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const openModals = document.querySelectorAll('.modal[style*="flex"], .instructions-modal[style*="block"], .share-modal');
+        openModals.forEach(modal => {
+            modal.style.display = 'none';
+        });
+        
+        const emojiPicker = document.getElementById('emojiPicker');
+        if (emojiPicker && emojiPicker.style.display === 'block') {
+            emojiPicker.style.display = 'none';
+        }
+        
+        document.body.style.overflow = 'auto';
+    }
+});
+
+console.log('✅ Event listeners setup completed');
+}
+
+// ==================== ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ====================
+
+// Проверка начального состояния кнопки при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+// Инициализация уже вызвана в initializeWeb3App()
 checkCreateButtonState();
 });
 
-console.log('✅ CardGift Generator полностью загружен с WEB3 интеграцией, улучшенной поддержкой видео и превью для соцсетей');
+// Альтернативный способ инициализации если DOMContentLoaded уже прошел
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeWeb3App);
+} else {
+    initializeWeb3App();
+}
+
+// ==================== ЭКСПОРТ ФУНКЦИЙ ДЛЯ ГЛОБАЛЬНОГО ДОСТУПА ====================
+
+// Делаем основные функции доступными глобально для onclick обработчиков
+window.switchLanguage = switchLanguage;
+window.connectWallet = connectWallet;
+window.handleMediaUpload = handleMediaUpload;
+window.toggleEmojiPicker = toggleEmojiPicker;
+window.loadEmojis = loadEmojis;
+window.setTextPosition = setTextPosition;
+window.selectStyle = selectStyle;
+window.useTemplate = useTemplate;
+window.showInstructions = showInstructions;
+window.hideInstructions = hideInstructions;
+window.showPreview = showPreview;
+window.closePreview = closePreview;
+window.createCard = createCard;
+window.toggleCTA = toggleCTA;
+window.setCTAPosition = setCTAPosition;
+window.toggleMarquee = toggleMarquee;
+window.toggleBanner = toggleBanner;
+window.saveCurrentToArchive = saveCurrentToArchive;
+window.goToActivation = goToActivation;
+window.goToReferrals = goToReferrals;
+window.sharePreviewDirectly = sharePreviewDirectly;
+window.shareToMessenger = shareToMessenger;
+window.shareToSocial = shareToSocial;
+window.copyToClipboard = copyToClipboard;
+
+console.log('✅ CardGift Generator полностью загружен с исправленным WEB3, превью и CORS поддержкой');
 </script>
 </body>
 </html>
