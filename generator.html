@@ -3141,7 +3141,7 @@ async function createCard() {
         const previewResult = await generateCardPreview(cardMetadata);
         
         // ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
-        const shareableLink = `${window.location.origin}/card-viewer.html?id=${cardMetadata.cardId}`;
+        const shareableLink = `${window.location.origin}/card-viewer.html?id=${cardMetadata.cardId}&v=${Date.now()}`;
         cardMetadata.shareUrl = shareableLink;
         
         // Показ результата
