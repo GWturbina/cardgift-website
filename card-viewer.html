@@ -2,6 +2,22 @@
 <html lang="en" id="htmlRoot">
 <head>
     <meta charset="UTF-8">
+	<script>
+    // УНИВЕРСАЛЬНОЕ РАННЕЕ ОБНОВЛЕНИЕ META-ТЕГОВ
+    const urlParams = new URLSearchParams(window.location.search);
+    const cardId = urlParams.get('id');
+    if (cardId && cardId.startsWith('card_')) {
+        // Генерируем базовые мета-теги для любой карты
+        const cleanId = cardId.replace('card_', '').substring(0, 8);
+        document.write(`<meta property="og:title" content="🎉 Персональная открытка ${cleanId}" id="ogTitleEarly">`);
+        document.write(`<meta property="og:description" content="Создано специально для вас с помощью CardGift" id="ogDescEarly">`);
+        document.write(`<meta name="twitter:title" content="🎉 Персональная открытка ${cleanId}" id="twitterTitleEarly">`);
+        document.write(`<meta name="twitter:description" content="Создано специально для вас с помощью CardGift" id="twitterDescEarly">`);
+        
+        // Устанавливаем заголовок страницы
+        document.write(`<title>Открытка ${cleanId} - CardGift</title>`);
+    }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title id="pageTitle">CardGift - Поздравительная открытка</title>
 	
