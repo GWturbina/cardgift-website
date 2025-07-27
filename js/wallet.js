@@ -89,31 +89,19 @@ class WalletManager {
         }
     }
     
-    // Основной метод подключения (УПРОЩЕННЫЙ)
-    async connectWallet() {
+// Основной метод подключения (ИСПРАВЛЕННЫЙ)
+async connectWallet() {
     try {
         let accounts = [];
         
-        if (this.walletType === 'safepal' && window.safepal) {
-            // SafePal специальный API
-            console.log('🔵 Подключаем SafePal через .connect()...');
-            
-            // SafePal использует .connect() вместо .request()
-            const result = await window.safepal.connect();
-            console.log('SafePal connect result:', result);
-            
-            // Получаем аккаунт через .getAccount()
-            const account = await window.safepal.getAccount();
-            console.log('SafePal account:', account);
-            
-            if (account) {
-                accounts = [account];
-            }
-            
+        if (window.safepal) {
+            console.log('🔵 Подключаем SafePal...');
+            accounts = await window.safepal.request({method: 'eth_requestAccounts'});
+            this.walletType = 'SafePal';
         } else if (window.ethereum) {
-            // Стандартный Ethereum API
             console.log('⚪ Подключаем стандартный кошелек...');
             accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
+            this.walletType = 'MetaMask';
         }
         
         if (accounts && accounts.length > 0) {
