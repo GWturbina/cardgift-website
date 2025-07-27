@@ -56,9 +56,13 @@ class WalletManager {
         console.log('✅ WalletManager инициализирован с приоритетом SafePal');
     }
     
-    // Инициализация Web3 (ИСПРАВЛЕНО)
+    // Инициализация Web3 (ИСПРАВЛЕНО - БЕЗ ТРЕБОВАНИЯ КОШЕЛЬКА)
     async initWeb3() {
         try {
+            console.log('🔍 Ищем доступные кошельки...');
+            console.log('window.safepal:', !!window.safepal);
+            console.log('window.ethereum:', !!window.ethereum);
+            
             let provider = null;
             
             // ПРИОРИТЕТ: SafePal первым делом
@@ -71,7 +75,8 @@ class WalletManager {
                 this.walletType = 'MetaMask';
                 console.log('🟡 Используем MetaMask кошелек');
             } else {
-                throw new Error('Кошелек не найден');
+                console.warn('⚠️ Кошелек не найден, работаем без Web3');
+                return false; // НЕ БРОСАЕМ ОШИБКУ
             }
             
             this.web3 = new Web3(provider);
@@ -81,11 +86,12 @@ class WalletManager {
                 console.log('✅ Контракт подключен:', this.contractAddress);
                 return true;
             } else {
-                throw new Error('Адрес контракта или ABI отсутствует');
+                console.warn('⚠️ Адрес контракта или ABI отсутствует');
+                return false;
             }
         } catch (error) {
             console.error('❌ Ошибка инициализации Web3:', error);
-            return false;
+            return false; // НЕ БРОСАЕМ ОШИБКУ
         }
     }
     
