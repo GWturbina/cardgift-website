@@ -1058,10 +1058,34 @@ const videoProcessor = new VideoProcessor();
 }
 
       // ===== ОТОБРАЖЕНИЕ КАРТЫ - ИСПРАВЛЕНИЕ ТЕКСТА =====
-async function displayCard(data) {
-   setTimeout(async () => {
-       document.getElementById('loadingScreen').classList.add('hidden');
-       document.getElementById('mainCard').classList.remove('hidden');
+      async function displayCard(data) {
+         setTimeout(async () => {
+             document.getElementById('loadingScreen').classList.add('hidden');
+             document.getElementById('mainCard').classList.remove('hidden');
+      	   
+      	   // ✅ ОБНОВЛЯЕМ META-ТЕГИ ДЛЯ ПРЕВЬЮ С РЕАЛЬНЫМИ ДАННЫМИ
+      if (data.greeting && data.greeting.trim()) {
+          const greetingLines = data.greeting.split('\n').filter(line => line.trim());
+          
+          if (greetingLines.length > 0) {
+              const title = greetingLines[0] || 'Поздравительная открытка';
+              const description = greetingLines.length > 1 ? greetingLines[1] : 'Персональная открытка от CardGift';
+              
+              // Обновляем title страницы
+              document.title = title + ' - CardGift';
+              
+              // Обновляем Open Graph
+              document.getElementById('ogTitle').content = title;
+              document.getElementById('ogDescription').content = description;
+              document.getElementById('ogUrl').content = window.location.href;
+              
+              // Обновляем Twitter Card
+              document.getElementById('twitterTitle').content = title;
+              document.getElementById('twitterDescription').content = description;
+              
+              console.log('✅ Meta-теги обновлены:', { title, description });
+          }
+      }
        
        // Применяем стиль фона
        const cardArea = document.querySelector('.card-area');
