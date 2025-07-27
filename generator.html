@@ -3169,8 +3169,45 @@ async function createCard() {
         }
     }
 }
-	
+
 // WEB3: Подготовка метаданных открытки
+// 🎨 ИСПРАВЛЕННАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ПРЕВЬЮ
+async function generateCardPreview(cardMetadata) {
+    try {
+        console.log('🎨 Generating card preview...');
+        
+        const previewImage = await socialPreviewGenerator.generatePreviewImage(cardMetadata);
+        const cardUrl = `${window.location.origin}/card-viewer.html?id=${cardMetadata.cardId}`;
+        
+        // Сохраняем локально
+        await saveCard(cardMetadata);
+        
+        return {
+            success: true,
+            previewImageUrl: previewImage,
+            cardViewUrl: cardUrl,
+            shareUrl: cardUrl,
+            fallback: false
+        };
+        
+    } catch (error) {
+        console.error('❌ Preview generation error:', error);
+        
+        // Запасной вариант
+        const fallbackPreview = socialPreviewGenerator.generateFallbackPreview(cardMetadata);
+        const cardUrl = `${window.location.origin}/card-viewer.html?id=${cardMetadata.cardId}`;
+        
+        await saveCard(cardMetadata);
+        
+        return {
+            success: true,
+            previewImageUrl: fallbackPreview,
+            cardViewUrl: cardUrl,
+            shareUrl: cardUrl,
+            fallback: true
+        };
+    }
+}
 async function prepareCardMetadata() {
     // ✅ ГЕНЕРИРУЕМ УНИКАЛЬНЫЙ ID КАЖДЫЙ РАЗ
     const timestamp = Date.now();
