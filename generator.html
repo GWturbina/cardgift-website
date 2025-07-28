@@ -3167,7 +3167,7 @@ try {
 }
         
         // ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
-        const shareableLink = `${window.location.origin}/api/card-preview?id=${cardMetadata.cardId}`;
+        const shareableLink = `${window.location.origin}/api/save-card?id=${cardMetadata.cardId}&preview=true`;
         cardMetadata.shareUrl = shareableLink;
         
         // Показ результата
