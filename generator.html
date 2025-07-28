@@ -2226,7 +2226,7 @@ async saveCardWithPreview(cardData) {
         console.log('💾 Сохраняем карту с превью...');
         
         const previewImage = await this.generatePreviewImage(cardData);
-        const cardUrl = `${window.location.origin}/card-viewer.html?id=${cardData.cardId}`;
+        const cardUrl = `${window.location.origin}/api/card-preview?id=${cardData.cardId}`;
         
         await saveCard(cardData);
         
