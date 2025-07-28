@@ -23,20 +23,6 @@
     <meta name="twitter:title" content="🎉 Персональная поздравительная открытка" id="twitterTitle">
     <meta name="twitter:description" content="Красивая открытка создана специально для вас в CardGift" id="twitterDescription">
     <meta name="twitter:image" content="https://cardgift-website-auhwvggj-gwturbina.4everland.app/preview-default.jpg" id="twitterImage">
-	
-	<script>
-    // Обновляем meta-теги динамически для превью
-    document.addEventListener('DOMContentLoaded', function() {
-        const cardId = new URLSearchParams(window.location.search).get('id');
-        if (cardId) {
-            const baseUrl = window.location.origin;
-            document.getElementById('ogImage').content = `${baseUrl}/api/card-preview/${cardId}.jpg`;
-            document.getElementById('twitterImage').content = `${baseUrl}/api/card-preview/${cardId}.jpg`;
-            document.getElementById('ogTitle').content = `Поздравительная открытка - ${cardId}`;
-            document.getElementById('ogUrl').content = window.location.href;
-        }
-    });
-    </script>
     
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 	
