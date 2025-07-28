@@ -4204,9 +4204,6 @@ async function saveCard(cardMetadata) {
     }
 }
 
-    try {
-       console.log('💾 Сохраняем карту...');
-       
        // Сохраняем БЕЗ превью чтобы не переполнить localStorage
        const lightMetadata = { ...cardMetadata };
        delete lightMetadata.previewImageUrl; // Убираем тяжелое превью
