@@ -4233,7 +4233,6 @@ async function saveCard(cardMetadata) {
            currentUser.cardCount = (currentUser.cardCount || 0) + 1;
            localStorage.setItem('currentUser', JSON.stringify(currentUser));
            updateUserInterface();
-       }
        
     } catch (error) {
        console.error('❌ Ошибка сохранения карты:', error);
