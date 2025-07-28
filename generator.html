@@ -3143,7 +3143,7 @@ async function createCard() {
 		// Отправляем данные на сервер для создания мета-страницы
 try {
     console.log('📡 Создаем мета-страницу...');
-    const response = await fetch('/api/generate-preview', {
+    const response = await fetch('/api/save-card', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
