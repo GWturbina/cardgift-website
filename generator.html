@@ -3167,7 +3167,7 @@ try {
 }
         
         // ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
-        const shareableLink = `${window.location.origin}/cards/${cardMetadata.cardId}.html`;
+        const shareableLink = `${window.location.origin}/card-viewer.html?id=${cardMetadata.cardId}&v=${Date.now()}`;
         cardMetadata.shareUrl = shareableLink;
         
         // Показ результата
@@ -4162,47 +4162,66 @@ try {
 
 // WEB3: Сохранение открытки
 async function saveCard(cardMetadata) {
-try {
-   console.log('💾 Сохраняем карту...');
-   
-   // Сохраняем БЕЗ превью чтобы не переполнить localStorage
-   const lightMetadata = { ...cardMetadata };
-   delete lightMetadata.previewImageUrl; // Убираем тяжелое превью
-   localStorage.setItem(`card_${cardMetadata.cardId}`, JSON.stringify(lightMetadata));   
-   
-   const userCards = JSON.parse(localStorage.getItem('userCards') || '{}');
-   const userId = cardMetadata.userId;
-   
-   if (!userCards[userId]) {
-       userCards[userId] = [];
-   }
-   
-   userCards[userId].push({
-       cardId: cardMetadata.cardId,
-       title: cardMetadata.greeting.split('\n')[0] || 'Без названия',
-       createdAt: cardMetadata.createdAt,
-       style: cardMetadata.style
-   });
-   
-   if (userCards[userId].length > 50) {
-       userCards[userId] = userCards[userId].slice(-50);
-   }
-   
-   localStorage.setItem('userCards', JSON.stringify(userCards));
-   
-   if (currentUser) {
-       currentUser.cardCount = (currentUser.cardCount || 0) + 1;
-       localStorage.setItem('currentUser', JSON.stringify(currentUser));
-       updateUserInterface();
-   }
-   
-   console.log('✅ Карта успешно сохранена:', cardMetadata.cardId);
-   return cardMetadata;
-   
-} catch (error) {
-   console.error('❌ Ошибка сохранения карты:', error);
-   throw error;
-}
+    // Автоматическая очистка localStorage при нехватке места
+    try {
+        const testData = 'x'.repeat(1000000); // Тест 1MB
+        localStorage.setItem('__test__', testData);
+        localStorage.removeItem('__test__');
+    } catch (e) {
+        console.log('🧹 localStorage переполнен, очищаем...');
+        
+        // Сохраняем только последние 10 карт
+        const allKeys = Object.keys(localStorage);
+        const cardKeys = allKeys.filter(k => k.startsWith('card_')).sort();
+        
+        if (cardKeys.length > 10) {
+            const oldKeys = cardKeys.slice(0, -10);
+            oldKeys.forEach(k => localStorage.removeItem(k));
+            console.log(`🗑️ Удалено ${oldKeys.length} старых карт`);
+        }
+    }
+
+    try {
+       console.log('💾 Сохраняем карту...');
+       
+       // Сохраняем БЕЗ превью чтобы не переполнить localStorage
+       const lightMetadata = { ...cardMetadata };
+       delete lightMetadata.previewImageUrl; // Убираем тяжелое превью
+       localStorage.setItem(`card_${cardMetadata.cardId}`, JSON.stringify(lightMetadata));   
+       
+       const userCards = JSON.parse(localStorage.getItem('userCards') || '{}');
+       const userId = cardMetadata.userId;
+       
+       if (!userCards[userId]) {
+           userCards[userId] = [];
+       }
+       
+       userCards[userId].push({
+           cardId: cardMetadata.cardId,
+           title: cardMetadata.greeting.split('\n')[0] || 'Без названия',
+           createdAt: cardMetadata.createdAt,
+           style: cardMetadata.style
+       });
+       
+       if (userCards[userId].length > 50) {
+           userCards[userId] = userCards[userId].slice(-50);
+       }
+       
+       localStorage.setItem('userCards', JSON.stringify(userCards));
+       
+       if (currentUser) {
+           currentUser.cardCount = (currentUser.cardCount || 0) + 1;
+           localStorage.setItem('currentUser', JSON.stringify(currentUser));
+           updateUserInterface();
+       }
+       
+       console.log('✅ Карта успешно сохранена:', cardMetadata.cardId);
+       return cardMetadata;
+       
+    } catch (error) {
+       console.error('❌ Ошибка сохранения карты:', error);
+       throw error;
+    }
 }
 
 // Показать уведомление
