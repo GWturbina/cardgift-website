@@ -3167,7 +3167,7 @@ try {
 }
         
         // ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
-        const shareableLink = `${window.location.origin}/card-viewer.html?id=${cardMetadata.cardId}&v=${Date.now()}`;
+        const shareableLink = `${window.location.origin}/api/card-preview?id=${cardMetadata.cardId}`;
         cardMetadata.shareUrl = shareableLink;
         
         // Показ результата
@@ -4162,24 +4162,47 @@ try {
 
 // WEB3: Сохранение открытки
 async function saveCard(cardMetadata) {
-    // Автоматическая очистка localStorage при нехватке места
     try {
-        const testData = 'x'.repeat(1000000); // Тест 1MB
-        localStorage.setItem('__test__', testData);
-        localStorage.removeItem('__test__');
-    } catch (e) {
-        console.log('🧹 localStorage переполнен, очищаем...');
+        console.log('💾 Сохраняем карту на сервер...');
         
-        // Сохраняем только последние 10 карт
-        const allKeys = Object.keys(localStorage);
-        const cardKeys = allKeys.filter(k => k.startsWith('card_')).sort();
+        // Отправляем на сервер
+        const response = await fetch('/api/save-card', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                cardId: cardMetadata.cardId,
+                cardData: cardMetadata
+            })
+        });
         
-        if (cardKeys.length > 10) {
-            const oldKeys = cardKeys.slice(0, -10);
-            oldKeys.forEach(k => localStorage.removeItem(k));
-            console.log(`🗑️ Удалено ${oldKeys.length} старых карт`);
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('✅ Карта сохранена на сервер:', cardMetadata.cardId);
+            
+            // Также сохраняем локально для быстрого доступа
+            const lightMetadata = { ...cardMetadata };
+            delete lightMetadata.previewImageUrl;
+            localStorage.setItem(`card_${cardMetadata.cardId}`, JSON.stringify(lightMetadata));
+            
+            return cardMetadata;
+        } else {
+            throw new Error('Ошибка сохранения на сервер');
         }
+        
+    } catch (error) {
+        console.error('❌ Ошибка сохранения карты:', error);
+        
+        // Fallback к localStorage
+        const lightMetadata = { ...cardMetadata };
+        delete lightMetadata.previewImageUrl;
+        localStorage.setItem(`card_${cardMetadata.cardId}`, JSON.stringify(lightMetadata));
+        
+        return cardMetadata;
     }
+}
 
     try {
        console.log('💾 Сохраняем карту...');
