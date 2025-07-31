@@ -3,79 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title id="pageTitle">CardGift - Поздравительная открытка</title>
+    <title id="pageTitle">CardGift - Greeting Card</title>
 	
 	<!-- Favicon fix -->
    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
     
-    <!-- DYNAMIC OPEN GRAPH для превью в мессенджерах -->
-    <meta property="og:title" content="🎉 Персональная поздравительная открытка" id="ogTitle">
-    <meta property="og:description" content="Красивая открытка создана специально для вас в CardGift" id="ogDescription">
-    <meta property="og:image" content="https://cardgift-website-dctcoaz6-georgiis-projects-49418266.vercel.app/api/og-image?id=demo" id="ogImage">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <!-- ✅ УЛУЧШЕННЫЕ DYNAMIC OPEN GRAPH для превью в мессенджерах -->
+    <meta property="og:title" content="🎉 Personal Greeting Card - CardGift" id="ogTitle">
+    <meta property="og:description" content="Beautiful personalized card created with CardGift Web3 platform" id="ogDescription">
+    <meta property="og:image" content="" id="ogImage">
+    <meta property="og:image:width" content="1200" id="ogImageWidth">
+    <meta property="og:image:height" content="630" id="ogImageHeight">
     <meta property="og:type" content="website">
     <meta property="og:url" content="" id="ogUrl">
     <meta property="og:site_name" content="CardGift">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="🎉 Персональная поздравительная открытка" id="twitterTitle">
-    <meta name="twitter:description" content="Красивая открытка создана специально для вас в CardGift" id="twitterDescription">
-    <meta name="twitter:image" content="https://cardgift-website-dctcoaz6-georgiis-projects-49418266.vercel.app/api/og-image?id=demo" id="twitterImage">
+    <meta name="twitter:title" content="🎉 Personal Greeting Card - CardGift" id="twitterTitle">
+    <meta name="twitter:description" content="Beautiful personalized card created with CardGift Web3 platform" id="twitterDescription">
+    <meta name="twitter:image" content="" id="twitterImage">
     
+    <!-- ✅ WEB3 библиотеки для интеграции -->
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 	
 	<script>
-// 🎬 VideoProcessor для card-viewer (только YouTube) - ИСПРАВЛЕН
-class VideoProcessor {
+// ✅ УЛУЧШЕННЫЙ VideoProcessor с поддержкой всех платформ
+class EnhancedVideoProcessor {
     constructor() {
         this.supportedPlatforms = {
             youtube: {
                 patterns: [
-                    // https://www.youtube.com/watch?v=XXXXXXXXXXX
                     /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-                    // https://youtube.com/embed/XXXXXXXXXXX
-                    /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/
+                    /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+                    /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/,
+                    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/
                 ],
-                // ИСПРАВЛЕН: Убран autoplay, добавлены правильные параметры
-                embed: (id) => `https://www.youtube.com/embed/${id}?enablejsapi=1&controls=1&rel=0&modestbranding=1&playsinline=1&origin=${window.location.origin}`
+                embed: (id) => `https://www.youtube-nocookie.com/embed/${id}?enablejsapi=1&controls=1&rel=0&modestbranding=1&playsinline=1&origin=${encodeURIComponent(window.location.origin)}`
+            },
+            tiktok: {
+                patterns: [
+                    /tiktok\.com\/@[\w.-]+\/video\/(\d+)/,
+                    /vm\.tiktok\.com\/([a-zA-Z0-9]+)/
+                ],
+                embed: (id) => `https://www.tiktok.com/embed/v2/${id}`
+            },
+            instagram: {
+                patterns: [
+                    /instagram\.com\/p\/([a-zA-Z0-9_-]+)/,
+                    /instagram\.com\/reel\/([a-zA-Z0-9_-]+)/
+                ],
+                embed: (id) => `https://www.instagram.com/p/${id}/embed/`
             }
         };
     }
 
     parseVideoUrl(url) {
-        if (!url) return { isValid: false };
+        if (!url || typeof url !== 'string') {
+            return { isValid: false, error: 'Invalid URL' };
+        }
 
-        const config = this.supportedPlatforms.youtube;
-        for (const pattern of config.patterns) {
-            const match = url.match(pattern);
-            if (match) {
-                return {
-                    isValid: true,
-                    platform: "youtube",
-                    videoId: match[1],
-                    embedUrl: config.embed(match[1])
-                };
+        url = url.trim();
+        
+        // Декодируем HTML entities
+        url = url
+            .replace(/&#x2F;/g, '/')
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#x27;/g, "'");
+
+        for (const [platform, config] of Object.entries(this.supportedPlatforms)) {
+            for (const pattern of config.patterns) {
+                const match = url.match(pattern);
+                if (match) {
+                    const videoId = match[1];
+                    return {
+                        isValid: true,
+                        platform: platform,
+                        videoId: videoId,
+                        originalUrl: url,
+                        embedUrl: config.embed(videoId)
+                    };
+                }
             }
         }
-        return { isValid: false };
+
+        return { isValid: false, error: 'Unsupported video platform' };
     }
 
-    // НОВАЯ ФУНКЦИЯ: Создание улучшенного YouTube элемента
-    createEnhancedYouTubeElement(videoData, container) {
+    createEnhancedVideoElement(videoData, container) {
         if (!videoData.isValid) {
-            this.showVideoError(container, 'Invalid video URL');
+            this.showVideoError(container, videoData.error || 'Invalid video URL');
             return;
         }
 
         container.innerHTML = '';
+        container.style.background = '#000';
 
-        // Основной контейнер
-        const youtubeContainer = document.createElement('div');
-        youtubeContainer.className = 'youtube-container';
+        // Основной контейнер для видео
+        const videoContainer = document.createElement('div');
+        videoContainer.className = `${videoData.platform}-container video-container`;
+        videoContainer.style.cssText = `
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            background: #000;
+            border-radius: inherit;
+            overflow: hidden;
+        `;
 
-        // Iframe
+        // Создаем iframe
         const iframe = document.createElement('iframe');
         iframe.src = videoData.embedUrl;
         iframe.frameBorder = '0';
@@ -83,44 +126,121 @@ class VideoProcessor {
         iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
         iframe.sandbox = 'allow-scripts allow-same-origin allow-presentation allow-forms';
         iframe.loading = 'lazy';
+        iframe.style.cssText = `
+            width: 100%;
+            height: 100%;
+            border: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: all;
+            border-radius: inherit;
+        `;
 
-        // Кнопка звука
-        const soundBtn = document.createElement('button');
-        soundBtn.className = 'sound-control-btn';
-        soundBtn.innerHTML = '🔊 Звук';
-        soundBtn.onclick = () => this.enableSound(iframe, soundBtn);
+        // Обработчики событий для iframe
+        iframe.onload = () => {
+            console.log(`✅ ${videoData.platform} video loaded successfully`);
+            this.hideVideoLoading(videoContainer);
+        };
 
-        youtubeContainer.appendChild(iframe);
-        youtubeContainer.appendChild(soundBtn);
-        container.appendChild(youtubeContainer);
+        iframe.onerror = () => {
+            console.error(`❌ ${videoData.platform} video failed to load`);
+            this.showVideoError(container, `Failed to load ${videoData.platform} video`);
+        };
 
-        return { iframe, container: youtubeContainer };
+        // Показываем индикатор загрузки
+        this.showVideoLoading(videoContainer, videoData.platform);
+
+        videoContainer.appendChild(iframe);
+        container.appendChild(videoContainer);
+
+        // Создаем кнопку управления для YouTube
+        if (videoData.platform === 'youtube') {
+            this.createSoundControlButton(videoContainer, iframe);
+        }
+
+        return { iframe, container: videoContainer };
     }
 
-    // НОВАЯ ФУНКЦИЯ: Включение звука
+    createSoundControlButton(container, iframe) {
+        const soundBtn = document.createElement('button');
+        soundBtn.className = 'sound-control-btn';
+        soundBtn.innerHTML = '🔊 Sound';
+        soundBtn.style.cssText = `
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.8);
+            color: #FFD700;
+            border: 2px solid #FFD700;
+            padding: 8px 12px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        `;
+
+        soundBtn.onmouseover = () => {
+            soundBtn.style.background = 'rgba(255, 215, 0, 0.2)';
+            soundBtn.style.transform = 'scale(1.05)';
+        };
+
+        soundBtn.onmouseout = () => {
+            soundBtn.style.background = 'rgba(0, 0, 0, 0.8)';
+            soundBtn.style.transform = 'scale(1)';
+        };
+
+        soundBtn.onclick = () => this.enableSound(iframe, soundBtn);
+
+        container.appendChild(soundBtn);
+    }
+
     enableSound(iframe, button) {
         try {
-            // Отправляем команду в YouTube iframe
-            iframe.contentWindow.postMessage(
-                '{"event":"command","func":"unMute","args":""}',
-                '*'
-            );
-            iframe.contentWindow.postMessage(
-                '{"event":"command","func":"playVideo","args":""}',
-                '*'
-            );
+            // Отправляем команды в YouTube iframe
+            iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+            iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
             
-            button.innerHTML = '🔊 ВКЛ';
+            button.innerHTML = '🔊 ON';
             button.style.background = 'rgba(76, 175, 80, 0.8)';
+            button.style.borderColor = '#4CAF50';
             
             setTimeout(() => {
-                button.style.display = 'none';
+                button.style.opacity = '0';
+                setTimeout(() => button.remove(), 300);
             }, 2000);
             
         } catch (error) {
-            console.warn('Could not control YouTube player:', error);
-            button.innerHTML = '❌';
+            console.warn('Could not control video player:', error);
+            button.innerHTML = '❌ Error';
+            button.style.background = 'rgba(244, 67, 54, 0.8)';
         }
+    }
+
+    showVideoLoading(container, platform) {
+        const loading = document.createElement('div');
+        loading.className = 'video-loading';
+        loading.style.cssText = `
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #FFD700;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 10;
+            font-weight: bold;
+        `;
+        loading.innerHTML = `
+            <div style="font-size: 24px; margin-bottom: 10px;">🔄</div>
+            <div>Loading ${platform} video...</div>
+        `;
+        container.appendChild(loading);
     }
 
     showVideoError(container, message) {
@@ -137,18 +257,155 @@ class VideoProcessor {
                 text-align: center;
                 z-index: 10;
                 font-weight: bold;
+                max-width: 80%;
             ">
-                ❌ ${message}
+                <div style="font-size: 32px; margin-bottom: 10px;">❌</div>
+                <div>${message}</div>
             </div>
         `;
     }
+
+    hideVideoLoading(container) {
+        const loading = container.querySelector('.video-loading');
+        if (loading) {
+            loading.style.opacity = '0';
+            setTimeout(() => loading.remove(), 300);
+        }
+    }
 }
 
-const videoProcessor = new VideoProcessor();
+const videoProcessor = new EnhancedVideoProcessor();
+
+// ✅ СИСТЕМА УВЕДОМЛЕНИЙ ДЛЯ CARD-VIEWER
+class CardNotificationSystem {
+    constructor() {
+        this.container = this.createContainer();
+    }
+
+    createContainer() {
+        const container = document.createElement('div');
+        container.id = 'cardNotificationContainer';
+        container.style.cssText = `
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10001;
+            pointer-events: none;
+            max-width: 90vw;
+        `;
+        document.body.appendChild(container);
+        return container;
+    }
+
+    show(message, type = 'info', duration = 3000) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            margin-bottom: 10px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #333;
+            text-align: center;
+            font-weight: 500;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+            pointer-events: auto;
+            cursor: pointer;
+            font-size: 14px;
+        `;
+
+        // Цвета по типам
+        const colors = {
+            success: { border: '#4CAF50', bg: 'rgba(76, 175, 80, 0.15)', color: '#4CAF50' },
+            error: { border: '#f44336', bg: 'rgba(244, 67, 54, 0.15)', color: '#f44336' },
+            warning: { border: '#FF9800', bg: 'rgba(255, 152, 0, 0.15)', color: '#FF9800' },
+            info: { border: '#2196F3', bg: 'rgba(33, 150, 243, 0.15)', color: '#2196F3' }
+        };
+
+        if (colors[type]) {
+            notification.style.borderColor = colors[type].border;
+            notification.style.background = colors[type].bg;
+            notification.style.color = colors[type].color;
+        }
+
+        notification.textContent = message;
+        this.container.appendChild(notification);
+
+        // Анимация появления
+        setTimeout(() => {
+            notification.style.opacity = '1';
+            notification.style.transform = 'translateY(0)';
+        }, 100);
+
+        // Автоудаление
+        const timeoutId = setTimeout(() => {
+            this.remove(notification);
+        }, duration);
+
+        // Удаление по клику
+        notification.addEventListener('click', () => {
+            clearTimeout(timeoutId);
+            this.remove(notification);
+        });
+
+        return notification;
+    }
+
+    remove(notification) {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(-20px)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 400);
+    }
+}
+
+const cardNotifications = new CardNotificationSystem();
+
+// ✅ МЕНЕДЖЕР УРОВНЕЙ ПОЛЬЗОВАТЕЛЯ
+class UserLevelManager {
+    constructor() {
+        this.levels = {
+            0: { name: 'FREE', features: ['Basic viewing'] },
+            1: { name: 'USER', features: ['Archive access', 'Basic sharing'] },
+            2: { name: 'MINI', features: ['Advanced sharing', 'Templates'] },
+            3: { name: 'ADMIN', features: ['All features', 'Priority support'] },
+            4: { name: 'SUPER', features: ['Unlimited sharing', 'Custom branding'] },
+            5: { name: 'MANAGER', features: ['Team features', 'Analytics'] },
+            6: { name: 'AUTHOR', features: ['Unlimited everything', 'Co-author access'] }
+        };
+    }
+
+    getLevelInfo(level) {
+        return this.levels[level] || this.levels[0];
+    }
+
+    getUserLevel(userId) {
+        try {
+            const userData = localStorage.getItem('currentUser');
+            if (userData) {
+                const user = JSON.parse(userData);
+                return user.level || 0;
+            }
+        } catch (error) {
+            console.warn('Error getting user level:', error);
+        }
+        return 0;
+    }
+}
+
+const levelManager = new UserLevelManager();
 </script>
     
     <style>
-        /* ГЛОБАЛЬНЫЕ СТИЛИ */
+        /* ✅ ГЛОБАЛЬНЫЕ СТИЛИ С УЛУЧШЕНИЯМИ */
         * {
             margin: 0;
             padding: 0;
@@ -159,43 +416,71 @@ const videoProcessor = new VideoProcessor();
             height: 100%;
             width: 100%;
             overflow-x: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+        }
+
+        /* ✅ АНИМИРОВАННЫЙ ФОН */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.03) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: backgroundShift 10s ease infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
         
-        /* ЯЗЫКОВОЙ ПЕРЕКЛЮЧАТЕЛЬ */
+        /* ✅ УЛУЧШЕННЫЙ ЯЗЫКОВОЙ ПЕРЕКЛЮЧАТЕЛЬ */
         .language-switcher {
             position: fixed;
             top: 8px;
             right: 8px;
             z-index: 1000;
             display: flex;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 12px;
-            padding: 2px;
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 3px;
+            backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .lang-btn {
             background: transparent;
             border: none;
             color: #FFD700;
-            padding: 4px 8px;
-            border-radius: 8px;
+            padding: 6px 10px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: bold;
             transition: all 0.3s ease;
-            min-width: 24px;
+            min-width: 28px;
         }
 
         .lang-btn.active {
             background: rgba(255, 215, 0, 0.3);
             color: #FFF;
+            transform: scale(1.05);
+        }
+
+        .lang-btn:hover:not(.active) {
+            background: rgba(255, 215, 0, 0.1);
+            transform: scale(1.02);
         }
         
-        /* ОСНОВНОЙ КОНТЕЙНЕР - МОБИЛЬНАЯ ВЕРСИЯ КАК ТЕЛЕФОН */
+        /* ✅ ОСНОВНОЙ КОНТЕЙНЕР - УЛУЧШЕННЫЙ МОБИЛЬНЫЙ ДИЗАЙН */
         .mobile-container {
             max-width: 400px;
             width: 90vw;
@@ -203,46 +488,52 @@ const videoProcessor = new VideoProcessor();
             min-height: 600px;
             margin: 5vh auto;
             background: #000;
-            border-radius: 25px;
+            border-radius: 30px;
             overflow: hidden;
             box-shadow: 
-                0 20px 60px rgba(0,0,0,0.3),
-                0 0 0 1px rgba(255,255,255,0.1);
+                0 30px 80px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(255,255,255,0.1),
+                0 0 50px rgba(255, 215, 0, 0.1);
             position: relative;
             display: flex;
             flex-direction: column;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        /* СТАТУС БАР КАК У ТЕЛЕФОНА */
+        /* ✅ УЛУЧШЕННЫЙ СТАТУС БАР */
         .status-bar {
-            height: 24px;
-            background: rgba(0,0,0,0.9);
+            height: 28px;
+            background: rgba(0,0,0,0.95);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 15px;
+            padding: 0 18px;
             font-size: 12px;
             color: #FFF;
-            font-weight: 500;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .status-left {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
         
         .status-right {
             display: flex;
             align-items: center;
-            gap: 3px;
+            gap: 4px;
+            font-family: 'SF Pro Display', -apple-system, sans-serif;
         }
         
-        /* ИСПРАВЛЕНИЕ: БЕГУЩАЯ СТРОКА ВВЕРХУ (заменяет верхний баннер) */
+        /* ✅ УЛУЧШЕННАЯ БЕГУЩАЯ СТРОКА */
         .top-marquee {
             background: linear-gradient(45deg, #FFD700, #FFA500);
             color: #000;
-            height: 32px;
+            height: 36px;
             overflow: hidden;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -250,28 +541,38 @@ const videoProcessor = new VideoProcessor();
             align-items: center;
             font-weight: bold;
             font-size: 12px;
+            position: relative;
         }
         
         .top-marquee.show {
             display: flex;
+            animation: slideDown 0.5s ease forwards;
         }
         
         .top-marquee:hover {
             background: linear-gradient(45deg, #FFE55C, #FFB700);
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
         }
         
         .marquee-content {
-            animation: marqueeMove 15s linear infinite;
+            animation: marqueeMove 20s linear infinite;
             white-space: nowrap;
             padding-left: 100%;
+            font-weight: 700;
         }
         
         @keyframes marqueeMove {
             0% { transform: translateX(0); }
             100% { transform: translateX(-100%); }
         }
+
+        @keyframes slideDown {
+            0% { transform: translateY(-100%); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
         
-        /* ОСНОВНАЯ ОБЛАСТЬ КАРТЫ */
+        /* ✅ ОСНОВНАЯ ОБЛАСТЬ КАРТЫ С УЛУЧШЕНИЯМИ */
         .card-area {
             flex: 1;
             position: relative;
@@ -279,7 +580,7 @@ const videoProcessor = new VideoProcessor();
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         }
         
-        /* ИСПРАВЛЕНО: ФОНОВОЕ ИЗОБРАЖЕНИЕ БЕЗ ЗАТЕМНЕНИЯ И ПРАВИЛЬНОЕ МАСШТАБИРОВАНИЕ */
+        /* ✅ УЛУЧШЕННОЕ ФОНОВОЕ ИЗОБРАЖЕНИЕ */
         .background-image {
             position: absolute;
             top: 0;
@@ -290,10 +591,11 @@ const videoProcessor = new VideoProcessor();
             background-position: center;
             background-repeat: no-repeat;
             z-index: 1;
+            transition: all 0.5s ease;
         }
 		
-		/* 🎬 ИСПРАВЛЕННЫЕ СТИЛИ ДЛЯ YOUTUBE */
-        .youtube-container {
+		/* ✅ УЛУЧШЕННЫЕ СТИЛИ ДЛЯ ВИДЕО КОНТЕЙНЕРОВ */
+        .video-container {
             position: absolute;
             top: 0;
             left: 0;
@@ -305,7 +607,7 @@ const videoProcessor = new VideoProcessor();
             overflow: hidden;
         }
 
-        .youtube-container iframe {
+        .video-container iframe {
             width: 100%;
             height: 100%;
             border: none;
@@ -316,30 +618,32 @@ const videoProcessor = new VideoProcessor();
             border-radius: inherit;
         }
 
-        /* КНОПКА ЗВУКА */
+        /* ✅ УЛУЧШЕННАЯ КНОПКА ЗВУКА */
         .sound-control-btn {
             position: absolute;
             top: 15px;
             right: 15px;
             z-index: 100;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             color: #FFD700;
             border: 2px solid #FFD700;
-            padding: 8px 12px;
-            border-radius: 25px;
+            padding: 10px 15px;
+            border-radius: 30px;
             cursor: pointer;
             font-weight: bold;
             font-size: 12px;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
             transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
 
         .sound-control-btn:hover {
             background: rgba(255, 215, 0, 0.2);
             transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(255, 215, 0, 0.3);
         }
         
-        /* КОНТЕНТ ПОВЕРХ */
+        /* ✅ УЛУЧШЕННЫЙ КОНТЕНТ ПОВЕРХ */
         .card-content {
             position: absolute;
             top: 0;
@@ -351,7 +655,7 @@ const videoProcessor = new VideoProcessor();
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 80px 20px 80px 20px;
+            padding: 80px 25px 80px 25px;
             text-align: center;
             pointer-events: none;
         }
@@ -360,11 +664,11 @@ const videoProcessor = new VideoProcessor();
             pointer-events: auto;
         }
         
-        /* ЗАГОЛОВОК */
+        /* ✅ УЛУЧШЕННАЯ ТИПОГРАФИКА */
         .card-title {
             color: #FFFFFF;
-            font-size: 24px;
-            font-weight: bold;
+            font-size: 26px;
+            font-weight: 800;
             text-shadow: 
                 -3px -3px 0 #000,
                 3px -3px 0 #000,
@@ -374,18 +678,41 @@ const videoProcessor = new VideoProcessor();
                 2px 0 0 #000,
                 0 -2px 0 #000,
                 0 2px 0 #000,
-                0 0 15px rgba(0,0,0,1),
-                0 0 25px rgba(0,0,0,0.8);
-            margin-bottom: 15px;
+                0 0 20px rgba(0,0,0,1),
+                0 0 35px rgba(0,0,0,0.8);
+            margin-bottom: 18px;
             opacity: 0;
             animation: fadeInUp 1s ease 0.5s forwards;
             position: relative;
             z-index: 11;
+            line-height: 1.2;
         }
         
-        /* ПОДЗАГОЛОВОК */
         .card-subtitle {
             color: #FFD700;
+            font-size: 18px;
+            font-weight: 700;
+            text-shadow: 
+                -3px -3px 0 #000,
+                3px -3px 0 #000,
+                -3px 3px 0 #000,
+                3px 3px 0 #000,
+                -2px 0 0 #000,
+                2px 0 0 #000,
+                0 -2px 0 #000,
+                0 2px 0 #000,
+                0 0 20px rgba(0,0,0,1),
+                0 0 35px rgba(0,0,0,0.8);
+            margin-bottom: 25px;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.8s forwards;
+            position: relative;
+            z-index: 11;
+            line-height: 1.3;
+        }
+        
+        .greeting-text {
+            color: #FFFFFF;
             font-size: 16px;
             font-weight: 600;
             text-shadow: 
@@ -397,55 +724,35 @@ const videoProcessor = new VideoProcessor();
                 2px 0 0 #000,
                 0 -2px 0 #000,
                 0 2px 0 #000,
-                0 0 15px rgba(0,0,0,1),
-                0 0 25px rgba(0,0,0,0.8);
-            margin-bottom: 20px;
-            opacity: 0;
-            animation: fadeInUp 1s ease 0.8s forwards;
-            position: relative;
-            z-index: 11;
-        }
-        
-        /* ОСНОВНОЙ ТЕКСТ */
-        .greeting-text {
-            color: #FFFFFF;
-            font-size: 14px;
-            font-weight: 500;
-            text-shadow: 
-                -3px -3px 0 #000,
-                3px -3px 0 #000,
-                -3px 3px 0 #000,
-                3px 3px 0 #000,
-                -2px 0 0 #000,
-                2px 0 0 #000,
-                0 -2px 0 #000,
-                0 2px 0 #000,
-                0 0 15px rgba(0,0,0,1),
-                0 0 25px rgba(0,0,0,0.8);
-            line-height: 1.4;
+                0 0 20px rgba(0,0,0,1),
+                0 0 35px rgba(0,0,0,0.8);
+            line-height: 1.5;
             opacity: 0;
             animation: fadeInUp 1s ease 1.1s forwards;
-            max-width: 280px;
+            max-width: 320px;
             position: relative;
             z-index: 11;
         }
         
-        /* НИЖНЯЯ ОБЛАСТЬ */
+        /* ✅ УЛУЧШЕННАЯ НИЖНЯЯ ОБЛАСТЬ */
         .bottom-area {
             background: linear-gradient(
                 180deg,
                 rgba(0,0,0,0.8) 0%,
                 rgba(0,0,0,0.95) 100%
             );
-            padding: 15px;
+            padding: 20px;
             z-index: 3;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
         
-        /* CTA СЕКЦИЯ */
+        /* ✅ УЛУЧШЕННАЯ CTA СЕКЦИЯ */
         .cta-section {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             display: none;
+            animation: fadeInUp 0.6s ease forwards;
         }
         
         .cta-section.show {
@@ -454,935 +761,1501 @@ const videoProcessor = new VideoProcessor();
         
         .cta-text {
             color: #FFFFFF;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
         
         .cta-subtitle {
             color: #FFD700;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
+            opacity: 0.9;
         }
         
-        /* КНОПКА ДЕЙСТВИЯ */
+        /* ✅ УЛУЧШЕННАЯ КНОПКА ДЕЙСТВИЯ */
         .action-button {
             background: linear-gradient(45deg, #FFD700, #FFA500);
             color: #000;
             border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-size: 14px;
+            padding: 15px 35px;
+            border-radius: 30px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
             width: 100%;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             display: none;
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .action-button:hover::before {
+            left: 100%;
         }
         
         .action-button.show {
             display: block;
+            animation: bounceIn 0.6s ease forwards;
         }
         
         .action-button:hover {
-            background: linear-gradient(45deg, #FFE55C, #FFB700);
-            transform: translateY(-1px);
-        }
-        
-        /* НИЖНИЙ БАННЕР */
-        .bottom-banner {
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            color: #000;
-            padding: 8px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: translateY(100%);
-            display: none;
-        }
-        
-        .bottom-banner.show {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-            animation: slideUpBanner 0.6s ease forwards;
-        }
-        
-        /* СТИЛИ ФОНОВ */
-        .style-classic {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .style-sunset {
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
-        }
-        
-        .style-ocean {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .style-space {
-            background: linear-gradient(135deg, #0c0c0c 0%, #000000 100%);
-            position: relative;
-        }
-        
-        .style-space::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(2px 2px at 20px 30px, #FFD700, transparent),
-                radial-gradient(2px 2px at 40px 70px, rgba(255, 215, 0, 0.8), transparent),
-                radial-gradient(1px 1px at 90px 40px, #FFD700, transparent);
-            background-repeat: repeat;
-            background-size: 250px 150px;
-            animation: sparkle 3s ease-in-out infinite;
-        }
-        
-        .style-neon {
-            background: linear-gradient(45deg, #FF006E, #8338EC, #3A86FF);
-            background-size: 400% 400%;
-            animation: neonGradient 3s ease infinite;
-        }
-        
-        /* АНИМАЦИИ */
-        @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(30px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes slideUpBanner {
-            0% { opacity: 0; transform: translateY(100%); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes sparkle {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        
-        @keyframes neonGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        /* ЗАГРУЗКА И ОШИБКИ */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            color: #FFD700;
-        }
-        
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 215, 0, 0.3);
-            border-top: 4px solid #FFD700;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .loading-text {
-            font-size: 18px;
-            font-weight: bold;
-        }
-        
-        .error-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            text-align: center;
-            z-index: 9999;
-        }
-        
-        .error-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-        }
-        
-        .error-title {
-            color: #FFD700;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        
-        .error-text {
-            color: #FFFFFF;
-            font-size: 16px;
-            margin-bottom: 30px;
-            line-height: 1.5;
-        }
-        
-        .error-button {
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            color: #000;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .error-button:hover {
-            background: linear-gradient(45deg, #FFE55C, #FFB700);
-            transform: translateY(-2px);
-        }
-        
-        /* 📱 МОБИЛЬНАЯ ОПТИМИЗАЦИЯ YOUTUBE */
-        @media (max-width: 480px) {
-            .mobile-container {
-                width: 95vw;
-                height: 85vh;
-                margin: 2.5vh auto;
-            }
-            
-            .card-content {
-                padding: 60px 15px 60px 15px;
-            }
-            
-            .card-title {
-                font-size: 20px;
-            }
-            
-            .card-subtitle {
-                font-size: 14px;
-            }
-            
-            .greeting-text {
-                font-size: 12px;
-            }
+           background: linear-gradient(45deg, #FFE55C, #FFB700);
+           transform: translateY(-2px) scale(1.02);
+           box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+       }
 
-            .youtube-container {
-                border-radius: 0;
-            }
-            
-            .sound-control-btn {
-                top: 10px;
-                right: 10px;
-                padding: 6px 10px;
-                font-size: 11px;
-            }
-        }
-        
-        /* СКРЫТИЕ ЭЛЕМЕНТОВ */
-        .hidden {
-            display: none !important;
-        }
-    </style>
+       .action-button:active {
+           transform: translateY(0) scale(0.98);
+       }
+       
+       /* ✅ УЛУЧШЕННЫЙ НИЖНИЙ БАННЕР */
+       .bottom-banner {
+           background: linear-gradient(45deg, #FFD700, #FFA500);
+           color: #000;
+           padding: 12px;
+           text-align: center;
+           font-weight: bold;
+           font-size: 13px;
+           cursor: pointer;
+           transition: all 0.3s ease;
+           opacity: 0;
+           transform: translateY(100%);
+           display: none;
+           box-shadow: 0 -4px 20px rgba(255, 215, 0, 0.2);
+           position: relative;
+           overflow: hidden;
+       }
+
+       .bottom-banner::before {
+           content: '';
+           position: absolute;
+           top: 0;
+           left: -100%;
+           width: 100%;
+           height: 100%;
+           background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+           transition: left 0.7s ease;
+       }
+
+       .bottom-banner:hover::before {
+           left: 100%;
+       }
+       
+       .bottom-banner.show {
+           display: block;
+           opacity: 1;
+           transform: translateY(0);
+           animation: slideUpBanner 0.6s ease forwards;
+       }
+
+       .bottom-banner:hover {
+           background: linear-gradient(45deg, #FFE55C, #FFB700);
+           transform: translateY(-1px);
+           box-shadow: 0 -6px 25px rgba(255, 215, 0, 0.3);
+       }
+       
+       /* ✅ УЛУЧШЕННЫЕ СТИЛИ ФОНОВ */
+       .style-classic {
+           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+       }
+       
+       .style-sunset {
+           background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #ffd89b 100%);
+       }
+       
+       .style-ocean {
+           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+       }
+       
+       .style-space {
+           background: linear-gradient(135deg, #0c0c0c 0%, #000000 100%);
+           position: relative;
+       }
+       
+       .style-space::before {
+           content: '';
+           position: absolute;
+           top: 0;
+           left: 0;
+           width: 100%;
+           height: 100%;
+           background-image: 
+               radial-gradient(2px 2px at 20px 30px, #FFD700, transparent),
+               radial-gradient(2px 2px at 40px 70px, rgba(255, 215, 0, 0.8), transparent),
+               radial-gradient(1px 1px at 90px 40px, #FFD700, transparent),
+               radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.6), transparent),
+               radial-gradient(2px 2px at 160px 30px, #FFD700, transparent);
+           background-repeat: repeat;
+           background-size: 250px 150px;
+           animation: sparkle 4s ease-in-out infinite;
+           z-index: 1;
+       }
+       
+       /* ✅ НОВЫЙ NEON СТИЛЬ С АНИМАЦИЕЙ */
+       .style-neon {
+           background: linear-gradient(45deg, #FF006E, #8338EC, #3A86FF);
+           background-size: 400% 400%;
+           animation: neonGradient 4s ease infinite;
+           position: relative;
+       }
+
+       .style-neon::before {
+           content: '';
+           position: absolute;
+           top: 0;
+           left: 0;
+           width: 100%;
+           height: 100%;
+           background: 
+               radial-gradient(circle at 25% 25%, rgba(255, 0, 110, 0.3) 0%, transparent 50%),
+               radial-gradient(circle at 75% 75%, rgba(131, 56, 236, 0.3) 0%, transparent 50%),
+               radial-gradient(circle at 50% 50%, rgba(58, 134, 255, 0.2) 0%, transparent 50%);
+           animation: neonPulse 3s ease-in-out infinite;
+           z-index: 1;
+       }
+
+       .style-neon::after {
+           content: '';
+           position: absolute;
+           top: 0;
+           left: 0;
+           width: 100%;
+           height: 100%;
+           background: 
+               linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+           animation: neonSweep 6s linear infinite;
+           z-index: 2;
+       }
+       
+       /* ✅ УЛУЧШЕННЫЕ АНИМАЦИИ */
+       @keyframes bounceIn {
+           0% { opacity: 0; transform: scale(0.3) translateY(50px); }
+           50% { opacity: 1; transform: scale(1.05) translateY(-10px); }
+           70% { transform: scale(0.9) translateY(0); }
+           100% { opacity: 1; transform: scale(1) translateY(0); }
+       }
+
+       @keyframes fadeInUp {
+           0% { opacity: 0; transform: translateY(40px); }
+           100% { opacity: 1; transform: translateY(0); }
+       }
+       
+       @keyframes slideUpBanner {
+           0% { opacity: 0; transform: translateY(100%); }
+           100% { opacity: 1; transform: translateY(0); }
+       }
+       
+       @keyframes sparkle {
+           0%, 100% { opacity: 1; transform: scale(1); }
+           50% { opacity: 0.7; transform: scale(1.1); }
+       }
+       
+       @keyframes neonGradient {
+           0% { background-position: 0% 50%; }
+           50% { background-position: 100% 50%; }
+           100% { background-position: 0% 50%; }
+       }
+
+       @keyframes neonPulse {
+           0%, 100% { opacity: 0.6; }
+           50% { opacity: 1; }
+       }
+
+       @keyframes neonSweep {
+           0% { transform: translateX(-100%) rotate(45deg); }
+           100% { transform: translateX(400%) rotate(45deg); }
+       }
+       
+       /* ✅ УЛУЧШЕННЫЕ ЭКРАНЫ ЗАГРУЗКИ И ОШИБОК */
+       .loading-screen {
+           position: fixed;
+           top: 0;
+           left: 0;
+           width: 100%;
+           height: 100%;
+           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+           display: flex;
+           flex-direction: column;
+           justify-content: center;
+           align-items: center;
+           z-index: 9999;
+           color: #FFD700;
+       }
+       
+       .loading-spinner {
+           width: 60px;
+           height: 60px;
+           border: 5px solid rgba(255, 215, 0, 0.3);
+           border-top: 5px solid #FFD700;
+           border-radius: 50%;
+           animation: spin 1s linear infinite;
+           margin-bottom: 25px;
+           box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+       }
+       
+       @keyframes spin {
+           0% { transform: rotate(0deg); }
+           100% { transform: rotate(360deg); }
+       }
+       
+       .loading-text {
+           font-size: 20px;
+           font-weight: bold;
+           text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+           animation: pulse 2s ease-in-out infinite;
+       }
+
+       @keyframes pulse {
+           0%, 100% { opacity: 1; }
+           50% { opacity: 0.7; }
+       }
+       
+       .error-screen {
+           position: fixed;
+           top: 0;
+           left: 0;
+           width: 100%;
+           height: 100%;
+           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+           display: flex;
+           flex-direction: column;
+           justify-content: center;
+           align-items: center;
+           padding: 30px;
+           text-align: center;
+           z-index: 9999;
+       }
+       
+       .error-icon {
+           font-size: 80px;
+           margin-bottom: 25px;
+           animation: shake 0.5s ease-in-out;
+       }
+
+       @keyframes shake {
+           0%, 100% { transform: translateX(0); }
+           25% { transform: translateX(-5px); }
+           75% { transform: translateX(5px); }
+       }
+       
+       .error-title {
+           color: #FFD700;
+           font-size: 28px;
+           font-weight: bold;
+           margin-bottom: 18px;
+           text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+       }
+       
+       .error-text {
+           color: #FFFFFF;
+           font-size: 18px;
+           margin-bottom: 35px;
+           line-height: 1.6;
+           max-width: 400px;
+           text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+       }
+       
+       .error-button {
+           background: linear-gradient(45deg, #FFD700, #FFA500);
+           color: #000;
+           border: none;
+           padding: 18px 35px;
+           border-radius: 30px;
+           font-size: 18px;
+           font-weight: bold;
+           cursor: pointer;
+           transition: all 0.3s ease;
+           text-decoration: none;
+           display: inline-block;
+           box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+       }
+       
+       .error-button:hover {
+           background: linear-gradient(45deg, #FFE55C, #FFB700);
+           transform: translateY(-3px);
+           box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+       }
+       
+       /* ✅ МОБИЛЬНАЯ ОПТИМИЗАЦИЯ */
+       @media (max-width: 480px) {
+           .mobile-container {
+               width: 95vw;
+               height: 85vh;
+               margin: 2.5vh auto;
+               border-radius: 25px;
+           }
+           
+           .card-content {
+               padding: 50px 20px 50px 20px;
+           }
+           
+           .card-title {
+               font-size: 22px;
+           }
+           
+           .card-subtitle {
+               font-size: 16px;
+           }
+           
+           .greeting-text {
+               font-size: 14px;
+               max-width: 280px;
+           }
+
+           .video-container {
+               border-radius: 0;
+           }
+           
+           .sound-control-btn {
+               top: 12px;
+               right: 12px;
+               padding: 8px 12px;
+               font-size: 11px;
+           }
+
+           .action-button {
+               padding: 12px 25px;
+               font-size: 14px;
+           }
+
+           .bottom-area {
+               padding: 15px;
+           }
+
+           .language-switcher {
+               top: 5px;
+               right: 5px;
+               padding: 2px;
+           }
+
+           .lang-btn {
+               padding: 4px 6px;
+               font-size: 10px;
+               min-width: 24px;
+           }
+       }
+
+       @media (max-width: 360px) {
+           .mobile-container {
+               width: 98vw;
+               height: 90vh;
+               margin: 1vh auto;
+           }
+
+           .card-title {
+               font-size: 20px;
+           }
+
+           .card-subtitle {
+               font-size: 14px;
+           }
+
+           .greeting-text {
+               font-size: 13px;
+           }
+       }
+       
+       /* ✅ СКРЫТИЕ ЭЛЕМЕНТОВ */
+       .hidden {
+           display: none !important;
+       }
+
+       /* ✅ ДОПОЛНИТЕЛЬНЫЕ УЛУЧШЕНИЯ */
+       .card-area.has-video .card-content {
+           background: rgba(0, 0, 0, 0.3);
+           backdrop-filter: blur(5px);
+           border-radius: 15px;
+           margin: 20px;
+           padding-top: 60px;
+           padding-bottom: 60px;
+       }
+
+       .user-level-indicator {
+           position: absolute;
+           top: 40px;
+           left: 15px;
+           background: rgba(0, 0, 0, 0.8);
+           color: #FFD700;
+           padding: 4px 8px;
+           border-radius: 12px;
+           font-size: 10px;
+           font-weight: bold;
+           z-index: 15;
+           backdrop-filter: blur(10px);
+           border: 1px solid rgba(255, 215, 0, 0.3);
+       }
+
+       /* ✅ ТЕМА ДЛЯ ТЕМНОГО РЕЖИМА */
+       @media (prefers-color-scheme: dark) {
+           .loading-screen,
+           .error-screen {
+               background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+           }
+       }
+   </style>
 </head>
 <body>
-    <!-- ЯЗЫКОВОЙ ПЕРЕКЛЮЧАТЕЛЬ -->
-    <div class="language-switcher">
-        <button class="lang-btn" onclick="changeLanguage('en')" id="lang-en">EN</button>
-        <button class="lang-btn" onclick="changeLanguage('ru')" id="lang-ru">RU</button>
-        <button class="lang-btn active" onclick="changeLanguage('ua')" id="lang-ua">UA</button>
-    </div>
+   <!-- ✅ УЛУЧШЕННЫЙ ЯЗЫКОВОЙ ПЕРЕКЛЮЧАТЕЛЬ -->
+   <div class="language-switcher">
+       <button class="lang-btn" onclick="changeLanguage('en')" id="lang-en">EN</button>
+       <button class="lang-btn" onclick="changeLanguage('ru')" id="lang-ru">RU</button>
+       <button class="lang-btn active" onclick="changeLanguage('ua')" id="lang-ua">UA</button>
+   </div>
 
-    <!-- ЭКРАН ЗАГРУЗКИ -->
-    <div id="loadingScreen" class="loading-screen">
-        <div class="loading-spinner"></div>
-        <div class="loading-text" id="loadingText">Завантажуємо листівку...</div>
-    </div>
-    
-    <!-- ЭКРАН ОШИБКИ -->
-    <div id="errorScreen" class="error-screen hidden">
-        <div class="error-icon">😔</div>
-        <div class="error-title" id="errorTitle">Листівку не знайдено</div>
-        <div class="error-text" id="errorText">Перевірте посилання або створіть нову листівку</div>
-        <a href="/generator.html" class="error-button" id="errorButton">Створити листівку</a>
-    </div>
+   <!-- ✅ УЛУЧШЕННЫЙ ЭКРАН ЗАГРУЗКИ -->
+   <div id="loadingScreen" class="loading-screen">
+       <div class="loading-spinner"></div>
+       <div class="loading-text" id="loadingText">Loading card...</div>
+       <div style="margin-top: 20px; font-size: 14px; opacity: 0.7;" id="loadingSubtext">Powered by CardGift Web3</div>
+   </div>
+   
+   <!-- ✅ УЛУЧШЕННЫЙ ЭКРАН ОШИБКИ -->
+   <div id="errorScreen" class="error-screen hidden">
+       <div class="error-icon">😔</div>
+       <div class="error-title" id="errorTitle">Card not found</div>
+       <div class="error-text" id="errorText">Check the link or create a new card</div>
+       <a href="/generator.html" class="error-button" id="errorButton">Create Card</a>
+       <div style="margin-top: 20px; font-size: 12px; opacity: 0.6;" id="errorSubtext">CardGift - Web3 Digital Cards</div>
+   </div>
 
-    <!-- ОСНОВНАЯ МОБИЛЬНАЯ ВЕРСИЯ -->
-    <div id="mainCard" class="mobile-container hidden">
-        <!-- Статус бар как у телефона -->
-        <div class="status-bar">
-            <div class="status-left">
-                <span>🔋</span>
-                <span>📶</span>
-                <span>📴</span>
-            </div>
-            <div class="status-right">
-                <span id="currentTime">12:34</span>
-            </div>
-        </div>
-        
-        <!-- ИСПРАВЛЕНИЕ: Бегущая строка вверху (заменяет верхний баннер) -->
-        <div class="top-marquee" id="topMarquee" onclick="handleMarqueeClick()">
-            <div class="marquee-content" id="marqueeContent">
-                <!-- Текст бегущей строки будет добавлен через JavaScript -->
-            </div>
-        </div>
-        
-        <!-- Основная область карты -->
-        <div class="card-area">
-            <!-- Фоновое изображение -->
-            <div class="background-image" id="backgroundImage"></div>
-            
-            <!-- Контент поверх -->
-            <div class="card-content">
-                <div class="card-title" id="cardTitle">🎉 С Новым Годом! 🌟</div>
-                <div class="card-subtitle" id="cardSubtitle">Пусть наступающий год будет полон волшебства!</div>
-                <div class="greeting-text" id="greetingText">Это демонстрационная поздравительная открытка с интеграцией WEB3.</div>
-            </div>
-        </div>
-        
-        <!-- Нижняя область -->
-        <div class="bottom-area">
-            <!-- CTA секция -->
-            <div class="cta-section" id="ctaSection">
-                <div class="cta-text" id="ctaText">Ласкаво просимо до CardGift! 🎉</div>
-                <div class="cta-subtitle" id="ctaSubtitle">Це демонстраційна листівка з WEB3 інтеграцією.</div>
-            </div>
-            
-            <!-- Кнопка действия -->
-            <button class="action-button" id="actionButton" onclick="handleActionClick()">
-                Получить подарок
-            </button>
-        </div>
-        
-        <!-- Нижний баннер -->
-        <div class="bottom-banner" id="bottomBanner" onclick="handleBottomBannerClick()">
-            <span id="bottomBannerText">Банер</span>
-        </div>
-    </div>
+   <!-- ✅ ОСНОВНАЯ МОБИЛЬНАЯ ВЕРСИЯ С УЛУЧШЕНИЯМИ -->
+   <div id="mainCard" class="mobile-container hidden">
+       <!-- ✅ Индикатор уровня пользователя -->
+       <div id="userLevelIndicator" class="user-level-indicator hidden"></div>
 
-    <script>
-        // ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ =====
-        let cardId = null;
-        let cardData = null;
-        let currentLanguage = 'ua';
-        let currentUrl = window.location.href;
-        
-        // ===== ФУНКЦИЯ ОЧИСТКИ URL =====
-        function cleanUrl(url) {
-            if (!url || typeof url !== 'string') return '';
-            
-            // Декодируем HTML entities
-            let cleanedUrl = url
-                .replace(/&amp;/g, '&')
-                .replace(/&#x2F;/g, '/')
-                .replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>')
-                .replace(/&quot;/g, '"')
-                .replace(/&#x27;/g, "'");
-            
-            // Проверяем валидность URL
-            try {
-                if (cleanedUrl.startsWith('http://') || cleanedUrl.startsWith('https://')) {
-                    new URL(cleanedUrl); // Проверяем валидность
-                    return cleanedUrl;
-                }
-            } catch (e) {
-                console.warn('Невалидный URL:', cleanedUrl);
-            }
-            
-            return '';
-        }
-        
-        // ===== ПЕРЕВОДЫ =====
-        const translations = {
-            en: {
-                loading: "Loading card...",
-                error: "Error",
-                cardNotFound: "Card not found",
-                checkLink: "Check the link or create a new card",
-                createCard: "Create Card",
-                ctaText: "Welcome to CardGift! 🎉",
-                ctaSubtitle: "This is a demo card with WEB3 integration.",
-                bottomBanner: "Banner",
-                actionButton: "Get Gift",
-                marqueeText: "Welcome to CardGift - Create amazing cards!"
-            },
-            ru: {
-                loading: "Загружаем открытку...",
-                error: "Ошибка",
-                cardNotFound: "Открытка не найдена",
-                checkLink: "Проверьте ссылку или создайте новую открытку",
-                createCard: "Создать открытку",
-                ctaText: "Добро пожаловать в CardGift! 🎉",
-                ctaSubtitle: "Это демонстрационная открытка с WEB3 интеграцией.",
-                bottomBanner: "Банер",
-                actionButton: "Получить подарок",
-                marqueeText: "Добро пожаловать в CardGift - Создавайте потрясающие открытки!"
-            },
-            ua: {
-                   loading: "Завантажуємо листівку...",
-                   error: "Помилка",
-                   cardNotFound: "Листівку не знайдено",
-                   checkLink: "Перевірте посилання або створіть нову листівку",
-                   createCard: "Створити листівку",
-                   ctaText: "Ласкаво просимо до CardGift! 🎉",
-                   ctaSubtitle: "Це демонстраційна листівка з WEB3 інтеграцією.",
-                   bottomBanner: "Банер",
-                   actionButton: "Отримати подарунок",
-                   marqueeText: "Ласкаво просимо до CardGift - Створюйте дивовижні листівки!"
-               }
-           };
-
-       // ===== ИНИЦИАЛИЗАЦИЯ =====
-       document.addEventListener('DOMContentLoaded', function() {
-           console.log('📱 CardGift Mobile Card Viewer LOADING...');
+       <!-- ✅ Улучшенный статус бар -->
+       <div class="status-bar">
+           <div class="status-left">
+               <span style="font-size: 14px;">🔋</span>
+               <span style="font-size: 12px;">📶</span>
+               <span style="font-size: 11px;">📴</span>
+           </div>
+           <div class="status-right">
+               <span id="currentTime">12:34</span>
+           </div>
+       </div>
+       
+       <!-- ✅ Улучшенная бегущая строка -->
+       <div class="top-marquee" id="topMarquee" onclick="handleMarqueeClick()">
+           <div class="marquee-content" id="marqueeContent">
+               <!-- Текст бегущей строки -->
+           </div>
+       </div>
+       
+       <!-- ✅ Основная область карты -->
+       <div class="card-area" id="cardArea">
+           <!-- Фоновое изображение/видео -->
+           <div class="background-image" id="backgroundImage"></div>
            
-           cardId = getCardIdFromUrl();
-           initializeLanguage();
-           updateTime();
-           loadAndDisplayCard();
+           <!-- Контент поверх -->
+           <div class="card-content" id="cardContent">
+               <div class="card-title" id="cardTitle">🎉 Welcome to CardGift! 🌟</div>
+               <div class="card-subtitle" id="cardSubtitle">Create amazing digital cards with Web3</div>
+               <div class="greeting-text" id="greetingText">This is a demonstration card with Web3 integration and enhanced features.</div>
+           </div>
+       </div>
+       
+       <!-- ✅ Улучшенная нижняя область -->
+       <div class="bottom-area">
+           <!-- CTA секция -->
+           <div class="cta-section" id="ctaSection">
+               <div class="cta-text" id="ctaText">Welcome to CardGift! 🎉</div>
+               <div class="cta-subtitle" id="ctaSubtitle">This is a demo card with Web3 integration.</div>
+           </div>
            
-           // Обновляем время каждую минуту
-           setInterval(updateTime, 60000);
-       });
+           <!-- Кнопка действия -->
+           <button class="action-button" id="actionButton" onclick="handleActionClick()">
+               Get Started
+           </button>
+       </div>
+       
+       <!-- ✅ Улучшенный нижний баннер -->
+       <div class="bottom-banner" id="bottomBanner" onclick="handleBottomBannerClick()">
+           <span id="bottomBannerText">🎁 CardGift - Web3 Digital Cards</span>
+       </div>
+   </div>
 
-       // ===== ВРЕМЯ В СТАТУС БАРЕ =====
-       function updateTime() {
-           const now = new Date();
-           const timeString = now.toLocaleTimeString('ru-RU', { 
-               hour: '2-digit', 
-               minute: '2-digit' 
-           });
-           document.getElementById('currentTime').textContent = timeString;
-       }
-
-       // ===== ЯЗЫКОВЫЕ ФУНКЦИИ =====
-       function changeLanguage(lang) {
-           currentLanguage = lang;
-           localStorage.setItem('cardGift_language', lang);
+   <script>
+       // ✅ ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ С УЛУЧШЕНИЯМИ
+       let cardId = null;
+       let cardData = null;
+       let currentLanguage = 'en';
+       let currentUrl = window.location.href;
+       let viewStartTime = Date.now();
+       let isDemo = false;
+       
+       // ✅ ФУНКЦИЯ ОЧИСТКИ URL С УЛУЧШЕНИЯМИ
+       function cleanUrl(url) {
+           if (!url || typeof url !== 'string') return '';
            
-           document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-           document.getElementById(`lang-${lang}`).classList.add('active');
+           // Декодируем HTML entities
+           let cleanedUrl = url
+               .replace(/&amp;/g, '&')
+               .replace(/&#x2F;/g, '/')
+               .replace(/&lt;/g, '<')
+               .replace(/&gt;/g, '>')
+               .replace(/&quot;/g, '"')
+               .replace(/&#x27;/g, "'");
            
-           updateTexts();
-           console.log('🌍 Язык изменен на:', lang);
-       }
-
-       function initializeLanguage() {
-           const urlParams = new URLSearchParams(window.location.search);
-           const langParam = urlParams.get('lang');
-           const savedLang = localStorage.getItem('cardGift_language');
-           
-           if (langParam && ['en', 'ru', 'ua'].includes(langParam)) {
-               currentLanguage = langParam;
-           } else if (savedLang) {
-               currentLanguage = savedLang;
-           }
-           
-           document.documentElement.lang = currentLanguage;
-           document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-           document.getElementById(`lang-${currentLanguage}`).classList.add('active');
-           
-           updateTexts();
-       }
-
-       function updateTexts() {
-           const t = translations[currentLanguage];
-           
-           document.getElementById('loadingText').textContent = t.loading;
-           document.getElementById('errorTitle').textContent = t.cardNotFound;
-           document.getElementById('errorText').textContent = t.checkLink;
-           document.getElementById('errorButton').textContent = t.createCard;
-           document.getElementById('ctaText').textContent = t.ctaText;
-           document.getElementById('ctaSubtitle').textContent = t.ctaSubtitle;
-           document.getElementById('bottomBannerText').textContent = t.bottomBanner;
-           document.getElementById('actionButton').textContent = t.actionButton;
-       }
-
-       // ===== ПОЛУЧЕНИЕ ID КАРТЫ =====
-       function getCardIdFromUrl() {
-           const urlParams = new URLSearchParams(window.location.search);
-           return urlParams.get('id') || window.location.hash.replace('#', '') || null;
-       }
-
-       // ===== ЗАГРУЗКА И ОТОБРАЖЕНИЕ КАРТЫ =====
-       async function loadAndDisplayCard() {
+           // Проверяем валидность URL
            try {
-               console.log('🔄 Загружаем карту с ID:', cardId);
-               
-               if (!cardId) {
-                   console.log('📝 Нет ID карты, показываем демо');
-                   displayDemoCard();
-                   return;
+               if (cleanedUrl.startsWith('http://') || cleanedUrl.startsWith('https://')) {
+                   new URL(cleanedUrl);
+                   return cleanedUrl;
+               } else if (cleanedUrl.startsWith('/')) {
+                   // Относительный URL
+                   return cleanedUrl;
                }
-               
-               // Поиск карты в localStorage
-               cardData = await findCardData(cardId);
-               
-               if (cardData) {
-                   console.log('✅ Карта найдена:', cardData);
-                   displayCard(cardData);
-               } else {
-                   console.log('🎭 Карта не найдена, показываем демо');
-                   displayDemoCard();
-               }
-               
-           } catch (error) {
-               console.error('❌ Ошибка загрузки:', error);
-               showError();
+           } catch (e) {
+               console.warn('Invalid URL:', cleanedUrl);
            }
+           
+           return '';
        }
+       
+       // ✅ УЛУЧШЕННЫЕ ПЕРЕВОДЫ
+       const translations = {
+           en: {
+               loading: "Loading card...",
+               loadingSubtext: "Powered by CardGift Web3",
+               error: "Error",
+               cardNotFound: "Card not found",
+               checkLink: "Check the link or create a new card",
+               createCard: "Create Card",
+               errorSubtext: "CardGift - Web3 Digital Cards",
+               ctaText: "Welcome to CardGift! 🎉",
+               ctaSubtitle: "This is a demo card with Web3 integration.",
+               bottomBanner: "🎁 CardGift - Web3 Digital Cards",
+               actionButton: "Get Started",
+               marqueeText: "Welcome to CardGift - Create amazing Web3 cards!",
+               demoTitle: "🎉 Welcome to CardGift! 🌟",
+               demoSubtitle: "Create amazing digital cards with Web3",
+               demoText: "This is a demonstration card with Web3 integration and enhanced features.",
+               userLevel: "Level"
+           },
+           ru: {
+               loading: "Загружаем открытку...",
+               loadingSubtext: "Работает на CardGift Web3",
+               error: "Ошибка",
+               cardNotFound: "Открытка не найдена",
+               checkLink: "Проверьте ссылку или создайте новую открытку",
+               createCard: "Создать открытку",
+               errorSubtext: "CardGift - Web3 цифровые открытки",
+               ctaText: "Добро пожаловать в CardGift! 🎉",
+               ctaSubtitle: "Это демонстрационная открытка с Web3 интеграцией.",
+               bottomBanner: "🎁 CardGift - Web3 цифровые открытки",
+               actionButton: "Начать",
+               marqueeText: "Добро пожаловать в CardGift - Создавайте потрясающие Web3 открытки!",
+               demoTitle: "🎉 Добро пожаловать в CardGift! 🌟",
+               demoSubtitle: "Создавайте потрясающие цифровые открытки с Web3",
+               demoText: "Это демонстрационная открытка с Web3 интеграцией и расширенными возможностями.",
+               userLevel: "Уровень"
+           },
+           ua: {
+               loading: "Завантажуємо листівку...",
+               loadingSubtext: "Працює на CardGift Web3",
+               error: "Помилка",
+               cardNotFound: "Листівку не знайдено",
+               checkLink: "Перевірте посилання або створіть нову листівку",
+               createCard: "Створити листівку",
+               errorSubtext: "CardGift - Web3 цифрові листівки",
+               ctaText: "Ласкаво просимо до CardGift! 🎉",
+               ctaSubtitle: "Це демонстраційна листівка з Web3 інтеграцією.",
+               bottomBanner: "🎁 CardGift - Web3 цифрові листівки",
+               actionButton: "Почати",
+               marqueeText: "Ласкаво просимо до CardGift - Створюйте дивовижні Web3 листівки!",
+               demoTitle: "🎉 Ласкаво просимо до CardGift! 🌟",
+               demoSubtitle: "Створюйте дивовижні цифрові листівки з Web3",
+               demoText: "Це демонстраційна листівка з Web3 інтеграцією та розширеними можливостями.",
+               userLevel: "Рівень"
+           }
+       };
 
-       // ===== ПОИСК ДАННЫХ КАРТЫ =====
-      async function findCardData(cardId) {
-          // 1. Прямой поиск по ключу
-          let cardData = localStorage.getItem(`card_${cardId}`);
-          if (cardData) {
-              try {
-                  return JSON.parse(cardData);
-              } catch (e) {
-                  console.warn('Ошибка парсинга прямого ключа');
+      // ✅ УЛУЧШЕННАЯ ИНИЦИАЛИЗАЦИЯ
+      document.addEventListener('DOMContentLoaded', function() {
+          console.log('📱 CardGift Enhanced Card Viewer v3.0 LOADING...');
+          
+          cardId = getCardIdFromUrl();
+          initializeLanguage();
+          updateTime();
+          showUserLevel();
+          loadAndDisplayCard();
+          
+          // Обновляем время каждую минуту
+          setInterval(updateTime, 60000);
+          
+          // Отслеживаем время просмотра
+          trackViewStart();
+      });
+
+      // ✅ УЛУЧШЕННОЕ ВРЕМЯ В СТАТУС БАРЕ
+      function updateTime() {
+          const now = new Date();
+          const timeString = now.toLocaleTimeString(currentLanguage === 'en' ? 'en-US' : 'ru-RU', { 
+              hour: '2-digit', 
+              minute: '2-digit',
+              hour12: false
+          });
+          const timeElement = document.getElementById('currentTime');
+          if (timeElement) {
+              timeElement.textContent = timeString;
+          }
+      }
+
+      // ✅ ПОКАЗ УРОВНЯ ПОЛЬЗОВАТЕЛЯ
+      function showUserLevel() {
+          const userLevel = levelManager.getUserLevel();
+          const levelInfo = levelManager.getLevelInfo(userLevel);
+          const indicator = document.getElementById('userLevelIndicator');
+          
+          if (indicator && userLevel > 0) {
+              indicator.textContent = `${translations[currentLanguage].userLevel} ${levelInfo.name}`;
+              indicator.classList.remove('hidden');
+          }
+      }
+
+      // ✅ УЛУЧШЕННЫЕ ЯЗЫКОВЫЕ ФУНКЦИИ
+      function changeLanguage(lang) {
+          currentLanguage = lang;
+          localStorage.setItem('cardGift_language', lang);
+          
+          document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+          document.getElementById(`lang-${lang}`).classList.add('active');
+          
+          updateTexts();
+          console.log('🌍 Language changed to:', lang);
+          
+          // Уведомление о смене языка
+          cardNotifications.show(
+              `Language changed to ${lang.toUpperCase()}`,
+              'info',
+              2000
+          );
+      }
+
+      function initializeLanguage() {
+          const urlParams = new URLSearchParams(window.location.search);
+          const langParam = urlParams.get('lang');
+          const savedLang = localStorage.getItem('cardGift_language');
+          
+          if (langParam && ['en', 'ru', 'ua'].includes(langParam)) {
+              currentLanguage = langParam;
+          } else if (savedLang && ['en', 'ru', 'ua'].includes(savedLang)) {
+              currentLanguage = savedLang;
+          } else {
+              // Определяем язык браузера
+              const browserLang = navigator.language || navigator.userLanguage;
+              if (browserLang.startsWith('uk')) {
+                  currentLanguage = 'ua';
+              } else if (browserLang.startsWith('ru')) {
+                  currentLanguage = 'ru';
+              } else {
+                  currentLanguage = 'en';
               }
           }
           
-          // 2. Поиск в userCards
-          const userCards = localStorage.getItem('userCards');
-          if (userCards) {
-              try {
+          document.documentElement.lang = currentLanguage;
+          document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+          const activeBtn = document.getElementById(`lang-${currentLanguage}`);
+          if (activeBtn) {
+              activeBtn.classList.add('active');
+          }
+          
+          updateTexts();
+      }
+
+      function updateTexts() {
+          const t = translations[currentLanguage];
+          
+          // Обновляем все текстовые элементы
+          const textElements = {
+              'loadingText': t.loading,
+              'errorTitle': t.cardNotFound,
+              'errorText': t.checkLink,
+              'errorButton': t.createCard,
+              'ctaText': t.ctaText,
+              'ctaSubtitle': t.ctaSubtitle,
+              'bottomBannerText': t.bottomBanner,
+              'actionButton': t.actionButton
+          };
+
+          Object.keys(textElements).forEach(elementId => {
+              const element = document.getElementById(elementId);
+              if (element) {
+                  element.textContent = textElements[elementId];
+              }
+          });
+
+          // Обновляем title страницы
+          document.getElementById('pageTitle').textContent = `CardGift - ${t.cardNotFound}`;
+      }
+
+      // ✅ ПОЛУЧЕНИЕ ID КАРТЫ С УЛУЧШЕНИЯМИ
+      function getCardIdFromUrl() {
+          const urlParams = new URLSearchParams(window.location.search);
+          let id = urlParams.get('id') || window.location.hash.replace('#', '');
+          
+          // Очищаем ID от лишних символов
+          if (id) {
+              id = id.replace(/[^a-zA-Z0-9_-]/g, '');
+          }
+          
+          console.log('🔍 Card ID from URL:', id || 'none');
+          return id || null;
+      }
+
+      // ✅ УЛУЧШЕННАЯ ЗАГРУЗКА И ОТОБРАЖЕНИЕ КАРТЫ
+      async function loadAndDisplayCard() {
+          try {
+              console.log('🔄 Loading card with ID:', cardId);
+              
+              if (!cardId) {
+                  console.log('📝 No card ID, showing enhanced demo');
+                  displayDemoCard();
+                  return;
+              }
+              
+              // Поиск карты в различных источниках
+              cardData = await findCardData(cardId);
+              
+              if (cardData) {
+                  console.log('✅ Card found:', cardData);
+                  displayCard(cardData);
+              } else {
+                  console.log('🎭 Card not found, showing enhanced demo');
+                  displayDemoCard();
+              }
+              
+          } catch (error) {
+              console.error('❌ Loading error:', error);
+              showError();
+          }
+      }
+
+      // ✅ УЛУЧШЕННЫЙ ПОИСК ДАННЫХ КАРТЫ
+      async function findCardData(cardId) {
+          console.log('🔍 Searching for card:', cardId);
+          
+          // 1. Пробуем API сервера
+          try {
+              const response = await fetch(`/api/card/${cardId}`, {
+                  method: 'GET',
+                  headers: {
+                      'Accept': 'application/json',
+                      'Cache-Control': 'no-cache'
+                  }
+              });
+              
+              if (response.ok) {
+                  const result = await response.json();
+                  if (result.success && result.data) {
+                      console.log('✅ Card found on server:', cardId);
+                      trackEvent('card_loaded_from_server', { cardId });
+                      return result.data;
+                  }
+              }
+          } catch (error) {
+              console.warn('⚠️ Server load error:', error);
+          }
+
+          // 2. Fallback API endpoint
+          try {
+              const response = await fetch(`/api/save-card?id=${cardId}`);
+              if (response.ok) {
+                  const result = await response.json();
+                  if (result.success && result.data) {
+                      console.log('✅ Card found via fallback API:', cardId);
+                      trackEvent('card_loaded_from_fallback', { cardId });
+                      return result.data;
+                  }
+              }
+          } catch (error) {
+              console.warn('⚠️ Fallback API error:', error);
+          }
+          
+          // 3. localStorage поиск
+          try {
+              let cardData = localStorage.getItem(`card_${cardId}`);
+              if (cardData) {
+                  const parsed = JSON.parse(cardData);
+                  console.log('✅ Card found in localStorage:', cardId);
+                  trackEvent('card_loaded_from_local', { cardId });
+                  return parsed;
+              }
+          } catch (error) {
+              console.warn('⚠️ localStorage error:', error);
+          }
+          
+          // 4. Поиск в старой системе userCards
+          try {
+              const userCards = localStorage.getItem('userCards');
+              if (userCards) {
                   const userCardsData = JSON.parse(userCards);
                   for (const userId in userCardsData) {
                       const cards = userCardsData[userId] || [];
                       const found = cards.find(card => card.cardId === cardId);
-                      if (found) return found;
+                      if (found) {
+                          console.log('✅ Card found in legacy userCards:', cardId);
+                          trackEvent('card_loaded_from_legacy', { cardId });
+                          return found;
+                      }
                   }
-              } catch (e) {
-                  console.warn('Ошибка поиска в userCards');
               }
+          } catch (error) {
+              console.warn('⚠️ Legacy search error:', error);
           }
           
-          // 3. Поиск в allCards
-          const allCards = localStorage.getItem('allCards');
-          if (allCards) {
-              try {
-                  const allCardsData = JSON.parse(allCards);
-                  const found = allCardsData.find(card => card.cardId === cardId);
-                  if (found) return found;
-              } catch (e) {
-                  console.warn('Ошибка поиска в allCards');
-              }
-          }
-          
+          console.log('❌ Card not found anywhere:', cardId);
+          trackEvent('card_not_found', { cardId });
           return null;
       }
 
-      // ===== ДЕМО КАРТА =====
+      // ✅ УЛУЧШЕННАЯ ДЕМО КАРТА
       function displayDemoCard() {
-   const demoStyles = ['classic', 'sunset', 'ocean', 'space', 'neon'];
-   const randomStyle = demoStyles[Math.floor(Math.random() * demoStyles.length)];
-   
-   cardData = {
-       cardId: 'demo_card',
-       userId: 'demo_user',
-       greeting: currentLanguage === 'en' ? 
-           "🎉 Welcome to CardGift! 🌟\nCreate amazing digital cards\nShare joy with modern technology" :
-           currentLanguage === 'ru' ? 
-           "🎉 С Новым Годом! 🌟\nПусть наступающий год будет полон волшебства\nЦифровые поздравительные открытки" :
-           "🎉 З Новим Роком! 🌟\nНехай наступний рік буде повний чарівності\nЦифрові привітальні листівки",
-       style: randomStyle,
-       backgroundImage: null,
-       music: null,
-       fontColor: '#FFFFFF',
-       fontSize: 'medium',
-       shareLink: currentUrl,
-       createdAt: new Date().toISOString(),
-       lastModified: new Date().toISOString(),
-       views: 0,
-       isDemo: true,
-       // CTA настройки
-       ctaEnabled: true,
-       ctaTitle: translations[currentLanguage].ctaText,
-       ctaSubtitle: translations[currentLanguage].ctaSubtitle,
-       ctaButton: translations[currentLanguage].actionButton,
-       ctaUrl: '',
-       ctaTimer: 3,
-       // Бегущая строка
-       marqueeEnabled: true,
-       marqueeText: translations[currentLanguage].marqueeText,
-       marqueeUrl: '/registration.html',
-       marqueeTimer: 5,
-       // Нижний баннер
-       bannerEnabled: true,
-       bannerHtml: '<div>🎁 CardGift Demo</div>',
-       bannerUrl: '/registration.html'
-   };
-   
-   displayCard(cardData);
-}
-
-      // ===== ОТОБРАЖЕНИЕ КАРТЫ - ИСПРАВЛЕНИЕ ТЕКСТА =====
-      async function displayCard(data) {
-         setTimeout(async () => {
-             document.getElementById('loadingScreen').classList.add('hidden');
-             document.getElementById('mainCard').classList.remove('hidden');
-      	   
-      	   // ✅ ОБНОВЛЯЕМ META-ТЕГИ ДЛЯ ПРЕВЬЮ С РЕАЛЬНЫМИ ДАННЫМИ
-      if (data.greeting && data.greeting.trim()) {
-          const greetingLines = data.greeting.split('\n').filter(line => line.trim());
+          isDemo = true;
+          const demoStyles = ['classic', 'sunset', 'ocean', 'space', 'neon'];
+          const randomStyle = demoStyles[Math.floor(Math.random() * demoStyles.length)];
           
-          if (greetingLines.length > 0) {
-              const title = greetingLines[0] || 'Поздравительная открытка';
-              const description = greetingLines.length > 1 ? greetingLines[1] : 'Персональная открытка от CardGift';
+          const t = translations[currentLanguage];
+          
+          cardData = {
+              cardId: 'demo_card_' + Date.now(),
+              userId: 'demo_user',
+              userLevel: 0,
+              greeting: `${t.demoTitle}\n${t.demoSubtitle}\n${t.demoText}`,
+              style: randomStyle,
+              backgroundImage: null,
+              mediaType: null,
+              mediaUrl: null,
+              videoUrl: null,
+              fontColor: '#FFFFFF',
+              fontSize: 'medium',
+              shareLink: currentUrl,
+              createdAt: new Date().toISOString(),
+              lastModified: new Date().toISOString(),
+              views: Math.floor(Math.random() * 1000) + 1,
+              isDemo: true,
+              language: currentLanguage,
               
-              // Обновляем title страницы
-              document.title = title + ' - CardGift';
+              // CTA настройки
+              ctaEnabled: true,
+              ctaTitle: t.ctaText,
+              ctaSubtitle: t.ctaSubtitle,
+              ctaButton: t.actionButton,
+              ctaUrl: '/generator.html',
+              ctaTimer: 3,
               
-              // Обновляем Open Graph
-              document.getElementById('ogTitle').content = title;
-              document.getElementById('ogDescription').content = description;
-              document.getElementById('ogUrl').content = window.location.href;
+              // Бегущая строка
+              marqueeEnabled: true,
+              marqueeText: t.marqueeText,
+              marqueeUrl: '/generator.html',
+              marqueeTimer: 4,
               
-              // Обновляем Twitter Card
-              document.getElementById('twitterTitle').content = title;
-              document.getElementById('twitterDescription').content = description;
+              // Нижний баннер
+              bannerEnabled: true,
+              bannerHtml: t.bottomBanner,
+              bannerUrl: '/generator.html',
+              bannerTimer: 6
+          };
+          
+          console.log('🎭 Displaying enhanced demo card with style:', randomStyle);
+          displayCard(cardData);
+          
+          // Показываем уведомление о демо
+          setTimeout(() => {
+              cardNotifications.show(
+                  currentLanguage === 'en' ? '🎭 This is a demo card. Create your own!' :
+                  currentLanguage === 'ru' ? '🎭 Это демо открытка. Создайте свою!' :
+                  '🎭 Це демо листівка. Створіть свою!',
+                  'info',
+                  4000
+              );
+          }, 2000);
+      }
+
+      // ✅ УЛУЧШЕННАЯ ФУНКЦИЯ ОТОБРАЖЕНИЯ КАРТЫ
+      async function displayCard(data) {
+          setTimeout(async () => {
+              // Скрываем экран загрузки
+              document.getElementById('loadingScreen').classList.add('hidden');
+              document.getElementById('mainCard').classList.remove('hidden');
+        	   
+        	   // ✅ ОБНОВЛЯЕМ META-ТЕГИ С УЛУЧШЕНИЯМИ
+              updateMetaTags(data);
+        	   
+              // ✅ Применяем стиль фона
+              const cardArea = document.getElementById('cardArea');
+              if (data.style) {
+                  cardArea.className = `card-area style-${data.style}`;
+                  console.log('🎨 Applied style:', data.style);
+              }
               
-              console.log('✅ Meta-теги обновлены:', { title, description });
+              // ✅ УЛУЧШЕННАЯ ОБРАБОТКА МЕДИА КОНТЕНТА
+              await handleMediaContent(data);
+              
+              // ✅ УЛУЧШЕННАЯ ОБРАБОТКА ТЕКСТА
+              handleTextContent(data);
+              
+              // ✅ ОБРАБОТКА CTA ЭЛЕМЕНТОВ
+              handleCTAElements(data);
+              
+              // ✅ ОБРАБОТКА ДОПОЛНИТЕЛЬНЫХ ЭЛЕМЕНТОВ
+              handleAdditionalElements(data);
+              
+              // ✅ Увеличиваем счетчик просмотров
+              incrementViews(data);
+              
+              // ✅ Отслеживаем событие
+              trackEvent('card_displayed', {
+                  cardId: data.cardId,
+                  style: data.style,
+                  hasVideo: !!(data.videoUrl || (data.mediaType === 'video')),
+                  hasImage: !!(data.backgroundImage || data.mediaUrl),
+                  isDemo: data.isDemo || false
+              });
+              
+              console.log('✅ Card displayed successfully');
+              
+          }, 1500);
+      }
+
+      // ✅ ОБНОВЛЕНИЕ МЕТА-ТЕГОВ
+      function updateMetaTags(data) {
+          if (data.greeting && data.greeting.trim()) {
+              const greetingLines = data.greeting.split('\n').filter(line => line.trim());
+              
+              if (greetingLines.length > 0) {
+                  const title = greetingLines[0] || 'CardGift - Digital Card';
+                  const description = greetingLines.length > 1 ? 
+                      greetingLines[1] : 
+                      'Beautiful personalized card created with CardGift Web3 platform';
+                  
+                  // Обновляем title страницы
+                  document.title = `${title} - CardGift`;
+                  document.getElementById('pageTitle').textContent = `${title} - CardGift`;
+                  
+                  // Обновляем Open Graph
+                  document.getElementById('ogTitle').content = title;
+                  document.getElementById('ogDescription').content = description;
+                  document.getElementById('ogUrl').content = window.location.href;
+                  
+                  // Обновляем Twitter Card
+                  document.getElementById('twitterTitle').content = title;
+                  document.getElementById('twitterDescription').content = description;
+                  
+                  console.log('✅ Meta tags updated:', { title, description });
+              }
           }
       }
-       
-       // Применяем стиль фона
-       const cardArea = document.querySelector('.card-area');
-       if (data.style) {
-           cardArea.className = `card-area style-${data.style}`;
-       }
-       
-       // 🎬 ИСПРАВЛЕНО: Поддержка видео + изображений
-if (data.backgroundImage || data.mediaUrl) {
-   const bgElement = document.getElementById('backgroundImage');
-   const mediaUrl = data.backgroundImage || data.mediaUrl;
-   
-   // Проверяем тип медиа
-   if (data.mediaType === 'video' && mediaUrl.startsWith('data:video/')) {
-       // Локальное видео
-const videoElement = document.createElement('video');
-videoElement.src = mediaUrl;
-videoElement.style.cssText = 'width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 2;';
-videoElement.controls = true;
-videoElement.loop = true;
-videoElement.muted = true;
-videoElement.autoplay = true;
-videoElement.playsinline = true;
 
-// Принудительный запуск
-videoElement.addEventListener('loadeddata', () => {
-   videoElement.play().catch(e => {
-       console.log('Autoplay failed');
-   });
-});
+      // ✅ УЛУЧШЕННАЯ ОБРАБОТКА МЕДИА КОНТЕНТА
+      async function handleMediaContent(data) {
+          const bgElement = document.getElementById('backgroundImage');
+          const cardContent = document.getElementById('cardContent');
+          
+          // Сброс состояния
+          bgElement.innerHTML = '';
+          bgElement.style.backgroundImage = 'none';
+          cardContent.classList.remove('has-video');
+          
+          // Обработка локального видео
+          if (data.mediaType === 'video' && data.mediaUrl && data.mediaUrl.startsWith('data:video/')) {
+              console.log('🎬 Processing local video');
+              
+              const videoElement = document.createElement('video');
+              videoElement.src = data.mediaUrl;
+              videoElement.style.cssText = `
+                  width: 100%; 
+                  height: 100%; 
+                  object-fit: cover; 
+                  position: absolute; 
+                  top: 0; 
+                  left: 0; 
+                  z-index: 2;
+              `;
+              videoElement.controls = true;
+              videoElement.loop = true;
+              videoElement.muted = true;
+              videoElement.autoplay = true;
+              videoElement.playsinline = true;
 
-bgElement.innerHTML = '';
-bgElement.appendChild(videoElement);
-bgElement.style.backgroundImage = 'none';
+              videoElement.addEventListener('loadeddata', () => {
+                  videoElement.play().catch(e => console.log('Autoplay failed'));
+              });
 
-// Создаем кнопку звука ОТДЕЛЬНО от bgElement
-setTimeout(() => {
-   const cardArea = document.querySelector('.card-area');
-   const soundButton = document.createElement('button');
-   soundButton.innerHTML = '🔊 Звук';
-   soundButton.id = 'soundBtn';
-   soundButton.style.cssText = 'position: absolute; top: 80px; right: 20px; z-index: 99999; background: #FFD700; color: black; border: 2px solid #FFA500; padding: 8px 12px; border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 12px;';
-   
-   soundButton.onclick = () => {
-       videoElement.muted = false;
-       videoElement.play();
-       soundButton.remove();
-       alert('Звук включен!');
-   };
-   
-   cardArea.appendChild(soundButton);
-}, 500);
-   } else {
-       // Изображение
-       bgElement.style.backgroundImage = `url(${mediaUrl})`;
-       bgElement.style.backgroundSize = 'contain';
-       bgElement.style.backgroundPosition = 'center';
-       bgElement.style.backgroundRepeat = 'no-repeat';
-   }
-}
+              bgElement.appendChild(videoElement);
+              cardContent.classList.add('has-video');
+              
+              // Создаем кнопку звука
+              setTimeout(() => {
+                  createSoundButton(videoElement);
+              }, 500);
+          }
+          // Обработка видео URL (YouTube, TikTok, Instagram)
+          else if (data.videoUrl && data.videoUrl.trim()) {
+              console.log('🎬 Processing video URL:', data.videoUrl);
+              
+              const cleanVideoUrl = cleanUrl(data.videoUrl);
+              if (cleanVideoUrl) {
+                  const videoData = videoProcessor.parseVideoUrl(cleanVideoUrl);
+                  if (videoData.isValid) {
+                      console.log('✅ Valid video data:', videoData);
+                      videoProcessor.createEnhancedVideoElement(videoData, bgElement);
+                      cardContent.classList.add('has-video');
+                  } else {
+                      console.warn('❌ Invalid video URL:', cleanVideoUrl);
+                      showVideoError(bgElement, videoData.error);
+                  }
+              }
+          }
+          // Обработка изображений
+          else if (data.backgroundImage || data.mediaUrl) {
+              const imageUrl = data.backgroundImage || data.mediaUrl;
+              console.log('🖼️ Processing image:', imageUrl);
+              
+              bgElement.style.backgroundImage = `url(${imageUrl})`;
+              bgElement.style.backgroundSize = 'contain';
+              bgElement.style.backgroundPosition = 'center';
+              bgElement.style.backgroundRepeat = 'no-repeat';
+          }
+      }
 
-// 🎬 ИСПРАВЛЕНО: Обработка видео URL
-if (data.videoUrl && data.videoUrl.trim()) {
-   // Декодируем HTML entities
-   let cleanVideoUrl = data.videoUrl
-       .replace(/&#x2F;/g, '/')
-       .replace(/&amp;/g, '&')
-       .replace(/&lt;/g, '<')
-       .replace(/&gt;/g, '>')
-       .replace(/&quot;/g, '"')
-       .replace(/&#x27;/g, "'");
-   
-   console.log('🎬 Обрабатываем видео URL:', cleanVideoUrl);
-   const videoData = videoProcessor.parseVideoUrl(cleanVideoUrl);
-   if (videoData.isValid && videoData.platform === 'youtube') {
-       console.log('✅ YouTube видео валидно:', videoData);
-       const bgElement = document.getElementById('backgroundImage');
-       
-       // ИСПОЛЬЗУЕМ ИСПРАВЛЕННУЮ ФУНКЦИЮ
-       videoProcessor.createEnhancedYouTubeElement(videoData, bgElement);
-       bgElement.style.backgroundImage = 'none';
-   }
-}
+      // ✅ СОЗДАНИЕ КНОПКИ ЗВУКА ДЛЯ ЛОКАЛЬНОГО ВИДЕО
+      function createSoundButton(videoElement) {
+          const cardArea = document.getElementById('cardArea');
+          const soundButton = document.createElement('button');
+          soundButton.innerHTML = '🔊 Sound';
+          soundButton.className = 'sound-control-btn';
+          soundButton.id = 'localVideoSoundBtn';
+          
+          soundButton.onclick = () => {
+              videoElement.muted = false;
+              videoElement.play();
+              soundButton.innerHTML = '🔊 ON';
+              soundButton.style.background = 'rgba(76, 175, 80, 0.8)';
+              soundButton.style.borderColor = '#4CAF50';
+              
+              setTimeout(() => {
+                  soundButton.style.opacity = '0';
+                  setTimeout(() => soundButton.remove(), 300);
+              }, 2000);
+              
+              cardNotifications.show('🔊 Sound enabled!', 'success', 2000);
+          };
+          
+          cardArea.appendChild(soundButton);
+      }
 
-// ИСПРАВЛЕНИЕ: Правильный парсинг БЕЗ принудительных текстов
-let title = '';
-let subtitle = '';
-let mainText = '';
+      // ✅ ПОКАЗ ОШИБКИ ВИДЕО
+      function showVideoError(container, message) {
+          container.innerHTML = `
+              <div style="
+                  position: absolute;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                  background: rgba(255, 68, 68, 0.9);
+                  color: white;
+                  padding: 20px;
+                  border-radius: 15px;
+                  text-align: center;
+                  z-index: 10;
+                  font-weight: bold;
+                  max-width: 80%;
+                  backdrop-filter: blur(10px);
+              ">
+                  <div style="font-size: 32px; margin-bottom: 10px;">❌</div>
+                  <div>${message || 'Video loading error'}</div>
+              </div>
+          `;
+      }
 
-if (data.greeting && data.greeting.trim()) {
-   const greetingLines = data.greeting.split('\n').filter(line => line.trim());
-   
-   if (greetingLines.length > 0) {
-       title = greetingLines[0];
-       if (greetingLines.length > 1) {
-           subtitle = greetingLines[1];
-       }
-       if (greetingLines.length > 2) {
-           mainText = greetingLines.slice(2).join('\n');
-       }
-   }
-}
-       // Пустые строки если нет контента - НЕ добавляем fallback тексты
-title = title || '';
-subtitle = subtitle || '';
-mainText = mainText || '';
-       
-       // Устанавливаем тексты (скрываем если есть видео)
-if ((data.videoUrl && data.videoUrl.trim()) || (data.mediaType === 'video' && data.mediaUrl)) {
-   // Если есть любое видео - скрываем весь текст
-   document.getElementById('cardTitle').style.display = 'none';
-   document.getElementById('cardSubtitle').style.display = 'none';
-   document.getElementById('greetingText').style.display = 'none';
-} else {
-   // Если нет видео - показываем тексты
-   document.getElementById('cardTitle').textContent = title;
-   document.getElementById('cardSubtitle').textContent = subtitle;
-   document.getElementById('greetingText').textContent = mainText;
-   document.getElementById('cardTitle').style.display = 'block';
-   document.getElementById('cardSubtitle').style.display = 'block';
-   document.getElementById('greetingText').style.display = 'block';
-}
-       
-       // CTA секция и кнопка
-       if (data.ctaEnabled && data.ctaTitle && data.ctaButton) {
-           document.getElementById('ctaText').textContent = data.ctaTitle;
-           document.getElementById('ctaSubtitle').textContent = data.ctaSubtitle || '';
-           document.getElementById('actionButton').textContent = data.ctaButton;
-           
-           const buttonDelay = (data.ctaTimer || 3) * 1000;
-           setTimeout(() => {
-               document.getElementById('ctaSection').classList.add('show');
-               document.getElementById('actionButton').classList.add('show');
-               console.log('✅ CTA показан через', data.ctaTimer, 'сек');
-           }, buttonDelay);
-       } else {
-           document.getElementById('ctaSection').classList.remove('show');
-           document.getElementById('actionButton').classList.remove('show');
-       }
-       
-       // Бегущая строка вверху
-       if (data.marqueeEnabled && data.marqueeText) {
-           document.getElementById('marqueeContent').textContent = data.marqueeText;
-           const marqueeDelay = (data.marqueeTimer || 5) * 1000;
-           setTimeout(() => {
-               document.getElementById('topMarquee').classList.add('show');
-               console.log('✅ Бегущая строка показана вверху через', data.marqueeTimer, 'сек');
-           }, marqueeDelay);
-       } else {
-           document.getElementById('topMarquee').classList.remove('show');
-       }
-       
-       // Нижний баннер
-       if (data.bannerEnabled && (data.bannerHtml || data.bannerUrl)) {
-           const bannerDelay = (data.bannerTimer || 8) * 1000;
-           setTimeout(() => {
-               document.getElementById('bottomBanner').classList.add('show');
-               if (data.bannerHtml) {
-                   document.getElementById('bottomBannerText').innerHTML = data.bannerHtml;
-               }
-               console.log('✅ Нижний баннер показан через', data.bannerTimer || 8, 'сек');
-           }, bannerDelay);
-       } else {
-           document.getElementById('bottomBanner').classList.remove('show');
-       }
-       
-       // Увеличиваем счетчик просмотров
-       incrementViews(data);
-       
-       console.log('✅ Карта отображена успешно');
-       
-   }, 1500);
-}
+      // ✅ ОБРАБОТКА ТЕКСТОВОГО КОНТЕНТА
+      function handleTextContent(data) {
+          let title = '';
+          let subtitle = '';
+          let mainText = '';
 
-      // ===== СЧЕТЧИК ПРОСМОТРОВ =====
+          if (data.greeting && data.greeting.trim()) {
+              const greetingLines = data.greeting.split('\n').filter(line => line.trim());
+              
+              if (greetingLines.length > 0) {
+                  title = greetingLines[0];
+                  if (greetingLines.length > 1) {
+                      subtitle = greetingLines[1];
+                  }
+                  if (greetingLines.length > 2) {
+                      mainText = greetingLines.slice(2).join('\n');
+                  }
+              }
+          }
+
+          // Проверяем наличие видео для скрытия текста
+          const hasVideo = (data.videoUrl && data.videoUrl.trim()) || 
+                          (data.mediaType === 'video' && data.mediaUrl);
+          
+          const titleElement = document.getElementById('cardTitle');
+          const subtitleElement = document.getElementById('cardSubtitle');
+          const textElement = document.getElementById('greetingText');
+
+          if (hasVideo) {
+              // Скрываем весь текст если есть видео
+              titleElement.style.display = 'none';
+              subtitleElement.style.display = 'none';
+              textElement.style.display = 'none';
+          } else {
+              // Показываем тексты
+              titleElement.textContent = title;
+              titleElement.style.display = title ? 'block' : 'none';
+              
+              subtitleElement.textContent = subtitle;
+              subtitleElement.style.display = subtitle ? 'block' : 'none';
+              
+              textElement.textContent = mainText;
+              textElement.style.display = mainText ? 'block' : 'none';
+          }
+      }
+
+      // ✅ ОБРАБОТКА CTA ЭЛЕМЕНТОВ
+      function handleCTAElements(data) {
+          const ctaSection = document.getElementById('ctaSection');
+          const actionButton = document.getElementById('actionButton');
+          
+          if (data.ctaEnabled && data.ctaTitle && data.ctaButton) {
+              document.getElementById('ctaText').textContent = data.ctaTitle;
+              document.getElementById('ctaSubtitle').textContent = data.ctaSubtitle || '';
+              actionButton.textContent = data.ctaButton;
+              
+              const buttonDelay = (data.ctaTimer || 3) * 1000;
+              setTimeout(() => {
+                  ctaSection.classList.add('show');
+                  actionButton.classList.add('show');
+                  console.log('✅ CTA shown after', data.ctaTimer, 'seconds');
+                  
+                  trackEvent('cta_shown', {
+                      cardId: data.cardId,
+                      delay: data.ctaTimer
+                  });
+              }, buttonDelay);
+          } else {
+              ctaSection.classList.remove('show');
+              actionButton.classList.remove('show');
+          }
+      }
+
+      // ✅ ОБРАБОТКА ДОПОЛНИТЕЛЬНЫХ ЭЛЕМЕНТОВ
+      function handleAdditionalElements(data) {
+          // Бегущая строка
+          const topMarquee = document.getElementById('topMarquee');
+          if (data.marqueeEnabled && data.marqueeText) {
+              document.getElementById('marqueeContent').textContent = data.marqueeText;
+              const marqueeDelay = (data.marqueeTimer || 5) * 1000;
+              setTimeout(() => {
+                  topMarquee.classList.add('show');
+                  console.log('✅ Marquee shown after', data.marqueeTimer, 'seconds');
+                  
+                  trackEvent('marquee_shown', {
+                      cardId: data.cardId,
+                      delay: data.marqueeTimer
+                  });
+              }, marqueeDelay);
+          } else {
+              topMarquee.classList.remove('show');
+          }
+          
+          // Нижний баннер
+          const bottomBanner = document.getElementById('bottomBanner');
+          if (data.bannerEnabled && (data.bannerHtml || data.bannerUrl)) {
+              const bannerDelay = (data.bannerTimer || 8) * 1000;
+              setTimeout(() => {
+                  bottomBanner.classList.add('show');
+                  if (data.bannerHtml) {
+                      document.getElementById('bottomBannerText').innerHTML = data.bannerHtml;
+                  }
+                  console.log('✅ Bottom banner shown after', data.bannerTimer || 8, 'seconds');
+                  
+                  trackEvent('banner_shown', {
+                      cardId: data.cardId,
+                      delay: data.bannerTimer || 8
+                  });
+              }, bannerDelay);
+          } else {
+              bottomBanner.classList.remove('show');
+          }
+      }
+
+      // ✅ УЛУЧШЕННЫЙ СЧЕТЧИК ПРОСМОТРОВ
       function incrementViews(data) {
           if (data.isDemo) return;
           
           try {
               data.views = (data.views || 0) + 1;
               data.lastViewed = new Date().toISOString();
+              data.viewDuration = Date.now() - viewStartTime;
+              
+              // Сохраняем обновленные данные
               localStorage.setItem(`card_${data.cardId}`, JSON.stringify(data));
-              console.log('📊 Просмотр засчитан:', data.views);
+              
+              console.log('📊 View counted:', data.views);
+              
+              trackEvent('view_counted', {
+                  cardId: data.cardId,
+                  views: data.views,
+                  duration: data.viewDuration
+              });
           } catch (error) {
-              console.warn('⚠️ Ошибка обновления просмотров:', error);
+              console.warn('⚠️ Error updating views:', error);
           }
       }
 
-      // ===== ОБРАБОТЧИКИ СОБЫТИЙ =====
+      // ✅ УЛУЧШЕННЫЕ ОБРАБОТЧИКИ СОБЫТИЙ
       
-      // ИСПРАВЛЕНИЕ: Обработчик клика по бегущей строке вверху
       function handleMarqueeClick() {
-          console.log('🎯 Клик по бегущей строке');
+          console.log('🎯 Marquee clicked');
+          
+          trackEvent('marquee_clicked', {
+              cardId: cardData?.cardId || 'demo'
+          });
           
           if (cardData && cardData.marqueeUrl && cardData.marqueeUrl.trim()) {
               const cleanedUrl = cleanUrl(cardData.marqueeUrl);
               if (cleanedUrl) {
                   window.open(cleanedUrl, '_blank');
               } else {
-                  // Fallback к registration.html
-                  window.open('/registration.html', '_blank');
+                  window.open('/generator.html', '_blank');
               }
           } else {
-              // По умолчанию registration.html
-              window.open('/registration.html', '_blank');
+              window.open('/generator.html', '_blank');
           }
       }
 
-      // ИСПРАВЛЕНИЕ: Обработчик кнопки действия с правильным перенаправлением
       function handleActionClick() {
-          console.log('🎯 Клик по кнопке действия');
+          console.log('🎯 Action button clicked');
+          
+          trackEvent('action_button_clicked', {
+              cardId: cardData?.cardId || 'demo'
+          });
+          
+          // Показываем уведомление
+          cardNotifications.show(
+              currentLanguage === 'en' ? '🚀 Redirecting to CardGift...' :
+              currentLanguage === 'ru' ? '🚀 Переход в CardGift...' :
+              '🚀 Перехід до CardGift...',
+              'info',
+              2000
+          );
           
           if (cardData && cardData.ctaUrl && cardData.ctaUrl.trim()) {
               const cleanedUrl = cleanUrl(cardData.ctaUrl);
               if (cleanedUrl) {
-                  window.open(cleanedUrl, '_blank');
+                  setTimeout(() => window.open(cleanedUrl, '_blank'), 500);
               } else {
-                  // Fallback к registration.html
-                  window.open('/registration.html', '_blank');
+                  setTimeout(() => window.open('/generator.html', '_blank'), 500);
               }
           } else {
-              // По умолчанию registration.html
-              window.open('/registration.html', '_blank');
+              setTimeout(() => window.open('/generator.html', '_blank'), 500);
           }
       }
 
       function handleBottomBannerClick() {
-          console.log('🎯 Клик по нижнему баннеру');
+          console.log('🎯 Bottom banner clicked');
+          
+          trackEvent('banner_clicked', {
+              cardId: cardData?.cardId || 'demo'
+          });
           
           if (cardData && cardData.bannerUrl && cardData.bannerUrl.trim()) {
               const cleanedUrl = cleanUrl(cardData.bannerUrl);
               if (cleanedUrl) {
                   window.open(cleanedUrl, '_blank');
               } else {
-                  // Fallback к registration.html
-                  window.open('/registration.html', '_blank');
+                  window.open('/generator.html', '_blank');
               }
           } else {
-              // По умолчанию registration.html
-              window.open('/registration.html', '_blank');
+              window.open('/generator.html', '_blank');
           }
       }
 
-      // ===== ПОКАЗ ОШИБКИ =====
+      // ✅ ПОКАЗ ОШИБКИ С УЛУЧШЕНИЯМИ
       function showError() {
           document.getElementById('loadingScreen').classList.add('hidden');
           document.getElementById('errorScreen').classList.remove('hidden');
+          
+          trackEvent('error_shown', {
+              cardId: cardId || 'none',
+              url: currentUrl
+          });
       }
 
-      // ===== WEB3 ИНТЕГРАЦИЯ =====
+      // ✅ ОТСЛЕЖИВАНИЕ НАЧАЛА ПРОСМОТРА
+      function trackViewStart() {
+          viewStartTime = Date.now();
+          trackEvent('view_started', {
+              cardId: cardId || 'demo',
+              language: currentLanguage,
+              userAgent: navigator.userAgent,
+              referrer: document.referrer
+          });
+      }
+
+      // ✅ WEB3 ИНТЕГРАЦИЯ С УЛУЧШЕНИЯМИ
       async function initWeb3() {
           if (typeof window.ethereum !== 'undefined') {
-              console.log('🔗 MetaMask обнаружен');
+              console.log('🔗 Web3 wallet detected');
               
               try {
-                  const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                  console.log('✅ Подключен к MetaMask:', accounts[0]);
-                  return accounts[0];
+                  // Проверяем подключение без запроса разрешений
+                  const accounts = await window.ethereum.request({ 
+                      method: 'eth_accounts' 
+                  });
+                  
+                  if (accounts.length > 0) {
+                      console.log('✅ Wallet already connected:', accounts[0]);
+                      
+                      // Проверяем сеть
+                      const chainId = await window.ethereum.request({ 
+                          method: 'eth_chainId' 
+                      });
+                      const currentChainId = parseInt(chainId, 16);
+                      
+                      if (currentChainId === 204) {
+                          cardNotifications.show('✅ Connected to opBNB', 'success', 3000);
+                      } else {
+                          cardNotifications.show('⚠️ Switch to opBNB network', 'warning', 4000);
+                      }
+                      
+                      return accounts[0];
+                  }
               } catch (error) {
-                  console.error('❌ Ошибка подключения MetaMask:', error);
-                  return null;
+                  console.warn('⚠️ Web3 check error:', error);
               }
-          } else {
-              console.warn('⚠️ MetaMask не установлен');
-              return null;
           }
+          
+          return null;
       }
 
-      // ===== ПОДЕЛИТЬСЯ КАРТОЙ =====
+      // ✅ УЛУЧШЕННАЯ ФУНКЦИЯ ШЕРИНГА
       function shareCard() {
+          const title = document.getElementById('cardTitle').textContent || 'CardGift Card';
+          const text = document.getElementById('greetingText').textContent || 'Check out this card!';
+          
+          trackEvent('share_attempted', {
+              cardId: cardData?.cardId || 'demo',
+              method: navigator.share ? 'native' : 'clipboard'
+          });
+          
           if (navigator.share) {
               navigator.share({
-                  title: document.getElementById('cardTitle').textContent,
-                  text: document.getElementById('greetingText').textContent,
+                  title: title,
+                  text: text,
                   url: currentUrl,
+              }).then(() => {
+                  cardNotifications.show('📱 Shared successfully!', 'success', 3000);
+                  trackEvent('share_completed', { method: 'native' });
+              }).catch((error) => {
+                  console.log('Share cancelled or failed:', error);
               });
           } else {
               // Fallback - копирование в буфер
-              navigator.clipboard.writeText(currentUrl).then(() => {
-                  alert('📋 Ссылка скопирована в буфер обмена!');
-              });
+              const shareText = `${title}\n${text}\n${currentUrl}`;
+              
+              if (navigator.clipboard) {
+                  navigator.clipboard.writeText(shareText).then(() => {
+                      cardNotifications.show('📋 Link copied to clipboard!', 'success', 3000);
+                      trackEvent('share_completed', { method: 'clipboard' });
+                  });
+              } else {
+                  // Старый метод копирования
+                  const textArea = document.createElement('textarea');
+                  textArea.value = shareText;
+                  document.body.appendChild(textArea);
+                  textArea.select();
+                  document.execCommand('copy');
+                  document.body.removeChild(textArea);
+                  
+                  cardNotifications.show('📋 Link copied!', 'success', 3000);
+                  trackEvent('share_completed', { method: 'legacy_clipboard' });
+              }
           }
       }
 
-      // ===== ГОРЯЧИЕ КЛАВИШИ =====
+      // ✅ УЛУЧШЕННЫЕ ГОРЯЧИЕ КЛАВИШИ
       document.addEventListener('keydown', function(e) {
-          switch(e.key) {
-              case 'Escape':
+          // Предотвращаем действия если пользователь печатает
+          if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+              return;
+          }
+          
+          switch(e.key.toLowerCase()) {
+              case 'escape':
                   // Закрыть любые модальные окна
                   document.querySelectorAll('[style*="position: fixed"]').forEach(el => {
                       if (el.style.zIndex === '10000') {
                           el.remove();
                       }
                   });
+                  trackEvent('escape_pressed');
                   break;
+                  
               case 's':
                   if (e.ctrlKey || e.metaKey) {
                       e.preventDefault();
                       shareCard();
                   }
                   break;
+                  
               case 'r':
                   if (e.ctrlKey || e.metaKey) {
                       e.preventDefault();
                       location.reload();
                   }
                   break;
+                  
+              case 'f':
+                  if (e.ctrlKey || e.metaKey) {
+                      e.preventDefault();
+                      // Переключение в полноэкранный режим
+                      if (!document.fullscreenElement) {
+                          document.documentElement.requestFullscreen();
+                      } else {
+                          document.exitFullscreen();
+                      }
+                  }
+                  break;
+                  
+              case ' ':
+                  // Пауза/воспроизведение видео
+                  const videos = document.querySelectorAll('video');
+                  videos.forEach(video => {
+                      if (video.paused) {
+                          video.play();
+                      } else {
+                          video.pause();
+                      }
+                  });
+                  e.preventDefault();
+                  break;
           }
       });
 
-      // ===== АНАЛИТИКА =====
+      // ✅ УЛУЧШЕННАЯ АНАЛИТИКА
       function trackEvent(eventName, eventData = {}) {
           const analyticsData = {
               event: eventName,
@@ -1391,33 +2264,134 @@ if ((data.videoUrl && data.videoUrl.trim()) || (data.mediaType === 'video' && da
               userAgent: navigator.userAgent,
               language: currentLanguage,
               url: currentUrl,
+              viewportWidth: window.innerWidth,
+              viewportHeight: window.innerHeight,
+              referrer: document.referrer || 'direct',
               ...eventData
           };
           
-          console.log('📊 Событие:', analyticsData);
+          console.log('📊 Event tracked:', analyticsData);
+          
+          // Сохраняем в localStorage для последующей отправки
+          try {
+              const events = JSON.parse(localStorage.getItem('cardGift_analytics') || '[]');
+              events.push(analyticsData);
+              
+              // Оставляем только последние 100 событий
+              if (events.length > 100) {
+                  events.splice(0, events.length - 100);
+              }
+              
+              localStorage.setItem('cardGift_analytics', JSON.stringify(events));
+          } catch (error) {
+              console.warn('Analytics storage error:', error);
+          }
       }
 
-      // ===== ОБРАБОТКА ОШИБОК =====
+      // ✅ ОБРАБОТКА ОШИБОК С УЛУЧШЕНИЯМИ
       window.addEventListener('error', function(e) {
-          console.error('❌ Глобальная ошибка:', e.error);
-          trackEvent('error', {
+          console.error('❌ Global error:', e.error);
+          
+          trackEvent('javascript_error', {
               message: e.message,
               filename: e.filename,
               line: e.lineno,
-              column: e.colno
+              column: e.colno,
+              stack: e.error?.stack
           });
-      });
-
-      // ===== ОТСЛЕЖИВАНИЕ ВИДИМОСТИ =====
-      document.addEventListener('visibilitychange', function() {
-          if (document.hidden) {
-              trackEvent('card_hidden');
-          } else {
-              trackEvent('card_visible');
+          
+          // Показываем пользователю только критические ошибки
+          if (e.message && (e.message.includes('fetch') || e.message.includes('network'))) {
+              cardNotifications.show(
+                  currentLanguage === 'en' ? 'Network error occurred' :
+                  currentLanguage === 'ru' ? 'Произошла ошибка сети' :
+                  'Сталася помилка мережі',
+                  'error',
+                  4000
+              );
           }
       });
 
-      console.log('📱 CardGift Mobile Card Viewer v2.1 загружен');
-  </script>
+      // ✅ ОТСЛЕЖИВАНИЕ ВИДИМОСТИ СТРАНИЦЫ
+      document.addEventListener('visibilitychange', function() {
+          if (document.hidden) {
+              trackEvent('page_hidden', {
+                  viewDuration: Date.now() - viewStartTime
+              });
+          } else {
+              trackEvent('page_visible');
+              viewStartTime = Date.now(); // Сбрасываем счетчик времени
+          }
+      });
+
+      // ✅ ОТСЛЕЖИВАНИЕ СКРОЛЛА (для будущих улучшений)
+      let scrollTrackingThrottle = false;
+      window.addEventListener('scroll', function() {
+          if (!scrollTrackingThrottle) {
+              scrollTrackingThrottle = true;
+              setTimeout(() => {
+                  trackEvent('page_scrolled', {
+                      scrollY: window.scrollY,
+                      scrollPercent: Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100)
+                  });
+                  scrollTrackingThrottle = false;
+              }, 1000);
+          }
+      });
+
+      // ✅ ОЧИСТКА РЕСУРСОВ ПРИ ЗАКРЫТИИ
+      window.addEventListener('beforeunload', function() {
+          trackEvent('page_unload', {
+              totalViewDuration: Date.now() - viewStartTime
+          });
+          
+          // Очищаем временные ресурсы
+          const videos = document.querySelectorAll('video');
+          videos.forEach(video => {
+              video.pause();
+              video.src = '';
+          });
+          
+          console.log('🧹 Resources cleaned up');
+      });
+
+      // ✅ ИНИЦИАЛИЗАЦИЯ WEB3 ПРИ ЗАГРУЗКЕ
+      setTimeout(() => {
+          initWeb3();
+      }, 2000);
+
+      console.log('📱 CardGift Enhanced Card Viewer v3.0 загружен успешно');
+      console.log('💡 Горячие клавиши: Ctrl+S (поделиться), Ctrl+F (полноэкран), Space (пауза видео)');
+      
+      // ✅ ФИНАЛЬНАЯ ОТЛАДОЧНАЯ ИНФОРМАЦИЯ
+      if (window.location.search.includes('debug=true')) {
+          window.cardViewerDebug = {
+              cardData: () => cardData,
+              currentLanguage: () => currentLanguage,
+              trackEvent: trackEvent,
+              showNotification: (msg, type) => cardNotifications.show(msg, type || 'info'),
+              changeLanguage: changeLanguage,
+              reloadCard: loadAndDisplayCard,
+              analytics: () => JSON.parse(localStorage.getItem('cardGift_analytics') || '[]'),
+              clearAnalytics: () => localStorage.removeItem('cardGift_analytics'),
+              version: 'CardGift Card Viewer v3.0',
+              features: [
+                  'Enhanced video support (YouTube, TikTok, Instagram)',
+                  'Multi-level user system integration',
+                  'Advanced analytics tracking',
+                  'Improved notification system',
+                  'Web3 integration with opBNB',
+                  'Better error handling',
+                  'Mobile-first responsive design',
+                  'Multi-language support',
+                  'Keyboard shortcuts',
+                  'Social sharing capabilities'
+              ]
+          };
+          
+          console.log('🐛 Debug mode enabled. Use cardViewerDebug object for debugging.');
+          console.log('Available debug commands:', Object.keys(window.cardViewerDebug));
+      }
+ </script>
 </body>
 </html>
