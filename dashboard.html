@@ -3508,15 +3508,15 @@
              <div class="activation-buttons" id="activationButtonsContainer">
                  <button class="activation-btn" onclick="activateUser(1)" id="activateUserBtn">
                      🔐 <span id="candidateLevel">Кандидат (User)</span><br>
-                     <small>0.0015 opBNB</small>
+                     <small>0.0025 opBNB</small>
                  </button>
                  <button class="activation-btn mini-admin" onclick="activateUser(2)" id="miniAdminBtn">
                      ⚡ <span id="miniAdminLevel">Mini Admin</span><br>
-                     <small>0.0225 opBNB</small>
+                     <small>0.05 opBNB</small>
                  </button>
                  <button class="activation-btn" onclick="activateUser(3)" id="adminBtn">
                      🔥 <span id="adminLevel">Admin</span><br>
-                     <small>0.2145 opBNB</small>
+                     <small>0.15 opBNB</small>
                  </button>
                  <button class="activation-btn super-admin" onclick="activateUser(4)" id="superAdminBtn">
                      🚀 <span id="superAdminLevel">Super Admin</span><br>
@@ -4544,56 +4544,89 @@
 
      // ✅ ФУНКЦИИ WEB3
      async function initWeb3() {
-         try {
-             // Проверяем SafePal (приоритет)
-             if (window.safePal && window.safePal.ethereum) {
-                 console.log('🛡️ SafePal detected');
-                 web3 = new Web3(window.safePal.ethereum);
-                 isWeb3Connected = true;
-                 return;
-             }
-             
-             // Проверяем MetaMask
-             if (window.ethereum) {
-                 console.log('🦊 MetaMask detected');
-                 web3 = new Web3(window.ethereum);
-                 isWeb3Connected = true;
-                 return;
-             }
-             
-             console.log('⚠️ No Web3 wallet detected');
-             isWeb3Connected = false;
-         } catch (error) {
-             console.error('❌ Web3 initialization error:', error);
-             isWeb3Connected = false;
-         }
-     }
+    try {
+        console.log('🔍 Checking for wallets...');
+        
+        // Ждем немного, чтобы расширения загрузились
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Проверяем SafePal (приоритет)
+        if (window.safepal || window.safePal) {
+            console.log('🛡️ SafePal detected');
+            const safepalProvider = window.safepal || window.safePal;
+            if (safepalProvider.ethereum) {
+                web3 = new Web3(safepalProvider.ethereum);
+                isWeb3Connected = true;
+                console.log('✅ SafePal Web3 ready');
+                return;
+            }
+        }
+        
+        // Проверяем обычный ethereum (может быть от SafePal)
+        if (window.ethereum) {
+            console.log('🔗 Ethereum provider detected');
+            // Проверяем, это SafePal или нет
+            if (window.ethereum.isSafePal) {
+                console.log('🛡️ SafePal via ethereum detected');
+            } else {
+                console.log('🦊 Other wallet (MetaMask?) detected');
+            }
+            web3 = new Web3(window.ethereum);
+            isWeb3Connected = true;
+            return;
+        }
+        
+        console.log('⚠️ No Web3 wallet detected');
+        isWeb3Connected = false;
+    } catch (error) {
+        console.error('❌ Web3 initialization error:', error);
+        isWeb3Connected = false;
+    }
+}
 
-     async function connectSafePal() {
-         try {
-             if (!window.safePal || !window.safePal.ethereum) {
-                 showNotification('SafePal wallet not found. Please install SafePal extension.', 'error');
-                 return;
-             }
-
-             showNotification('Connecting to SafePal...', 'info');
-             
-             const accounts = await window.safePal.ethereum.request({ method: 'eth_requestAccounts' });
-             userWalletAddress = accounts[0];
-             web3 = new Web3(window.safePal.ethereum);
-             
-             await checkUserAccess();
-             updateUserInterface();
-             
-             showNotification('SafePal connected successfully!', 'success');
-             console.log('✅ SafePal connected:', userWalletAddress);
-             
-         } catch (error) {
-             console.error('❌ SafePal connection error:', error);
-             showNotification('SafePal connection failed: ' + error.message, 'error');
-         }
-     }
-
+    async function connectSafePal() {
+    try {
+        console.log('🛡️ Attempting SafePal connection...');
+        
+        let provider = null;
+        
+        // Проверяем разные варианты SafePal
+        if (window.safepal && window.safepal.ethereum) {
+            provider = window.safepal.ethereum;
+            console.log('✅ Found window.safepal.ethereum');
+        } else if (window.safePal && window.safePal.ethereum) {
+            provider = window.safePal.ethereum;
+            console.log('✅ Found window.safePal.ethereum');
+        } else if (window.ethereum && window.ethereum.isSafePal) {
+            provider = window.ethereum;
+            console.log('✅ Found SafePal via window.ethereum');
+        } else if (window.ethereum) {
+            provider = window.ethereum;
+            console.log('⚠️ Using fallback ethereum provider');
+        }
+        
+        if (!provider) {
+            showNotification('SafePal wallet not detected. Please refresh the page and try again.', 'error');
+            return;
+        }
+        
+        showNotification('Connecting to SafePal...', 'info');
+        
+        const accounts = await provider.request({ method: 'eth_requestAccounts' });
+        userWalletAddress = accounts[0];
+        web3 = new Web3(provider);
+        
+        await checkUserAccess();
+        updateUserInterface();
+        
+        showNotification('SafePal connected successfully!', 'success');
+        console.log('✅ SafePal connected:', userWalletAddress);
+        
+    } catch (error) {
+        console.error('❌ SafePal connection error:', error);
+        showNotification('Wallet connection failed: ' + error.message, 'error');
+    }
+}
      async function connectMetaMask() {
          try {
              if (!window.ethereum) {
@@ -4620,8 +4653,29 @@
      }
 
      async function connectWalletConnect() {
-         showNotification('WalletConnect integration coming soon!', 'info');
-     }
+    try {
+        showNotification('Connecting via WalletConnect...', 'info');
+        
+        // Проверяем наличие Web3
+        if (typeof window.ethereum !== 'undefined') {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            userWalletAddress = accounts[0];
+            web3 = new Web3(window.ethereum);
+            
+            await checkUserAccess();
+            updateUserInterface();
+            
+            showNotification('Wallet connected successfully!', 'success');
+            console.log('✅ Wallet connected:', userWalletAddress);
+        } else {
+            showNotification('No Web3 wallet found. Please install MetaMask or SafePal.', 'error');
+        }
+        
+    } catch (error) {
+        console.error('❌ WalletConnect error:', error);
+        showNotification('Wallet connection failed: ' + error.message, 'error');
+    }
+}
 
      async function checkUserAccess() {
     try {
@@ -4706,64 +4760,64 @@
      }
 
      function updateMenuAccess() {
-         const menuItems = document.querySelectorAll('.menu-item');
-         
-         menuItems.forEach(item => {
-             const section = item.getAttribute('data-section');
-             
-             // Базовый доступ только к dashboard и wallet
-             if (currentUser.level === 0) {
-                 if (section !== 'wallet' && section !== 'dashboard') {
-                     item.classList.add('locked');
-                 } else {
-                     item.classList.remove('locked');
-                 }
-             }
-             
-             // USER (1) - все разделы, но ограниченный функционал
-             if (currentUser.level >= 1) {
-                 if (['dashboard', 'contacts', 'wallet', 'settings', 'archive'].includes(section)) {
-                     item.classList.remove('locked');
-                 }
-             }
-             
-             // MINI_ADMIN (2) - добавляем CRM и рефералы
-             if (currentUser.level >= 2) {
-                 if (['referrals', 'crm'].includes(section)) {
-                     item.classList.remove('locked');
-                 }
-             }
-             
-             // ADMIN (3) - добавляем блог, рассылки, опросы
-             if (currentUser.level >= 3) {
-                 if (['blog', 'mailings', 'analytics', 'surveys'].includes(section)) {
-                     item.classList.remove('locked');
-                 }
-             }
-             
-             // SUPER_ADMIN (4) - партнерская программа
-             if (currentUser.level >= 4) {
-                 if (section === 'mlm') {
-                     item.classList.remove('locked');
-                 }
-             }
-             
-             // MANAGER (5) и AUTHOR (6) - полный доступ
-             if (currentUser.level >= 5) {
-                 item.classList.remove('locked');
-             }
-             
-             // Соавторы доступны только основателям
-             if (section === 'coauthors') {
-                 const isFounder = FOUNDERS_ADDRESSES.includes(userWalletAddress);
-                 if (isFounder) {
-                     item.classList.remove('locked');
-                 } else {
-                     item.classList.add('locked');
-                 }
-             }
-         });
-     }
+    const menuItems = document.querySelectorAll('.menu-item');
+    
+    menuItems.forEach(item => {
+        const section = item.getAttribute('data-section');
+        
+        // ✅ ПОЛНЫЙ ДОСТУП ДЛЯ АВТОРА И СОАВТОРОВ
+        if (currentUser.level >= 5) { // MANAGER и AUTHOR
+            item.classList.remove('locked');
+            return;
+        }
+        
+        // Ограничения для обычных пользователей
+        if (currentUser.level === 0) {
+            if (section !== 'wallet' && section !== 'dashboard') {
+                item.classList.add('locked');
+            } else {
+                item.classList.remove('locked');
+            }
+        }
+        
+        // USER (1) - базовые функции
+        if (currentUser.level >= 1) {
+            if (['dashboard', 'contacts', 'wallet', 'settings', 'archive'].includes(section)) {
+                item.classList.remove('locked');
+            }
+        }
+        
+        // MINI_ADMIN (2) - добавляем CRM и рефералы
+        if (currentUser.level >= 2) {
+            if (['referrals', 'crm'].includes(section)) {
+                item.classList.remove('locked');
+            }
+        }
+        
+        // ADMIN (3) - добавляем блог, рассылки, опросы
+        if (currentUser.level >= 3) {
+            if (['blog', 'mailings', 'analytics', 'surveys'].includes(section)) {
+                item.classList.remove('locked');
+            }
+        }
+        
+        // SUPER_ADMIN (4) - партнерская программа
+        if (currentUser.level >= 4) {
+            if (section === 'mlm') {
+                item.classList.remove('locked');
+            }
+        }
+        
+        // ✅ УПРАВЛЕНИЕ СОАВТОРАМИ ТОЛЬКО ДЛЯ АВТОРА
+        if (section === 'coauthors') {
+            if (currentUser.level === 6) { // Только AUTHOR
+                item.classList.remove('locked');
+            } else {
+                item.classList.add('locked');
+            }
+        }
+    });
+}
 
      function updateActivationButtons() {
          const buttons = document.querySelectorAll('.activation-btn');
@@ -8020,7 +8074,31 @@
      console.log('🔗 API integrations ready for Telegram, WhatsApp, and Email');
      console.log('📢 Push notification system with level-based limits');
      console.log('📥📤 Import/Export functionality available');
+
+     // ✅ ДИАГНОСТИКА КОШЕЛЬКОВ
+function checkWallets() {
+    console.log('🔍 === WALLET DETECTION REPORT ===');
+    console.log('window.ethereum:', !!window.ethereum);
+    console.log('window.safepal:', !!window.safepal);  
+    console.log('window.safePal:', !!window.safePal);
+    
+    if (window.ethereum) {
+        console.log('ethereum.isSafePal:', window.ethereum.isSafePal);
+        console.log('ethereum.isMetaMask:', window.ethereum.isMetaMask);
+        console.log('ethereum provider info:', window.ethereum);
+    }
+    
+    // Проверяем все возможные объекты
+    console.log('Available window objects:');
+    Object.keys(window).filter(key => key.toLowerCase().includes('safe') || key.toLowerCase().includes('pal') || key.toLowerCase().includes('meta')).forEach(key => {
+        console.log(`  ${key}:`, !!window[key]);
+    });
+    
+    console.log('🔍 === END REPORT ===');
+}
+
+// Запускаем диагностику через 3 секунды после загрузки
+setTimeout(checkWallets, 3000);
  </script>
 </body>
 </html>
-
