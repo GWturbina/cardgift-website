@@ -2304,7 +2304,7 @@ async generatePreviewImage(cardData) {
        // Добавляем брендинг
        this.drawBranding(ctx);
        
-       const imageData = canvas.toDataURL('image/jpeg', 0.9);
+       const imageData = canvas.toDataURL('image/jpeg', 0.5);
        console.log('✅ Превью изображение создано');
        
        return imageData;
@@ -2498,7 +2498,7 @@ generateFallbackPreview(cardData) {
    ctx.fillStyle = '#FFD700';
    ctx.fillText('CardGift - Card Generator', this.canvasWidth / 2, this.canvasHeight / 2 + 60);
    
-   return canvas.toDataURL('image/jpeg');
+   return canvas.toDataURL('image/jpeg', 0.5);
 }
 
 async saveCardWithPreview(cardData) {
@@ -5541,4 +5541,5 @@ console.log(`
 </script>
 </body>
 </html>
+
 
