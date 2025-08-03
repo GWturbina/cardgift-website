@@ -3424,6 +3424,23 @@ async function connectWallet() {
        
        const walletAddress = accounts[0];
        console.log('💼 Wallet connected:', walletAddress);
+
+// ✅ ДОБАВИТЬ ЭТОТ КОД СРАЗУ ПОСЛЕ СТРОКИ ВЫШЕ:
+const AUTHOR_ADDRESS = '0x0099188030174E381E7A7ee36D2783ECC31B6728';
+if (walletAddress && walletAddress.toLowerCase() === AUTHOR_ADDRESS.toLowerCase()) {
+    console.log('🎉 AUTHOR detected - unlocking all features!');
+    currentUser = {
+        userId: 'AUTHOR_009918',
+        level: 6,
+        isActive: true,
+        walletAddress: walletAddress
+    };
+    
+    // Разблокируем архив и все функции
+    document.querySelectorAll('.locked, .disabled').forEach(el => {
+        el.classList.remove('locked', 'disabled');
+    });
+}
        
        // ✅ ПРОВЕРЯЕМ И ПЕРЕКЛЮЧАЕМ НА opBNB
        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
@@ -5524,3 +5541,4 @@ console.log(`
 </script>
 </body>
 </html>
+
