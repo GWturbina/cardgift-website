@@ -3636,48 +3636,56 @@ async function createCard() {
 
    console.log('✅ Memory auto-cleaned successfully');
 }   
-   // ✅ ПРОВЕРЯЕМ СЕТЬ opBNB ПЕРЕД СОЗДАНИЕМ
-   if (window.ethereum) {
-       try {
-           const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-           const currentChainId = parseInt(chainId, 16);
-           
-           if (currentChainId !== 204) {
-               console.log('❌ Wrong network! Current:', currentChainId, 'Need: 204 (opBNB)');
-               
-               try {
-                   await window.ethereum.request({
-                       method: 'wallet_switchEthereumChain',
-                       params: [{ chainId: '0xCC' }] // 204 в hex
-                   });
-                   notificationManager.show('✅ Switched to opBNB!', 'success');
-               } catch (switchError) {
-                   if (switchError.code === 4902) {
-                       await window.ethereum.request({
-                           method: 'wallet_addEthereumChain',
-                           params: [{
-                               chainId: '0xCC',
-                               chainName: 'opBNB Mainnet',
-                               nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
-                               rpcUrls: ['https://opbnb-mainnet-rpc.bnbchain.org'],
-                               blockExplorerUrls: ['https://mainnet.opbnbscan.com/']
-                           }]
-                       });
-                       notificationManager.show('✅ opBNB network added!', 'success');
-                   } else {
-                       notificationManager.show('❌ Switch to opBNB network manually!', 'error');
-                       return;
-                   }
-               }
-           } else {
-               console.log('✅ Already on opBNB network');
-           }
-       } catch (error) {
-           console.error('Network check failed:', error);
-           notificationManager.show('❌ Please switch to opBNB network', 'error');
-           return;
-       }
-   }
+// ✅ ПРОВЕРЯЕМ СЕТЬ opBNB ПЕРЕД СОЗДАНИЕМ
+async function checkOpBNBNetwork() {
+    if (!window.ethereum) {
+        console.warn("❌ MetaMask или другой Web3-провайдер не найден");
+        return;
+    }
+
+    try {
+        const chainIdHex = await window.ethereum.request({ method: 'eth_chainId' });
+        const currentChainId = parseInt(chainIdHex, 16);
+
+        console.log("Chain ID:", currentChainId);
+
+        if (currentChainId !== 204) {
+            console.log('❌ Wrong network! Current:', currentChainId, 'Need: 204 (opBNB)');
+
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0xCC' }] // 204 в hex
+                });
+                notificationManager.show('✅ Switched to opBNB!', 'success');
+            } catch (switchError) {
+                if (switchError.code === 4902) {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: '0xCC',
+                            chainName: 'opBNB Mainnet',
+                            nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+                            rpcUrls: ['https://opbnb-mainnet-rpc.bnbchain.org'],
+                            blockExplorerUrls: ['https://mainnet.opbnbscan.com/']
+                        }]
+                    });
+                    notificationManager.show('✅ opBNB network added!', 'success');
+                } else {
+                    notificationManager.show('❌ Switch to opBNB network manually!', 'error');
+                    return;
+                }
+            }
+        } else {
+            console.log('✅ Already on opBNB network');
+        }
+
+    } catch (error) {
+        console.error('Network check failed:', error);
+        notificationManager.show('❌ Please switch to opBNB network', 'error');
+    }
+}
+
 
    const greetingText = document.getElementById('greetingText').value.trim();
    const videoUrl = document.getElementById('videoUrl').value.trim();
@@ -5621,5 +5629,6 @@ console.log("🎁 CardGift Generator v2.0 ГОТОВ!");
 </script>
 </body>
 </html>
+
 
 
