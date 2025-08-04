@@ -3495,6 +3495,11 @@
                  <button class="wallet-connect-btn" onclick="connectWalletConnect()" id="walletConnectBtn">
                      🔗 WalletConnect
                  </button>
+                 <!-- ТОЛЬКО ОДНА кнопка отключения в самом конце -->
+                 <button class="wallet-connect-btn" onclick="disconnectWallet()" id="disconnectBtn" 
+                         style="background: #FF4444; display: none;">
+                     🚪 Disconnect Wallet
+                 </button>
              </div>
              <div id="walletInfo" style="display: none;">
                  <p><span id="walletAddressLabel">Address:</span> <span id="walletAddress"></span></p>
@@ -8126,6 +8131,7 @@ setTimeout(checkWallets, 3000);
  </script>
 </body>
 </html>
+
 
 
 
