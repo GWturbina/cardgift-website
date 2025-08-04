@@ -3462,8 +3462,7 @@ async function connectWallet() {
            // Разблокируем архив и все функции
            document.querySelectorAll('.locked, .disabled').forEach(el => {
                el.classList.remove('locked', 'disabled');
-           });
-       }       
+           });      
        
        // ✅ ПРОВЕРЯЕМ И ПЕРЕКЛЮЧАЕМ НА opBNB
        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
