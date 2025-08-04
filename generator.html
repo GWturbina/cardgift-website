@@ -10,7 +10,7 @@
              media-src 'self' data: blob: https:;
              connect-src 'self' ws: wss: https:;
              frame-src https://www.youtube.com https://www.youtube-nocookie.com https://www.tiktok.com https://www.instagram.com https://youtube.com https://youtu.be;">
-			   
+         
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title id="pageTitle">CardGift - Digital Card Generator</title>
@@ -3449,29 +3449,21 @@ async function connectWallet() {
        const walletAddress = accounts[0];
        console.log('💼 Wallet connected:', walletAddress);
 
-// ✅ ПОЛНЫЙ ДОСТУП ДЛЯ ВСЕХ
-if (walletAddress) {
-    console.log('💼 Full access granted to all connected wallets!');
-    currentUser = {
-        userId: 'USER_' + walletAddress.substring(2, 8).toUpperCase(),
-        level: 6,
-        isActive: true,
-        walletAddress: walletAddress
-    };
-    
-    // Разблокируем все функции
-    document.querySelectorAll('.locked, .disabled').forEach(el => {
-        el.classList.remove('locked', 'disabled');
-    });
-    
-    // ✅ СОХРАНЯЕМ СОСТОЯНИЕ ПОЛЬЗОВАТЕЛЯ
-    walletState.save({
-        address: walletAddress,
-        userId: currentUser.userId,
-        level: currentUser.level,
-        isActive: currentUser.isActive
-    });
-}
+       
+
+           // ✅ СОХРАНЯЕМ СОСТОЯНИЕ ПОЛЬЗОВАТЕЛЯ (всех уровней)
+           walletState.save({
+               address: walletAddress,
+               userId: currentUser.userId,
+               level: currentUser.level,
+               isActive: currentUser.isActive
+           });
+           
+           // Разблокируем архив и все функции
+           document.querySelectorAll('.locked, .disabled').forEach(el => {
+               el.classList.remove('locked', 'disabled');
+           });
+       }       
        
        // ✅ ПРОВЕРЯЕМ И ПЕРЕКЛЮЧАЕМ НА opBNB
        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
@@ -3598,94 +3590,82 @@ function disconnectWallet() {
         location.reload(); // Перезагружаем страницу
     }
 }
-const walletBtn = document.getElementById('walletConnectBtn');
-if (walletBtn) {
-   walletBtn.style.display = 'none';
-}
 
 // ==================== ✅ СОЗДАНИЕ КАРТЫ С ИСПРАВЛЕННЫМ ПРЕВЬЮ ====================
 
 async function createCard() {
    console.log('🎨 Starting card creation...');
 
-   // ✅ АВТООЧИСТКА ПАМЯТИ ПЕРЕД СОЗДАНИЕМ КАРТЫ
-   console.log('🧹 Auto-cleaning memory before card creation...');
+// ✅ АВТООЧИСТКА ПАМЯТИ ПЕРЕД СОЗДАНИЕМ КАРТЫ
+console.log('🧹 Auto-cleaning memory before card creation...');
 
-   // Очищаем старые превью и большие файлы
-   Object.keys(localStorage).forEach(key => {
-       const item = localStorage.getItem(key);
-       if (item && (
-           key.startsWith('cardPreview_') || 
-           key.startsWith('tempCard_') || 
-           item.length > 50000 // Файлы больше 50KB
-       )) {
-           localStorage.removeItem(key);
+// Очищаем старые превью и большие файлы
+Object.keys(localStorage).forEach(key => {
+    const item = localStorage.getItem(key);
+    if (item && (
+        key.startsWith('cardPreview_') || 
+        key.startsWith('tempCard_') || 
+        item.length > 50000 // Файлы больше 50KB
+    )) {
+        localStorage.removeItem(key);
+    }
+});
+
+// Очищаем canvas
+document.querySelectorAll('canvas').forEach(canvas => {
+    const ctx = canvas.getContext('2d');
+    if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+// Освобождаем blob URLs
+document.querySelectorAll('img[src^="blob:"]').forEach(img => {
+    URL.revokeObjectURL(img.src);
+});
+
+console.log('✅ Memory auto-cleaned successfully');
+   
+   // ✅ ПРОВЕРЯЕМ СЕТЬ opBNB ПЕРЕД СОЗДАНИЕМ
+   if (window.ethereum) {
+       try {
+           const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+           const currentChainId = parseInt(chainId, 16);
+           
+           if (currentChainId !== 204) {
+               console.log('❌ Wrong network! Current:', currentChainId, 'Need: 204 (opBNB)');
+               
+               try {
+                   await window.ethereum.request({
+                       method: 'wallet_switchEthereumChain',
+                       params: [{ chainId: '0xCC' }] // 204 в hex
+                   });
+                   notificationManager.show('✅ Switched to opBNB!', 'success');
+               } catch (switchError) {
+                   if (switchError.code === 4902) {
+                       await window.ethereum.request({
+                           method: 'wallet_addEthereumChain',
+                           params: [{
+                               chainId: '0xCC',
+                               chainName: 'opBNB Mainnet',
+                               nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+                               rpcUrls: ['https://opbnb-mainnet-rpc.bnbchain.org'],
+                               blockExplorerUrls: ['https://mainnet.opbnbscan.com/']
+                           }]
+                       });
+                       notificationManager.show('✅ opBNB network added!', 'success');
+                   } else {
+                       notificationManager.show('❌ Switch to opBNB network manually!', 'error');
+                       return;
+                   }
+               }
+           } else {
+               console.log('✅ Already on opBNB network');
+           }
+       } catch (error) {
+           console.error('Network check failed:', error);
+           notificationManager.show('❌ Please switch to opBNB network', 'error');
+           return;
        }
-   });
-
-   // Очищаем canvas
-   document.querySelectorAll('canvas').forEach(canvas => {
-       const ctx = canvas.getContext('2d');
-       if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-   });
-
-   // Освобождаем blob URLs
-   document.querySelectorAll('img[src^="blob:"]').forEach(img => {
-       URL.revokeObjectURL(img.src);
-   });
-
-   console.log('✅ Memory auto-cleaned successfully');
-}   
-// ✅ ПРОВЕРЯЕМ СЕТЬ opBNB ПЕРЕД СОЗДАНИЕМ
-async function checkOpBNBNetwork() {
-    if (!window.ethereum) {
-        console.warn("❌ MetaMask или другой Web3-провайдер не найден");
-        return;
-    }
-
-    try {
-        const chainIdHex = await window.ethereum.request({ method: 'eth_chainId' });
-        const currentChainId = parseInt(chainIdHex, 16);
-
-        console.log("Chain ID:", currentChainId);
-
-        if (currentChainId !== 204) {
-            console.log('❌ Wrong network! Current:', currentChainId, 'Need: 204 (opBNB)');
-
-            try {
-                await window.ethereum.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: '0xCC' }] // 204 в hex
-                });
-                notificationManager.show('✅ Switched to opBNB!', 'success');
-            } catch (switchError) {
-                if (switchError.code === 4902) {
-                    await window.ethereum.request({
-                        method: 'wallet_addEthereumChain',
-                        params: [{
-                            chainId: '0xCC',
-                            chainName: 'opBNB Mainnet',
-                            nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
-                            rpcUrls: ['https://opbnb-mainnet-rpc.bnbchain.org'],
-                            blockExplorerUrls: ['https://mainnet.opbnbscan.com/']
-                        }]
-                    });
-                    notificationManager.show('✅ opBNB network added!', 'success');
-                } else {
-                    notificationManager.show('❌ Switch to opBNB network manually!', 'error');
-                    return;
-                }
-            }
-        } else {
-            console.log('✅ Already on opBNB network');
-        }
-
-    } catch (error) {
-        console.error('Network check failed:', error);
-        notificationManager.show('❌ Please switch to opBNB network', 'error');
-    }
-}
-
+   }
 
    const greetingText = document.getElementById('greetingText').value.trim();
    const videoUrl = document.getElementById('videoUrl').value.trim();
@@ -5608,7 +5588,10 @@ window.addEventListener('beforeunload', function() {
 
 // ==================== 🎉 ФИНАЛ ====================
 
-console.log("🎁 CardGift Generator v2.0 ГОТОВ!");
+console.log(`
+🎨 ====================================
+🎁 CardGift Generator v2.0 ГОТОВ!
+🎨 ====================================
 
 ✅ Возможности:
   🔗 Web3 интеграция с opBNB
@@ -5629,6 +5612,3 @@ console.log("🎁 CardGift Generator v2.0 ГОТОВ!");
 </script>
 </body>
 </html>
-
-
-
