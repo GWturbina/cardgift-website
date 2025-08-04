@@ -4706,6 +4706,30 @@ if (currentUser.level > 0) {
     }
 }
 
+    // ✅ ФУНКЦИЯ ОТКЛЮЧЕНИЯ КОШЕЛЬКА
+function disconnectWallet() {
+    if (confirm('Disconnect wallet? You will need to reconnect.')) {
+        // Очищаем все данные
+        userWalletAddress = null;
+        web3 = null;
+        currentUser = {
+            userId: 'NOT_CONNECTED',
+            level: 0,
+            isActive: false,
+            walletAddress: null
+        };
+        
+        // Очищаем сохраненное состояние
+        walletState.clear();
+        
+        // Обновляем интерфейс
+        updateUserInterface();
+        updateConnectionStatus();
+        
+        showNotification('Wallet disconnected successfully!', 'success');
+        console.log('🚪 Wallet disconnected');
+    }
+}
      async function checkUserAccess() {
     try {
         if (!userWalletAddress) return;
@@ -8131,6 +8155,7 @@ setTimeout(checkWallets, 3000);
  </script>
 </body>
 </html>
+
 
 
 
