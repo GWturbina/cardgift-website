@@ -3450,31 +3450,26 @@ async function connectWallet() {
        console.log('💼 Wallet connected:', walletAddress);
 
 // ✅ ПОЛНЫЙ ДОСТУП ДЛЯ ВСЕХ
-       if (walletAddress) {
-           console.log('💼 Full access granted to all connected wallets!');
-           currentUser = {
-               userId: 'USER_' + walletAddress.substring(2, 8).toUpperCase(),
-               level: 6,
-               isActive: true,
-               walletAddress: walletAddress
-           };
-           
-           document.querySelectorAll('.locked, .disabled').forEach(el => {
-               el.classList.remove('locked', 'disabled');
-           });
-       }
-	
-	// ✅ СОХРАНЯЕМ СОСТОЯНИЕ ПОЛЬЗОВАТЕЛЯ (всех уровней)
-walletState.save({
-    address: walletAddress,
-    userId: currentUser.userId,
-    level: currentUser.level,
-    isActive: currentUser.isActive
-});
+if (walletAddress) {
+    console.log('💼 Full access granted to all connected wallets!');
+    currentUser = {
+        userId: 'USER_' + walletAddress.substring(2, 8).toUpperCase(),
+        level: 6,
+        isActive: true,
+        walletAddress: walletAddress
+    };
     
-    // Разблокируем архив и все функции
+    // Разблокируем все функции
     document.querySelectorAll('.locked, .disabled').forEach(el => {
         el.classList.remove('locked', 'disabled');
+    });
+    
+    // ✅ СОХРАНЯЕМ СОСТОЯНИЕ ПОЛЬЗОВАТЕЛЯ
+    walletState.save({
+        address: walletAddress,
+        userId: currentUser.userId,
+        level: currentUser.level,
+        isActive: currentUser.isActive
     });
 }
        
@@ -5630,6 +5625,7 @@ console.log(`
 </script>
 </body>
 </html>
+
 
 
 
