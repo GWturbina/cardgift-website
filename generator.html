@@ -3449,16 +3449,20 @@ async function connectWallet() {
        const walletAddress = accounts[0];
        console.log('💼 Wallet connected:', walletAddress);
 
-// ✅ ДОБАВИТЬ ЭТОТ КОД СРАЗУ ПОСЛЕ СТРОКИ ВЫШЕ:
-const AUTHOR_ADDRESS = '0x0099188030174E381E7A7ee36D2783ECC31B6728';
-if (walletAddress && walletAddress.toLowerCase() === AUTHOR_ADDRESS.toLowerCase()) {
-    console.log('🎉 AUTHOR detected - unlocking all features!');
-    currentUser = {
-        userId: 'AUTHOR_009918',
-        level: 6,
-        isActive: true,
-        walletAddress: walletAddress
-    };
+// ✅ ПОЛНЫЙ ДОСТУП ДЛЯ ВСЕХ
+       if (walletAddress) {
+           console.log('💼 Full access granted to all connected wallets!');
+           currentUser = {
+               userId: 'USER_' + walletAddress.substring(2, 8).toUpperCase(),
+               level: 6,
+               isActive: true,
+               walletAddress: walletAddress
+           };
+           
+           document.querySelectorAll('.locked, .disabled').forEach(el => {
+               el.classList.remove('locked', 'disabled');
+           });
+       }
 	
 	// ✅ СОХРАНЯЕМ СОСТОЯНИЕ ПОЛЬЗОВАТЕЛЯ (всех уровней)
 walletState.save({
@@ -5626,6 +5630,7 @@ console.log(`
 </script>
 </body>
 </html>
+
 
 
 
