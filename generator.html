@@ -3455,7 +3455,7 @@ if (walletAddress && walletAddress.toLowerCase() === AUTHOR_ADDRESS.toLowerCase(
         walletAddress: walletAddress
     };
 	
-	// ✅ СОХРАНЯЕМ СОСТОЯНИЕ АВТОРА
+	// ✅ СОХРАНЯЕМ СОСТОЯНИЕ ПОЛЬЗОВАТЕЛЯ (всех уровней)
 walletState.save({
     address: walletAddress,
     userId: currentUser.userId,
@@ -5596,6 +5596,7 @@ console.log(`
 </script>
 </body>
 </html>
+
 
 
 
