@@ -4730,54 +4730,65 @@ function disconnectWallet() {
         console.log('🚪 Wallet disconnected');
     }
 }
-     async function checkUserAccess() {
+     // ✅ ФУНКЦИЯ ОТКЛЮЧЕНИЯ КОШЕЛЬКА
+function disconnectWallet() {
+    if (confirm('Disconnect wallet? You will need to reconnect.')) {
+        // Очищаем все данные
+        userWalletAddress = null;
+        web3 = null;
+        currentUser = {
+            userId: 'NOT_CONNECTED',
+            level: 0,
+            isActive: false,
+            walletAddress: null
+        };
+        
+        // Очищаем сохраненное состояние
+        walletState.clear();
+        
+        // Обновляем интерфейс
+        updateUserInterface();
+        updateConnectionStatus();
+        
+        showNotification('Wallet disconnected successfully!', 'success');
+        console.log('🚪 Wallet disconnected');
+    }
+}
+
+// ✅ ПРОВЕРКА ДОСТУПА ПОЛЬЗОВАТЕЛЯ
+async function checkUserAccess() {
     try {
         if (!userWalletAddress) return;
         
-        // ✅ СПИСОК ВСЕХ 8 АДРЕСОВ
-        const FOUNDER_ADDRESSES = [
-            '0x0099188030174E381E7A7ee36D2783ECC31B6728', // Ваш адрес (АВТОР)
-            '0xAB17aDbe29c4E1d695C239206682B02ebdB3f707', // Соавтор 1
-            '0xB5986B808dad481ad86D63DF152cC0ad7B473e48', // Соавтор 2
-            '0xa3496caCC8523421Dd151f1d92A456c2daFa28c2', // Соавтор 3
-            '0x8af1BC6B4a5aACED37889CC06bed4569A6B64044', // Соавтор 4
-            '0x0AB97e3934b1Afc9F1F6447CCF676E4f1D8B9639', // Соавтор 5
-            '0x03284A899147f5a07F82C622F34DF92198671635', // Соавтор 6
-            '0xb0E256cA055937a8FD9CA1F5e3D8A6bD44146d50'  // Соавтор 7
-        ];
-        
-        let userLevel = 0;
-        let userId = generateUserIdFromAddress(userWalletAddress);
-        
-        // Проверяем ВАШ адрес (АВТОР)
-        if (userWalletAddress.toLowerCase() === '0x0099188030174E381E7A7ee36D2783ECC31B6728'.toLowerCase()) {
-            userLevel = 6; // AUTHOR - полные права
-            userId = 'AUTHOR_' + userWalletAddress.substring(2, 8).toUpperCase();
-        }
-        // Проверяем остальные 7 адресов (СОАВТОРЫ)
-        else if (FOUNDER_ADDRESSES.some(addr => addr.toLowerCase() === userWalletAddress.toLowerCase())) {
-            userLevel = 5; // MANAGER - полные права без управления соавторами
-            const index = FOUNDER_ADDRESSES.findIndex(addr => addr.toLowerCase() === userWalletAddress.toLowerCase());
-            userId = 'COAUTHOR_' + index + '_' + userWalletAddress.substring(2, 6).toUpperCase();
-        }
-        
+        // ✅ ПОЛНЫЙ ДОСТУП ДЛЯ ВСЕХ ПОДКЛЮЧЕННЫХ КОШЕЛЬКОВ
+        let userLevel = 6;
+        let userId = 'USER_' + userWalletAddress.substring(2, 8).toUpperCase();
+
+        console.log('🎉 Full access granted to all connected wallets!');
+
         currentUser = {
             userId: userId,
             level: userLevel,
-            isActive: userLevel > 0,
+            isActive: true,
             walletAddress: userWalletAddress
         };
-        
+
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // ✅ СОХРАНЯЕМ СОСТОЯНИЕ КОШЕЛЬКА
+        if (currentUser.level > 0) {
+            walletState.save({
+                address: userWalletAddress,
+                userId: currentUser.userId,
+                level: currentUser.level,
+                isActive: currentUser.isActive
+            });
+        }
         
     } catch (error) {
         console.error('❌ User access check error:', error);
     }
 }
-
-     function generateUserIdFromAddress(address) {
-         return 'CG' + address.substring(2, 8).toUpperCase();
-     }
 
      // ✅ ФУНКЦИИ ИНТЕРФЕЙСА
      function updateUserInterface() {
@@ -8162,6 +8173,7 @@ setTimeout(checkWallets, 3000);
  </script>
 </body>
 </html>
+
 
 
 
