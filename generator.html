@@ -3562,18 +3562,43 @@ try {
 
 // ✅ WEB3: Показать подключенный кошелек
 function showWalletConnected(address) {
-walletConnected = true;
-
-const walletStatusElement = document.getElementById('walletStatus');
-if (walletStatusElement) {
-   walletStatusElement.innerHTML = `
-      <div style="background: rgba(76, 175, 80, 0.1); color: #4CAF50; padding: 10px; border-radius: 10px; margin-top: 10px; text-align: center;">
-          <div style="font-weight: bold;">✅ ${currentLanguage === 'en' ? 'Wallet connected' : currentLanguage === 'ru' ? 'Кошелек подключен' : 'Гаманець підключено'}</div>
-          <div style="font-size: 12px; color: #CCC; margin-top: 5px;">${address.substring(0, 6)}...${address.substring(address.length - 4)}</div>
-      </div>
-   `;
+    walletConnected = true;
+    const walletStatusElement = document.getElementById('walletStatus');
+    if (walletStatusElement) {
+       walletStatusElement.innerHTML = `
+          <div style="background: rgba(76, 175, 80, 0.1); color: #4CAF50; padding: 10px; border-radius: 10px; margin-top: 10px; text-align: center;">
+              <div style="font-weight: bold;">✅ ${currentLanguage === 'en' ? 'Wallet connected' : currentLanguage === 'ru' ? 'Кошелек подключен' : 'Гаманець підключено'}</div>
+              <div style="font-size: 12px; color: #CCC; margin-top: 5px;">${address.substring(0, 6)}...${address.substring(address.length - 4)}</div>
+              <button onclick="disconnectWallet()" id="disconnectBtnGen" 
+                      style="background: #FF4444; color: white; border: none; border-radius: 8px; 
+                             padding: 8px 15px; cursor: pointer; margin-top: 10px; font-size: 12px;">
+                  🚪 ${currentLanguage === 'en' ? 'Disconnect' : currentLanguage === 'ru' ? 'Отключить' : 'Відключити'}
+              </button>
+          </div>
+       `;
+    }
 }
 
+// ✅ ОТКЛЮЧЕНИЕ КОШЕЛЬКА В ГЕНЕРАТОРЕ
+function disconnectWallet() {
+    if (confirm('Disconnect wallet?')) {
+        walletAddress = null;
+        walletConnected = false;
+        currentUser = null;
+        
+        // Очищаем состояние
+        walletState.clear();
+        
+        // Обновляем интерфейс
+        const walletStatusElement = document.getElementById('walletStatus');
+        if (walletStatusElement) {
+            walletStatusElement.innerHTML = '';
+        }
+        
+        console.log('🚪 Wallet disconnected from generator');
+        location.reload(); // Перезагружаем страницу
+    }
+}
 const walletBtn = document.getElementById('walletConnectBtn');
 if (walletBtn) {
    walletBtn.style.display = 'none';
@@ -5601,6 +5626,7 @@ console.log(`
 </script>
 </body>
 </html>
+
 
 
 
