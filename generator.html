@@ -3184,8 +3184,11 @@ try {
 
 // ✅ ВОССТАНАВЛИВАЕМ КОШЕЛЕК В ГЕНЕРАТОРЕ
 const savedWallet = walletState.load();
-if (savedWallet && !walletAddress) {
+if (savedWallet) {
     console.log('🔄 Restoring wallet in generator...');
+    
+    // Устанавливаем ВСЕ нужные переменные
+    window.walletAddress = savedWallet.address;
     walletAddress = savedWallet.address;
     currentUser = {
         userId: savedWallet.userId,
@@ -3198,6 +3201,8 @@ if (savedWallet && !walletAddress) {
     document.querySelectorAll('.locked, .disabled').forEach(el => {
         el.classList.remove('locked', 'disabled');
     });
+    
+    console.log('✅ Wallet fully restored:', savedWallet.userId);
 }
   
   const detectedLang = detectLanguage();
@@ -5596,6 +5601,7 @@ console.log(`
 </script>
 </body>
 </html>
+
 
 
 
