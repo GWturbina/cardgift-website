@@ -4897,6 +4897,10 @@ function disconnectWallet() {
              statusElement.textContent = 'Connected';
              statusElement.style.color = '#4CAF50';
              
+             // ✅ ПОКАЗЫВАЕМ КНОПКУ ОТКЛЮЧЕНИЯ
+             const disconnectBtn = document.getElementById('disconnectBtn');
+             if (disconnectBtn) disconnectBtn.style.display = 'inline-block';
+             
              if (walletInfo) {
                  walletInfo.style.display = 'block';
                  document.getElementById('walletAddress').textContent = 
@@ -8155,6 +8159,7 @@ setTimeout(checkWallets, 3000);
  </script>
 </body>
 </html>
+
 
 
 
