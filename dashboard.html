@@ -4487,6 +4487,19 @@
      // ✅ ФУНКЦИИ ИНИЦИАЛИЗАЦИИ
      window.onload = async function() {
          console.log('🚀 CardGift Web3 Dashboard initializing...');
+
+// ✅ ВОССТАНАВЛИВАЕМ КОШЕЛЕК
+const savedWallet = walletState.load();
+if (savedWallet && !userWalletAddress) {
+    console.log('🔄 Restoring wallet from previous session...');
+    userWalletAddress = savedWallet.address;
+    currentUser = {
+        userId: savedWallet.userId,
+        level: savedWallet.level,
+        isActive: savedWallet.isActive,
+        walletAddress: savedWallet.address
+    };
+}
          
          await initWeb3();
          loadSavedLanguage();
@@ -8113,5 +8126,6 @@ setTimeout(checkWallets, 3000);
  </script>
 </body>
 </html>
+
 
 
