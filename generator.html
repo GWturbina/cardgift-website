@@ -3601,7 +3601,7 @@ function disconnectWallet() {
 const walletBtn = document.getElementById('walletConnectBtn');
 if (walletBtn) {
    walletBtn.style.display = 'none';
-}
+  }
 }
 
 // ==================== ✅ СОЗДАНИЕ КАРТЫ С ИСПРАВЛЕННЫМ ПРЕВЬЮ ====================
@@ -3609,34 +3609,34 @@ if (walletBtn) {
 async function createCard() {
    console.log('🎨 Starting card creation...');
 
-// ✅ АВТООЧИСТКА ПАМЯТИ ПЕРЕД СОЗДАНИЕМ КАРТЫ
-console.log('🧹 Auto-cleaning memory before card creation...');
+   // ✅ АВТООЧИСТКА ПАМЯТИ ПЕРЕД СОЗДАНИЕМ КАРТЫ
+   console.log('🧹 Auto-cleaning memory before card creation...');
 
-// Очищаем старые превью и большие файлы
-Object.keys(localStorage).forEach(key => {
-    const item = localStorage.getItem(key);
-    if (item && (
-        key.startsWith('cardPreview_') || 
-        key.startsWith('tempCard_') || 
-        item.length > 50000 // Файлы больше 50KB
-    )) {
-        localStorage.removeItem(key);
-    }
-});
+   // Очищаем старые превью и большие файлы
+   Object.keys(localStorage).forEach(key => {
+       const item = localStorage.getItem(key);
+       if (item && (
+           key.startsWith('cardPreview_') || 
+           key.startsWith('tempCard_') || 
+           item.length > 50000 // Файлы больше 50KB
+       )) {
+           localStorage.removeItem(key);
+       }
+   });
 
-// Очищаем canvas
-document.querySelectorAll('canvas').forEach(canvas => {
-    const ctx = canvas.getContext('2d');
-    if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-});
+   // Очищаем canvas
+   document.querySelectorAll('canvas').forEach(canvas => {
+       const ctx = canvas.getContext('2d');
+       if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+   });
 
-// Освобождаем blob URLs
-document.querySelectorAll('img[src^="blob:"]').forEach(img => {
-    URL.revokeObjectURL(img.src);
-});
+   // Освобождаем blob URLs
+   document.querySelectorAll('img[src^="blob:"]').forEach(img => {
+       URL.revokeObjectURL(img.src);
+   });
 
-console.log('✅ Memory auto-cleaned successfully');
-   
+   console.log('✅ Memory auto-cleaned successfully');
+}   
    // ✅ ПРОВЕРЯЕМ СЕТЬ opBNB ПЕРЕД СОЗДАНИЕМ
    if (window.ethereum) {
        try {
