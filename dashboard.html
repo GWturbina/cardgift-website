@@ -4502,6 +4502,16 @@
          // Проверяем подключение кошелька
          if (isWeb3Connected && userWalletAddress) {
              await checkUserAccess();
+
+// ✅ СОХРАНЯЕМ СОСТОЯНИЕ КОШЕЛЬКА
+if (currentUser.level > 0) {
+    walletState.save({
+        address: userWalletAddress,
+        userId: currentUser.userId,
+        level: currentUser.level,
+        isActive: currentUser.isActive
+    });
+}
          } else {
              currentUser = {
                  userId: 'NOT_CONNECTED',
@@ -8103,4 +8113,5 @@ setTimeout(checkWallets, 3000);
  </script>
 </body>
 </html>
+
 
