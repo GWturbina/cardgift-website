@@ -3869,8 +3869,18 @@ try {
         hasPreview: true
     };
     
-    // ✅ ПОЛУЧАЕМ USER ID ПРАВИЛЬНО
-    const userId = currentUser.userId || 'AUTHOR';
+    // ✅ УНИВЕРСАЛЬНОЕ ПОЛУЧЕНИЕ USER ID ДЛЯ ВСЕХ
+    let userId;
+    
+    if (currentUser && currentUser.userId) {
+        userId = currentUser.userId; // AUTHOR, COAUTHOR, или USER_XXXXX
+    } else {
+        // Fallback - генерируем из адреса кошелька
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        const walletAddress = accounts[0];
+        userId = 'USER_' + walletAddress.substring(2, 8).toUpperCase();
+    }
+    
     const savedArchive = localStorage.getItem(`archive_${userId}`);
     const archive = savedArchive ? JSON.parse(savedArchive) : { cards: [] };
     
@@ -5772,6 +5782,7 @@ console.log(`
 </script>
 </body>
 </html>
+
 
 
 
