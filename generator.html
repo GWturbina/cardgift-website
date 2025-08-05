@@ -2778,6 +2778,97 @@ let uploadedMedia = null;
 let currentUser = null;
 let walletConnected = false;
 
+// ✅ АВТООЧИСТКА СТАРЫХ ДАННЫХ
+function autoCleanOldData() {
+    try {
+        console.log('🧹 Auto-cleaning old localStorage data...');
+        
+        const maxCards = 50; // Максимум карт в localStorage
+        const maxAge = 30 * 24 * 60 * 60 * 1000; // 30 дней
+        const maxStorageSize = 4 * 1024 * 1024; // 4MB лимит
+        
+        // Проверяем размер localStorage
+        let totalSize = 0;
+        for (let key in localStorage) {
+            if (localStorage.hasOwnProperty(key)) {
+                totalSize += localStorage[key].length;
+            }
+        }
+        
+        console.log(`📊 Current localStorage size: ${Math.round(totalSize/1024)}KB`);
+        
+        // Если размер больше 3MB - агрессивная очистка
+        if (totalSize > 3 * 1024 * 1024) {
+            console.log('⚠️ localStorage is getting full, cleaning aggressively...');
+            
+            // Удаляем старые карты
+            for (let i = localStorage.length - 1; i >= 0; i--) {
+                const key = localStorage.key(i);
+                
+                if (key && (key.startsWith('archive_') || key.startsWith('card_') || key.includes('preview'))) {
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key));
+                        if (data && data.createdAt) {
+                            const age = Date.now() - new Date(data.createdAt).getTime();
+                            if (age > maxAge) {
+                                localStorage.removeItem(key);
+                                console.log(`🗑️ Removed old data: ${key}`);
+                            }
+                        }
+                    } catch (e) {
+                        // Если не можем парсить - удаляем
+                        localStorage.removeItem(key);
+                        console.log(`🗑️ Removed corrupted data: ${key}`);
+                    }
+                }
+            }
+        }
+        
+        // Очистка архивов пользователей
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            
+            if (key && key.startsWith('archive_')) {
+                try {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    if (data.cards) {
+                        // Удаляем старые карты
+                        data.cards = data.cards.filter(card => {
+                            const age = Date.now() - new Date(card.createdAt || card.archivedAt).getTime();
+                            return age < maxAge;
+                        });
+                        
+                        // Оставляем только последние карты
+                        if (data.cards.length > maxCards) {
+                            data.cards = data.cards.slice(0, maxCards);
+                        }
+                        
+                        // Удаляем превью из старых карт
+                        data.cards = data.cards.map(card => {
+                            if (card.previewImageUrl && card.previewImageUrl.length > 50000) {
+                                delete card.previewImageUrl;
+                                card.hasPreview = true;
+                            }
+                            return card;
+                        });
+                        
+                        localStorage.setItem(key, JSON.stringify(data));
+                    }
+                } catch (e) {
+                    console.warn('Failed to clean archive:', key, e);
+                }
+            }
+        }
+        
+        console.log('✅ Auto-clean completed');
+    } catch (error) {
+        console.warn('❌ Auto-clean failed:', error);
+    }
+}
+
+// ✅ ЗАПУСКАЕМ АВТООЧИСТКУ ПРИ ЗАГРУЗКЕ
+autoCleanOldData();
+
 // ✅ ОБНОВЛЕННЫЕ ПЕРЕВОДЫ С НОВЫМИ ЭЛЕМЕНТАМИ
 const translations = {
 en: {
@@ -4817,9 +4908,16 @@ async function saveCurrentToArchive() {
         return;
     }
     try {
-        const cardMetadata = await prepareCardMetadata();
-        cardMetadata.isArchived = true;
-        cardMetadata.archivedAt = new Date().toISOString();
+    const cardMetadata = await prepareCardMetadata();
+    cardMetadata.isArchived = true;
+    cardMetadata.archivedAt = new Date().toISOString();
+    
+    // ✅ НЕ СОХРАНЯЕМ ПРЕВЬЮ - ТОЛЬКО МЕТАДАННЫЕ
+    // Превью будет генерироваться при отправке
+    cardMetadata.hasPreview = true; // Флаг что превью можно сгенерировать
+    
+    // Сохраняем в архив БЕЗ превью
+    await saveCard(cardMetadata);
         
         // ✅ ГЕНЕРИРУЕМ ПРЕВЬЮ ДЛЯ АРХИВА
         try {
@@ -5624,4 +5722,3 @@ console.log(`
 </script>
 </body>
 </html>
-
