@@ -5142,7 +5142,63 @@ function shareViaWebAPI(url, title) {
         copyToClipboard(url);
     }
 }
-   
+
+// ✅ ФУНКЦИЯ ОТОБРАЖЕНИЯ ПРЕВЬЮ В ГЕНЕРАТОРЕ
+function displayCardPreview(cardData, shareUrl, previewUrl) {
+    console.log('🖼️ Displaying card preview...');
+    
+    // Ищем контейнер для превью
+    let previewContainer = document.getElementById('cardPreviewContainer');
+    
+    // Если контейнера нет, создаем его
+    if (!previewContainer) {
+        previewContainer = document.createElement('div');
+        previewContainer.id = 'cardPreviewContainer';
+        
+        // Вставляем после кнопки создания карты
+        const createBtn = document.getElementById('createCardBtn');
+        if (createBtn && createBtn.parentNode) {
+            createBtn.parentNode.insertBefore(previewContainer, createBtn.nextSibling);
+        }
+    }
+    
+    // Показываем превью
+    previewContainer.innerHTML = `
+        <div style="background: rgba(255,215,0,0.1); border: 2px solid #FFD700; border-radius: 15px; padding: 20px; margin: 20px 0; text-align: center;">
+            <h3 style="color: #FFD700; margin-bottom: 15px;">🎉 Ваша открытка готова!</h3>
+            
+            <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <div style="color: #CCC; font-size: 12px; margin-bottom: 5px;">Поделитесь этой ссылкой:</div>
+                <div style="color: #FFD700; word-break: break-all; font-family: monospace; font-size: 14px;">${shareUrl}</div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button onclick="copyToClipboard('${shareUrl}')" class="btn-primary" style="padding: 10px 15px;">📋 Копировать</button>
+                <button onclick="window.open('${shareUrl}', '_blank')" class="btn-secondary" style="padding: 10px 15px;">👁️ Просмотр</button>
+            </div>
+        </div>
+    `;
+    
+    console.log('✅ Card preview displayed');
+}
+
+// ✅ ФУНКЦИЯ КОПИРОВАНИЯ
+function copyToClipboard(text) {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+            notificationManager.show('📋 Ссылка скопирована!', 'success');
+        });
+    } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        notificationManager.show('📋 Ссылка скопирована!', 'success');
+    }
+}
+ 
    console.log('🧹 Cleanup completed');
 });
 
@@ -5173,3 +5229,4 @@ console.log(`
 </script>
 </body>
 </html>
+
