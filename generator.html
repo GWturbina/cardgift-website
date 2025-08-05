@@ -4778,73 +4778,79 @@ if (currentUser && currentUser.level >= 1) {
 
 // ✅ Сохранение в архив с улучшениями
 async function saveCurrentToArchive() {
-const greetingText = document.getElementById('greetingText')?.value?.trim() || '';
-const videoUrl = document.getElementById('videoUrl')?.value?.trim() || '';
-
-if (!greetingText && !uploadedMedia && !videoUrl) {
-  notificationManager.show(
-      currentLanguage === 'en' ? 'Create content first before saving to archive' :
-      currentLanguage === 'ru' ? 'Сначала создайте контент перед сохранением в архив' :
-      'Спочатку створіть контент перед збереженням в архів',
-      'error'
-  );
-  return;
-}
-
-if (!currentUser || currentUser.level < 1) {
-  notificationManager.show(
-      currentLanguage === 'en' ? 'Archive access requires account activation' :
-      currentLanguage === 'ru' ? 'Доступ к архиву требует активации аккаунта' :
-      'Доступ до архіву потребує активації акаунту',
-      'warning'
-  );
-  return;
-}
-
-// Проверяем лимиты архива
-if (!levelManager.canSaveToArchive(currentUser.level, currentUser.archiveCount || 0)) {
-  const levelInfo = levelManager.getLevelInfo(currentUser.level);
-  notificationManager.show(
-      currentLanguage === 'en' ? `Archive limit reached (${levelInfo.archiveLimit}). Upgrade your account.` :
-      currentLanguage === 'ru' ? `Достигнут лимит архива (${levelInfo.archiveLimit}). Улучшите аккаунт.` :
-      `Досягнуто ліміт архіву (${levelInfo.archiveLimit}). Покращте акаунт.`,
-      'warning', 5000
-  );
-  return;
-}
-
-try {
-   const cardMetadata = await prepareCardMetadata();
-   cardMetadata.isArchived = true;
-   cardMetadata.archivedAt = new Date().toISOString();
-   
-   // Сохраняем в архив
-   await saveCard(cardMetadata);
-   
-   // Обновляем счетчик архива
-   currentUser.archiveCount = (currentUser.archiveCount || 0) + 1;
-   localStorage.setItem('currentUser', JSON.stringify(currentUser));
-   levelManager.updateUserInterface(currentUser);
-   
-   notificationManager.show(
-       currentLanguage === 'en' ? '💾 Card saved to archive!' :
-       currentLanguage === 'ru' ? '💾 Карта сохранена в архив!' :
-       '💾 Карта збережена в архів!',
-       'success'
-   );
-   
-   // Очищаем форму после сохранения
-   clearForm();
-   
-} catch (error) {
-   console.error('❌ Archive save error:', error);
-   notificationManager.show(
-       currentLanguage === 'en' ? 'Error saving to archive' :
-       currentLanguage === 'ru' ? 'Ошибка сохранения в архив' :
-       'Помилка збереження в архів',
-       'error'
-   );
-}
+    const greetingText = document.getElementById('greetingText')?.value?.trim() || '';
+    const videoUrl = document.getElementById('videoUrl')?.value?.trim() || '';
+    if (!greetingText && !uploadedMedia && !videoUrl) {
+        notificationManager.show(
+            currentLanguage === 'en' ? 'Create content first before saving to archive' :
+            currentLanguage === 'ru' ? 'Сначала создайте контент перед сохранением в архив' :
+            'Спочатку створіть контент перед збереженням в архів',
+            'error'
+        );
+        return;
+    }
+    if (!currentUser || currentUser.level < 1) {
+        notificationManager.show(
+            currentLanguage === 'en' ? 'Archive access requires account activation' :
+            currentLanguage === 'ru' ? 'Доступ к архиву требует активации аккаунта' :
+            'Доступ до архіву потребує активації акаунту',
+            'warning'
+        );
+        return;
+    }
+    // Проверяем лимиты архива
+    if (!levelManager.canSaveToArchive(currentUser.level, currentUser.archiveCount || 0)) {
+        const levelInfo = levelManager.getLevelInfo(currentUser.level);
+        notificationManager.show(
+            currentLanguage === 'en' ? `Archive limit reached (${levelInfo.archiveLimit}). Upgrade your account.` :
+            currentLanguage === 'ru' ? `Достигнут лимит архива (${levelInfo.archiveLimit}). Улучшите аккаунт.` :
+            `Досягнуто ліміт архіву (${levelInfo.archiveLimit}). Покращте акаунт.`,
+            'warning', 5000
+        );
+        return;
+    }
+    try {
+        const cardMetadata = await prepareCardMetadata();
+        cardMetadata.isArchived = true;
+        cardMetadata.archivedAt = new Date().toISOString();
+        
+        // ✅ ГЕНЕРИРУЕМ ПРЕВЬЮ ДЛЯ АРХИВА
+        try {
+            const previewImage = await socialPreviewGenerator.generatePreviewImage(cardMetadata);
+            cardMetadata.previewImageUrl = previewImage;
+            console.log('✅ Preview generated for archive:', previewImage);
+        } catch (previewError) {
+            console.warn('⚠️ Preview generation failed:', previewError);
+            // Продолжаем без превью
+        }
+        
+        // Сохраняем в архив
+        await saveCard(cardMetadata);
+        
+        // Обновляем счетчик архива
+        currentUser.archiveCount = (currentUser.archiveCount || 0) + 1;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        levelManager.updateUserInterface(currentUser);
+        
+        notificationManager.show(
+            currentLanguage === 'en' ? '💾 Card saved to archive with preview!' :
+            currentLanguage === 'ru' ? '💾 Карта сохранена в архив с превью!' :
+            '💾 Карта збережена в архів з прев\'ю!',
+            'success'
+        );
+        
+        // Очищаем форму после сохранения
+        clearForm();
+        
+    } catch (error) {
+        console.error('❌ Archive save error:', error);
+        notificationManager.show(
+            currentLanguage === 'en' ? 'Error saving to archive' :
+            currentLanguage === 'ru' ? 'Ошибка сохранения в архив' :
+            'Помилка збереження в архів',
+            'error'
+        );
+    }
 }
 
 // Переход к активации
