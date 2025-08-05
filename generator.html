@@ -3865,19 +3865,19 @@ try {
         ...cardMetadata,
         isArchived: true,
         archivedAt: new Date().toISOString(),
-        previewImageUrl: previewResult.previewImageUrl, // ПОЛНОЕ превью
+        previewImageUrl: previewResult.previewImageUrl,
         hasPreview: true
     };
     
-    // Сохраняем в архив
-    const userId = getCurrentUserId();
+    // ✅ ПОЛУЧАЕМ USER ID ПРАВИЛЬНО
+    const userId = currentUser.userId || 'AUTHOR';
     const savedArchive = localStorage.getItem(`archive_${userId}`);
     const archive = savedArchive ? JSON.parse(savedArchive) : { cards: [] };
     
     archive.cards.unshift(archiveData);
     localStorage.setItem(`archive_${userId}`, JSON.stringify(archive));
     
-    console.log('✅ Card saved to archive with FULL preview');
+    console.log('✅ Card saved to archive with FULL preview for user:', userId);
 } catch (error) {
     console.warn('Archive save failed:', error);
 }
@@ -5772,6 +5772,7 @@ console.log(`
 </script>
 </body>
 </html>
+
 
 
 
