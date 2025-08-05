@@ -39,7 +39,6 @@
 <meta name="twitter:description" content="Создавайте потрясающие цифровые открытки за секунды!" id="twitterDescription">
 <meta name="twitter:image" content="" id="twitterImage">
 
-  
   <!-- WEB3 библиотеки -->
   <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
@@ -2272,308 +2271,6 @@ async checkVideoContent(videoData) {
 // Создаем глобальный экземпляр видео процессора
 const videoProcessor = new VideoProcessor();
 
-// 🎨 УЛУЧШЕННЫЙ КЛАСС ДЛЯ ГЕНЕРАЦИИ ПРЕВЬЮ С ПРАВИЛЬНЫМ CORS
-class SocialPreviewGenerator {
-constructor() {
-   this.canvasWidth = 1200;
-   this.canvasHeight = 630;
-}
-
-async generatePreviewImage(cardData) {
-   try {
-       console.log('🎨 Генерируем превью для соцсетей...');
-       
-       const canvas = document.createElement('canvas');
-       canvas.width = this.canvasWidth;
-       canvas.height = this.canvasHeight;
-       const ctx = canvas.getContext('2d');
-
-       // Рисуем фон
-       this.drawBackground(ctx, cardData.style);
-       
-       // Рисуем изображение если есть
-       if (cardData.mediaUrl && cardData.mediaType === 'image') {
-           await this.drawMainImage(ctx, cardData.mediaUrl);
-       }
-       
-       // Добавляем оверлей
-       this.drawTextOverlay(ctx);
-       
-       // Рисуем текст поздравления
-       this.drawGreetingText(ctx, cardData.greeting);
-       
-       // Добавляем брендинг
-       this.drawBranding(ctx);
-       
-       const imageData = canvas.toDataURL('image/jpeg', 0.5);
-       console.log('✅ Превью изображение создано');
-       
-       return imageData;
-       
-   } catch (error) {
-       console.error('❌ Ошибка генерации превью:', error);
-       return this.generateFallbackPreview(cardData);
-   }
-}
-
-drawBackground(ctx, style) {
-   const gradients = {
-       classic: ['#667eea', '#764ba2'],
-       sunset: ['#ff9a9e', '#fecfef', '#ffd89b'],
-       ocean: ['#667eea', '#764ba2'],
-       space: ['#0c0c0c', '#434343'],
-       neon: ['#FF006E', '#8338EC', '#3A86FF']
-   };
-   
-   const colors = gradients[style] || gradients.classic;
-   const gradient = ctx.createLinearGradient(0, 0, this.canvasWidth, this.canvasHeight);
-   
-   gradient.addColorStop(0, colors[0]);
-   gradient.addColorStop(1, colors[1]);
-   
-   if (colors[2]) {
-       gradient.addColorStop(0.5, colors[2]);
-   }
-   
-   ctx.fillStyle = gradient;
-   ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-}
-
-async drawMainImage(ctx, imageData) {
-   return new Promise((resolve) => {
-       const img = new Image();
-       img.crossOrigin = "anonymous";
-       
-       img.onload = () => {
-           try {
-               const scale = Math.max(
-                   this.canvasWidth / img.width,
-                   this.canvasHeight / img.height
-               );
-               
-               const newWidth = img.width * scale;
-               const newHeight = img.height * scale;
-               const x = (this.canvasWidth - newWidth) / 2;
-               const y = (this.canvasHeight - newHeight) / 2;
-               
-               ctx.globalAlpha = 0.7;
-               ctx.drawImage(img, x, y, newWidth, newHeight);
-               ctx.globalAlpha = 1.0;
-               
-               resolve();
-           } catch (error) {
-               console.warn('CORS error drawing image:', error);
-               // Рисуем цветной прямоугольник как fallback
-               ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
-               ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-               resolve();
-           }
-       };
-       
-       img.onerror = () => {
-           console.warn('Image load error, using fallback');
-           ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
-           ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-           resolve();
-       };
-       
-       img.src = imageData;
-   });
-}
-
-drawTextOverlay(ctx) {
-   const gradient = ctx.createLinearGradient(0, 0, 0, this.canvasHeight);
-   gradient.addColorStop(0, 'rgba(0, 0, 0, 0.3)');
-   gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.5)');
-   gradient.addColorStop(1, 'rgba(0, 0, 0, 0.7)');
-   
-   ctx.fillStyle = gradient;
-   ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-}
-
-drawGreetingText(ctx, greeting) {
-   if (!greeting) return;
-
-   ctx.textAlign = 'center';
-   ctx.fillStyle = '#FFFFFF';
-   
-   const lines = greeting.split('\n').filter(line => line.trim());
-   
-   if (lines[0]) {
-       ctx.font = 'bold 64px Arial, sans-serif';
-       this.drawTextWithStroke(ctx, lines[0], this.canvasWidth / 2, 200, '#000000', 4);
-   }
-   
-   if (lines[1]) {
-       ctx.font = '48px Arial, sans-serif';
-       ctx.fillStyle = '#FFD700';
-       this.drawTextWithStroke(ctx, lines[1], this.canvasWidth / 2, 280, '#000000', 3);
-   }
-   
-   if (lines.length > 2) {
-       ctx.font = '36px Arial, sans-serif';
-       ctx.fillStyle = '#FFFFFF';
-       let y = 350;
-       
-       for (let i = 2; i < Math.min(lines.length, 5); i++) {
-           this.drawTextWithStroke(ctx, lines[i], this.canvasWidth / 2, y, '#000000', 2);
-           y += 50;
-       }
-   }
-}
-
-drawBranding(ctx) {
-   const buttonY = this.canvasHeight - 120;
-   const buttonWidth = 500;
-   const buttonHeight = 70;
-   const buttonX = (this.canvasWidth - buttonWidth) / 2;
-   
-   const buttonGradient = ctx.createLinearGradient(buttonX, buttonY, buttonX + buttonWidth, buttonY);
-   buttonGradient.addColorStop(0, '#FFD700');
-   buttonGradient.addColorStop(1, '#FFA500');
-   
-   ctx.fillStyle = buttonGradient;
-   this.roundedRect(ctx, buttonX, buttonY, buttonWidth, buttonHeight, 35);
-   ctx.fill();
-   
-   ctx.font = 'bold 32px Arial, sans-serif';
-   ctx.fillStyle = '#000000';
-   ctx.textAlign = 'center';
-   ctx.fillText('🎁 VIEW GREETING CARD', this.canvasWidth / 2, buttonY + 45);
-   
-   const logoX = this.canvasWidth - 150;
-   const logoY = 30;
-   
-   ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-   this.roundedRect(ctx, logoX - 10, logoY - 10, 140, 80, 15);
-   ctx.fill();
-   
-   ctx.font = 'bold 28px Arial, sans-serif';
-   ctx.fillStyle = '#FFD700';
-   ctx.textAlign = 'center';
-   ctx.fillText('CardGift', logoX + 60, logoY + 30);
-   ctx.font = '16px Arial, sans-serif';
-   ctx.fillStyle = '#FFFFFF';
-   ctx.fillText('Generator', logoX + 60, logoY + 55);
-}
-
-drawTextWithStroke(ctx, text, x, y, strokeColor, strokeWidth) {
-   ctx.strokeStyle = strokeColor;
-   ctx.lineWidth = strokeWidth;
-   ctx.strokeText(text, x, y);
-   ctx.fillText(text, x, y);
-}
-
-roundedRect(ctx, x, y, width, height, radius) {
-   ctx.beginPath();
-   ctx.moveTo(x + radius, y);
-   ctx.lineTo(x + width - radius, y);
-   ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-   ctx.lineTo(x + width, y + height - radius);
-   ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-   ctx.lineTo(x + radius, y + height);
-   ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-   ctx.lineTo(x, y + radius);
-   ctx.quadraticCurveTo(x, y, x + radius, y);
-   ctx.closePath();
-}
-
-generateFallbackPreview(cardData) {
-   const canvas = document.createElement('canvas');
-   canvas.width = this.canvasWidth;
-   canvas.height = this.canvasHeight;
-   const ctx = canvas.getContext('2d');
-   
-   const gradient = ctx.createLinearGradient(0, 0, this.canvasWidth, this.canvasHeight);
-   gradient.addColorStop(0, '#667eea');
-   gradient.addColorStop(1, '#764ba2');
-   ctx.fillStyle = gradient;
-   ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-   
-   ctx.font = 'bold 48px Arial, sans-serif';
-   ctx.fillStyle = '#FFFFFF';
-   ctx.textAlign = 'center';
-   ctx.fillText('🎉 Greeting Card', this.canvasWidth / 2, this.canvasHeight / 2);
-   
-   ctx.font = '32px Arial, sans-serif';
-   ctx.fillStyle = '#FFD700';
-   ctx.fillText('CardGift - Card Generator', this.canvasWidth / 2, this.canvasHeight / 2 + 60);
-   
-   return canvas.toDataURL('image/jpeg', 0.5);
-}
-
-async saveCardWithPreview(cardData) {
-   try {
-       console.log('💾 Сохраняем карту с превью...');
-       
-       const previewImage = await this.generatePreviewImage(cardData);
-       const cardUrl = `${window.location.origin}/cards/${cardData.cardId}.html`;
-       
-       await saveCard(cardData);
-       
-       return {
-           success: true,
-           previewImageUrl: previewImage,
-           cardViewUrl: cardUrl,
-           shareUrl: cardUrl,
-           fallback: false
-       };
-       
-   } catch (error) {
-       console.error('❌ Ошибка сохранения:', error);
-       throw error;
-   }
-}
-
-generateMetaTags(cardData, previewImageUrl) {
-   const title = this.extractTitle(cardData.greeting) || 'Greeting Card - CardGift';
-   const description = this.extractDescription(cardData.greeting) || 'Beautiful personal card created with CardGift';
-   const url = `${window.location.origin}/card-viewer.html?id=${cardData.cardId}`;
-   
-   return {
-       'og:title': this.escapeHTML(title),
-       'og:description': this.escapeHTML(description),
-       'og:image': previewImageUrl,
-       'og:image:width': '1200',
-       'og:image:height': '630',
-       'og:image:alt': this.escapeHTML(`Preview: ${title}`),
-       'og:type': 'website',
-       'og:url': url,
-       'og:site_name': 'CardGift',
-       'twitter:card': 'summary_large_image',
-       'twitter:title': this.escapeHTML(title),
-       'twitter:description': this.escapeHTML(description),
-       'twitter:image': previewImageUrl
-   };
-}
-
-extractTitle(greeting) {
-   if (!greeting) return null;
-   const lines = greeting.split('\n').filter(line => line.trim());
-   return lines[0] ? this.truncateText(lines[0], 60) : null;
-}
-
-extractDescription(greeting) {
-   if (!greeting) return null;
-   const lines = greeting.split('\n').filter(line => line.trim());
-   return lines[1] ? this.truncateText(lines[1], 120) : null;
-}
-
-truncateText(text, maxLength) {
-   if (text.length <= maxLength) return text;
-   return text.substring(0, maxLength - 3) + '...';
-}
-
-escapeHTML(text) {
-   const div = document.createElement('div');
-   div.textContent = text;
-   return div.innerHTML;
-}
-}
-
-// Создаем глобальный экземпляр генератора превью
-const socialPreviewGenerator = new SocialPreviewGenerator();
-
 // ✅ УЛУЧШЕННЫЙ КЛАСС ДЛЯ УПРАВЛЕНИЯ УРОВНЯМИ
 class UserLevelManager {
    constructor() {
@@ -2777,97 +2474,6 @@ let selectedCTAPosition = 'bottom';
 let uploadedMedia = null;
 let currentUser = null;
 let walletConnected = false;
-
-// ✅ АВТООЧИСТКА СТАРЫХ ДАННЫХ
-function autoCleanOldData() {
-    try {
-        console.log('🧹 Auto-cleaning old localStorage data...');
-        
-        const maxCards = 50; // Максимум карт в localStorage
-        const maxAge = 30 * 24 * 60 * 60 * 1000; // 30 дней
-        const maxStorageSize = 4 * 1024 * 1024; // 4MB лимит
-        
-        // Проверяем размер localStorage
-        let totalSize = 0;
-        for (let key in localStorage) {
-            if (localStorage.hasOwnProperty(key)) {
-                totalSize += localStorage[key].length;
-            }
-        }
-        
-        console.log(`📊 Current localStorage size: ${Math.round(totalSize/1024)}KB`);
-        
-        // Если размер больше 3MB - агрессивная очистка
-        if (totalSize > 3 * 1024 * 1024) {
-            console.log('⚠️ localStorage is getting full, cleaning aggressively...');
-            
-            // Удаляем старые карты
-            for (let i = localStorage.length - 1; i >= 0; i--) {
-                const key = localStorage.key(i);
-                
-                if (key && (key.startsWith('archive_') || key.startsWith('card_') || key.includes('preview'))) {
-                    try {
-                        const data = JSON.parse(localStorage.getItem(key));
-                        if (data && data.createdAt) {
-                            const age = Date.now() - new Date(data.createdAt).getTime();
-                            if (age > maxAge) {
-                                localStorage.removeItem(key);
-                                console.log(`🗑️ Removed old data: ${key}`);
-                            }
-                        }
-                    } catch (e) {
-                        // Если не можем парсить - удаляем
-                        localStorage.removeItem(key);
-                        console.log(`🗑️ Removed corrupted data: ${key}`);
-                    }
-                }
-            }
-        }
-        
-        // Очистка архивов пользователей
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            
-            if (key && key.startsWith('archive_')) {
-                try {
-                    const data = JSON.parse(localStorage.getItem(key));
-                    if (data.cards) {
-                        // Удаляем старые карты
-                        data.cards = data.cards.filter(card => {
-                            const age = Date.now() - new Date(card.createdAt || card.archivedAt).getTime();
-                            return age < maxAge;
-                        });
-                        
-                        // Оставляем только последние карты
-                        if (data.cards.length > maxCards) {
-                            data.cards = data.cards.slice(0, maxCards);
-                        }
-                        
-                        // Удаляем превью из старых карт
-                        data.cards = data.cards.map(card => {
-                            if (card.previewImageUrl && card.previewImageUrl.length > 50000) {
-                                delete card.previewImageUrl;
-                                card.hasPreview = true;
-                            }
-                            return card;
-                        });
-                        
-                        localStorage.setItem(key, JSON.stringify(data));
-                    }
-                } catch (e) {
-                    console.warn('Failed to clean archive:', key, e);
-                }
-            }
-        }
-        
-        console.log('✅ Auto-clean completed');
-    } catch (error) {
-        console.warn('❌ Auto-clean failed:', error);
-    }
-}
-
-// ✅ ЗАПУСКАЕМ АВТООЧИСТКУ ПРИ ЗАГРУЗКЕ
-autoCleanOldData();
 
 // ✅ ОБНОВЛЕННЫЕ ПЕРЕВОДЫ С НОВЫМИ ЭЛЕМЕНТАМИ
 const translations = {
@@ -3262,7 +2868,7 @@ symbols: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '�
 flags: ['🏁', '🚩', '🎌', '🏴', '🏳️', '🏳️‍🌈', '🏳️‍⚧️', '🏴‍☠️', '🇦🇫', '🇦🇽', '🇦🇱', '🇩🇿', '🇦🇸', '🇦🇩', '🇦🇴', '🇦🇮', '🇦🇶', '🇦🇬', '🇦🇷', '🇦🇲', '🇦🇼', '🇦🇺', '🇦🇹', '🇦🇿', '🇧🇸', '🇧🇭', '🇧🇩', '🇧🇧', '🇧🇾', '🇧🇪', '🇧🇿', '🇧🇯', '🇧🇲', '🇧🇹', '🇧🇴', '🇧🇦', '🇧🇼', '🇧🇷', '🇻🇬']
 };
 
-// ==================== ✅ ОСНОВНЫЕ ФУНКЦИИ С УЛУЧШЕНИЯМИ ====================
+// ==================== ✅ ОСНОВНЫЕ ФУНКЦИИ С ИСПРАВЛЕНИЯМИ ====================
 
 window.addEventListener('DOMContentLoaded', function() {
    initializeWeb3App();
@@ -3540,20 +3146,18 @@ async function connectWallet() {
        const walletAddress = accounts[0];
        console.log('💼 Wallet connected:', walletAddress);
 
+       // ✅ СОХРАНЯЕМ СОСТОЯНИЕ ПОЛЬЗОВАТЕЛЯ (всех уровней)
+       walletState.save({
+           address: walletAddress,
+           userId: currentUser.userId,
+           level: currentUser.level,
+           isActive: currentUser.isActive
+       });
        
-
-           // ✅ СОХРАНЯЕМ СОСТОЯНИЕ ПОЛЬЗОВАТЕЛЯ (всех уровней)
-           walletState.save({
-               address: walletAddress,
-               userId: currentUser.userId,
-               level: currentUser.level,
-               isActive: currentUser.isActive
-           });
-           
-           // Разблокируем архив и все функции
-           document.querySelectorAll('.locked, .disabled').forEach(el => {
-               el.classList.remove('locked', 'disabled');
-           });      
+       // Разблокируем архив и все функции
+       document.querySelectorAll('.locked, .disabled').forEach(el => {
+           el.classList.remove('locked', 'disabled');
+       });      
        
        // ✅ ПРОВЕРЯЕМ И ПЕРЕКЛЮЧАЕМ НА opBNB
        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
@@ -3653,8 +3257,6 @@ async function syncUserWithBlockchain(walletAddress) {
             console.warn('⚠️ No current user to sync');
             return;
         }
-
-        // ЗДЕСЬ ОСТАЛЬНОЙ ТВОЙ СТАРЫЙ КОД...
   
   if (typeof walletManager !== 'undefined' && walletManager.getUser) {
       const web3User = await walletManager.getUser(currentUser.userId);
@@ -3715,39 +3317,11 @@ function disconnectWallet() {
     }
 }
 
-// ==================== ✅ СОЗДАНИЕ КАРТЫ С ИСПРАВЛЕННЫМ ПРЕВЬЮ ====================
+// ==================== ✅ СОЗДАНИЕ КАРТЫ С ИСПРАВЛЕНИЯМИ LOCALSTORAGE ====================
 
 async function createCard() {
    console.log('🎨 Starting card creation...');
 
-// ✅ АВТООЧИСТКА ПАМЯТИ ПЕРЕД СОЗДАНИЕМ КАРТЫ
-console.log('🧹 Auto-cleaning memory before card creation...');
-
-// Очищаем старые превью и большие файлы
-Object.keys(localStorage).forEach(key => {
-    const item = localStorage.getItem(key);
-    if (item && (
-        key.startsWith('cardPreview_') || 
-        key.startsWith('tempCard_') || 
-        item.length > 50000 // Файлы больше 50KB
-    )) {
-        localStorage.removeItem(key);
-    }
-});
-
-// Очищаем canvas
-document.querySelectorAll('canvas').forEach(canvas => {
-    const ctx = canvas.getContext('2d');
-    if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-});
-
-// Освобождаем blob URLs
-document.querySelectorAll('img[src^="blob:"]').forEach(img => {
-    URL.revokeObjectURL(img.src);
-});
-
-console.log('✅ Memory auto-cleaned successfully');
-   
    // ✅ ПРОВЕРЯЕМ СЕТЬ opBNB ПЕРЕД СОЗДАНИЕМ
    if (window.ethereum) {
        try {
@@ -3851,109 +3425,76 @@ console.log('✅ Memory auto-cleaned successfully');
    }
 
    try {
-       console.log('🎨 Creating Web3 card with preview...');
+       console.log('🎨 Creating Web3 card...');
        
        const cardMetadata = await prepareCardMetadata();
        
-       // Генерируем превью
-console.log('🖼️ Генерируем превью...');
-const previewResult = await generateCardPreview(cardMetadata);
+       // ✅ ИСПРАВЛЕНО: ОТПРАВЛЯЕМ НА СЕРВЕР БЕЗ ПРЕВЬЮ
+       console.log('📡 Отправляем данные карты на сервер...');
+       
+       const response = await fetch('/api/save-card', {
+           method: 'POST',
+           headers: {
+               'Content-Type': 'application/json',
+           },
+           body: JSON.stringify({
+               cardId: cardMetadata.cardId,
+               cardData: cardMetadata
+               // ✅ БЕЗ ПРЕВЬЮ - сервер сам сгенерирует
+           })
+       });
+       
+       if (!response.ok) {
+           throw new Error(`Server error: ${response.status}`);
+       }
+       
+       const result = await response.json();
+       
+       if (result.success) {
+           console.log('✅ Карта успешно создана на сервере:', cardMetadata.cardId);
+           
+           // ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
+           const shareableLink = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
+           cardMetadata.shareUrl = shareableLink;
+           
+           // ✅ Обновляем счетчик карт пользователя
+           currentUser.cardCount = (currentUser.cardCount || 0) + 1;
+           localStorage.setItem('currentUser', JSON.stringify(currentUser));
+           levelManager.updateUserInterface(currentUser);
+           
+           // ✅ ПОКАЗЫВАЕМ РЕЗУЛЬТАТ БЕЗ ПРЕВЬЮ (оно генерируется на сервере)
+           showEnhancedCardResult(cardMetadata, { 
+               success: true,
+               shareUrl: shareableLink,
+               cardViewUrl: shareableLink,
+               previewImageUrl: null // Превью будет создано сервером для соцсетей
+           });
+           
+           const message = currentLanguage === 'en' ? '✨ Card created successfully!' :
+                         currentLanguage === 'ru' ? '✨ Открытка создана успешно!' :
+                         '✨ Листівка створена успішно!';
+           notificationManager.show(message, 'success');
+           
+           // Очищаем форму после успешного создания
+           clearForm();
+           
+       } else {
+           throw new Error(result.error || 'Ошибка создания карты на сервере');
+       }
 
-// ✅ СОХРАНЯЕМ В АРХИВ С ПРЕВЬЮ
-try {
-    const archiveData = {
-        ...cardMetadata,
-        isArchived: true,
-        archivedAt: new Date().toISOString(),
-        previewImageUrl: previewResult.previewImageUrl,
-        hasPreview: true
-    };
-    
-    // ✅ УНИВЕРСАЛЬНОЕ ПОЛУЧЕНИЕ USER ID ДЛЯ ВСЕХ
-    let userId;
-    
-    if (currentUser && currentUser.userId) {
-        userId = currentUser.userId; // AUTHOR, COAUTHOR, или USER_XXXXX
-    } else {
-        // Fallback - генерируем из адреса кошелька
-        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-        const walletAddress = accounts[0];
-        userId = 'USER_' + walletAddress.substring(2, 8).toUpperCase();
-    }
-    
-    const savedArchive = localStorage.getItem(`archive_${userId}`);
-    const archive = savedArchive ? JSON.parse(savedArchive) : { cards: [] };
-    
-    archive.cards.unshift(archiveData);
-    localStorage.setItem(`archive_${userId}`, JSON.stringify(archive));
-    
-    console.log('✅ Card saved to archive with FULL preview for user:', userId);
-} catch (error) {
-    console.warn('Archive save failed:', error);
-}
+   } catch (error) {
+       console.error('❌ Card creation error:', error);
+       const message = error.message || (currentLanguage === 'en' ? 'Card creation error' :
+                                      currentLanguage === 'ru' ? 'Ошибка создания открытки' :
+                                      'Помилка створення листівки');
+       notificationManager.show(message, 'error');
 
-// Отправляем данные на сервер для создания мета-страницы
-try {
-    console.log('📡 Создаем мета-страницу...');
-    const response = await fetch('/api/save-card', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            cardId: cardMetadata.cardId,
-            cardData: cardMetadata,
-            previewImage: previewResult.previewImageUrl
-        })
-    });
-    
-    const result = await response.json();
-    console.log('✅ Данные отправлены на сервер:', result);
-    
-    // Обновляем ссылку для шаринга
-    if (result.shareUrl) {
-        cardMetadata.shareUrl = result.shareUrl;
-    }
-} catch (error) {
-    console.warn('⚠️ Ошибка создания мета-страницы:', error);
-}
-
-// ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
-const shareableLink = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
-cardMetadata.shareUrl = shareableLink;
-
-// ✅ Обновляем счетчик карт пользователя
-currentUser.cardCount = (currentUser.cardCount || 0) + 1;
-localStorage.setItem('currentUser', JSON.stringify(currentUser));
-levelManager.updateUserInterface(currentUser);
-
-// Показ результата
-showEnhancedCardResult(cardMetadata, { 
-    ...previewResult, 
-    shareUrl: shareableLink 
-});
-
-const message = currentLanguage === 'en' ? '✨ Card created successfully!' :
-              currentLanguage === 'ru' ? '✨ Открытка создана успешно!' :
-              '✨ Листівка створена успішно!';
-notificationManager.show(message, 'success');
-
-// Очищаем форму после успешного создания
-clearForm();
-
-} catch (error) {
-console.error('❌ Card creation error:', error);
-const message = error.message || (currentLanguage === 'en' ? 'Card creation error' :
-                               currentLanguage === 'ru' ? 'Ошибка создания открытки' :
-                               'Помилка створення листівки');
-notificationManager.show(message, 'error');
-
-} finally {
-if (createBtn) {
-    createBtn.classList.remove('loading');
-    createBtn.disabled = false;
-}
-}
+   } finally {
+       if (createBtn) {
+           createBtn.classList.remove('loading');
+           createBtn.disabled = false;
+       }
+   }
 }
 
 // ✅ Очистка формы после создания карты
@@ -4033,46 +3574,8 @@ async function prepareCardMetadata() {
    return metadata;
 }
 
-// ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ПРЕВЬЮ
-async function generateCardPreview(cardMetadata) {
-   try {
-       console.log('🎨 Generating card preview...');
-       
-       const previewImage = await socialPreviewGenerator.generatePreviewImage(cardMetadata);
-       const cardUrl = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
-       
-       // Сохраняем локально и на сервер
-       await saveCard(cardMetadata);
-
-       return {
-           success: true,
-           previewImageUrl: previewImage,
-           cardViewUrl: cardUrl,
-           shareUrl: cardUrl,
-           fallback: false
-       };
-       
-   } catch (error) {
-       console.error('❌ Preview generation error:', error);
-       
-       // Запасной вариант
-       const fallbackPreview = socialPreviewGenerator.generateFallbackPreview(cardMetadata);
-       const cardUrl = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
-       
-       await saveCard(cardMetadata);
-       
-       return {
-           success: true,
-           previewImageUrl: fallbackPreview,
-           cardViewUrl: cardUrl,
-           shareUrl: cardUrl,
-           fallback: true
-       };
-   }
-}
-
-// ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОКАЗА РЕЗУЛЬТАТА С ПРЕВЬЮ
-function showEnhancedCardResult(cardMetadata, previewResult) {
+// ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОКАЗА РЕЗУЛЬТАТА БЕЗ ПРЕВЬЮ В LOCALSTORAGE
+function showEnhancedCardResult(cardMetadata, result) {
 const t = translations[currentLanguage];
 
 const overlay = document.createElement('div');
@@ -4088,32 +3591,26 @@ modal.innerHTML = `
   
   <p style="color: #CCC; margin-bottom: 20px; text-align: center;">${t.shareCardDescription}</p>
   
-  ${previewResult.previewImageUrl ? `
-  <div class="preview-image-container">
-      <img src="${previewResult.previewImageUrl}" alt="Card Preview" style="max-width: 100%; height: auto; border-radius: 10px; border: 2px solid #FFD700;">
-  </div>
-  ` : ''}
-  
   <div class="share-methods">
       <div class="share-method">
           <h4>${t.shareImageMethod}</h4>
           <p>${t.shareImageDescription}</p>
           <div class="share-method-buttons">
-              <button class="share-method-btn" onclick="sharePreviewDirectly('${cardMetadata.cardId}', '${previewResult.shareUrl}')">
+              <button class="share-method-btn" onclick="sharePreviewDirectly('${cardMetadata.cardId}', '${result.shareUrl}')">
                   📱 ${t.downloadImage}
               </button>
           </div>
           <div class="social-platforms">
-              <button class="social-platform-btn whatsapp" onclick="shareToMessenger('whatsapp', '${previewResult.shareUrl}')">
+              <button class="social-platform-btn whatsapp" onclick="shareToMessenger('whatsapp', '${result.shareUrl}')">
                   📱<br>WhatsApp
               </button>
-              <button class="social-platform-btn telegram" onclick="shareToMessenger('telegram', '${previewResult.shareUrl}')">
+              <button class="social-platform-btn telegram" onclick="shareToMessenger('telegram', '${result.shareUrl}')">
                   ✈️<br>Telegram
               </button>
-              <button class="social-platform-btn viber" onclick="shareToMessenger('viber', '${previewResult.shareUrl}')">
+              <button class="social-platform-btn viber" onclick="shareToMessenger('viber', '${result.shareUrl}')">
                   💜<br>Viber
               </button>
-              <button class="social-platform-btn email" onclick="shareToMessenger('email', '${previewResult.shareUrl}')">
+              <button class="social-platform-btn email" onclick="shareToMessenger('email', '${result.shareUrl}')">
                   📧<br>Email
               </button>
           </div>
@@ -4123,27 +3620,27 @@ modal.innerHTML = `
           <h4>${t.shareLinkMethod}</h4>
           <p>${t.shareLinkDescription}</p>
           <div style="background: #333; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-              <div style="color: #FFF; word-break: break-all; font-size: 14px;" id="shareableUrl">${previewResult.shareUrl}</div>
+              <div style="color: #FFF; word-break: break-all; font-size: 14px;" id="shareableUrl">${result.shareUrl}</div>
           </div>
           <div class="share-method-buttons">
-               <button class="share-method-btn" onclick="copyToClipboard('${previewResult.shareUrl}')">
+               <button class="share-method-btn" onclick="copyToClipboard('${result.shareUrl}')">
                    📋 ${t.copyLink}
                </button>
-               <button class="share-method-btn secondary" onclick="window.open('${previewResult.shareUrl}', '_blank')">
+               <button class="share-method-btn secondary" onclick="window.open('${result.shareUrl}', '_blank')">
                    👁️ ${translations[currentLanguage].preview || 'View'}
                </button>
            </div>
            <div class="social-platforms">
-               <button class="social-platform-btn facebook" onclick="shareToSocial('facebook', '${previewResult.shareUrl}')">
+               <button class="social-platform-btn facebook" onclick="shareToSocial('facebook', '${result.shareUrl}')">
                    👥<br>Facebook
                </button>
-               <button class="social-platform-btn x" onclick="shareToSocial('x', '${previewResult.shareUrl}')">
+               <button class="social-platform-btn x" onclick="shareToSocial('x', '${result.shareUrl}')">
                    🐦<br>X
                </button>
-               <button class="social-platform-btn instagram" onclick="shareToSocial('instagram', '${previewResult.shareUrl}')">
+               <button class="social-platform-btn instagram" onclick="shareToSocial('instagram', '${result.shareUrl}')">
                    📷<br>Instagram
                </button>
-               <button class="social-platform-btn tiktok" onclick="shareToSocial('tiktok', '${previewResult.shareUrl}')">
+               <button class="social-platform-btn tiktok" onclick="shareToSocial('tiktok', '${result.shareUrl}')">
                    🎵<br>TikTok
                </button>
            </div>
@@ -4934,10 +4431,11 @@ if (currentUser && currentUser.level >= 1) {
 }
 }
 
-// ✅ Сохранение в архив с улучшениями
+// ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ СОХРАНЕНИЯ В АРХИВ (БЕЗ LOCALSTORAGE ПРЕВЬЮ)
 async function saveCurrentToArchive() {
     const greetingText = document.getElementById('greetingText')?.value?.trim() || '';
     const videoUrl = document.getElementById('videoUrl')?.value?.trim() || '';
+    
     if (!greetingText && !uploadedMedia && !videoUrl) {
         notificationManager.show(
             currentLanguage === 'en' ? 'Create content first before saving to archive' :
@@ -4947,6 +4445,7 @@ async function saveCurrentToArchive() {
         );
         return;
     }
+    
     if (!currentUser || currentUser.level < 1) {
         notificationManager.show(
             currentLanguage === 'en' ? 'Archive access requires account activation' :
@@ -4956,6 +4455,7 @@ async function saveCurrentToArchive() {
         );
         return;
     }
+    
     // Проверяем лимиты архива
     if (!levelManager.canSaveToArchive(currentUser.level, currentUser.archiveCount || 0)) {
         const levelInfo = levelManager.getLevelInfo(currentUser.level);
@@ -4967,45 +4467,54 @@ async function saveCurrentToArchive() {
         );
         return;
     }
+    
     try {
-    const cardMetadata = await prepareCardMetadata();
-    cardMetadata.isArchived = true;
-    cardMetadata.archivedAt = new Date().toISOString();
-    
-    // ✅ НЕ СОХРАНЯЕМ ПРЕВЬЮ - ТОЛЬКО МЕТАДАННЫЕ
-    // Превью будет генерироваться при отправке
-    cardMetadata.hasPreview = true; // Флаг что превью можно сгенерировать
-    
-    // Сохраняем в архив БЕЗ превью
-    await saveCard(cardMetadata);
+        const cardMetadata = await prepareCardMetadata();
+        cardMetadata.isArchived = true;
+        cardMetadata.archivedAt = new Date().toISOString();
         
-        // ✅ ГЕНЕРИРУЕМ ПРЕВЬЮ ДЛЯ АРХИВА
-        try {
-            const previewImage = await socialPreviewGenerator.generatePreviewImage(cardMetadata);
-            cardMetadata.previewImageUrl = previewImage;
-            console.log('✅ Preview generated for archive:', previewImage);
-        } catch (previewError) {
-            console.warn('⚠️ Preview generation failed:', previewError);
-            // Продолжаем без превью
+        // ✅ ОТПРАВЛЯЕМ НА СЕРВЕР ДЛЯ АРХИВА БЕЗ ПРЕВЬЮ
+        console.log('📡 Сохраняем карту в архив через сервер...');
+        
+        const response = await fetch('/api/save-card', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                cardId: cardMetadata.cardId,
+                cardData: cardMetadata,
+                isArchive: true // Флаг что это для архива
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
         }
         
-        // Сохраняем в архив
-        await saveCard(cardMetadata);
+        const result = await response.json();
         
-        // Обновляем счетчик архива
-        currentUser.archiveCount = (currentUser.archiveCount || 0) + 1;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        levelManager.updateUserInterface(currentUser);
-        
-        notificationManager.show(
-            currentLanguage === 'en' ? '💾 Card saved to archive with preview!' :
-            currentLanguage === 'ru' ? '💾 Карта сохранена в архив с превью!' :
-            '💾 Карта збережена в архів з прев\'ю!',
-            'success'
-        );
-        
-        // Очищаем форму после сохранения
-        clearForm();
+        if (result.success) {
+            console.log('✅ Карта сохранена в архив на сервере:', cardMetadata.cardId);
+            
+            // Обновляем счетчик архива
+            currentUser.archiveCount = (currentUser.archiveCount || 0) + 1;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            levelManager.updateUserInterface(currentUser);
+            
+            notificationManager.show(
+                currentLanguage === 'en' ? '💾 Card saved to archive!' :
+                currentLanguage === 'ru' ? '💾 Карта сохранена в архив!' :
+                '💾 Карта збережена в архів!',
+                'success'
+            );
+            
+            // Очищаем форму после сохранения
+            clearForm();
+            
+        } else {
+            throw new Error(result.error || 'Ошибка сохранения в архив');
+        }
         
     } catch (error) {
         console.error('❌ Archive save error:', error);
@@ -5059,55 +4568,6 @@ try {
   console.warn('⚠️ Could not create hash:', error);
   return 'hash_' + Date.now();
 }
-}
-
-// ✅ WEB3: Улучшенное сохранение открытки
-async function saveCard(cardMetadata) {
-   try {
-       console.log('💾 Сохраняем карту на сервер...');
-       
-       // Отправляем на сервер
-       const response = await fetch('/api/save-card', {
-           method: 'POST',
-           headers: {
-               'Content-Type': 'application/json',
-           },
-           body: JSON.stringify({
-               cardId: cardMetadata.cardId,
-               cardData: cardMetadata
-           })
-       });
-       
-       if (!response.ok) {
-           throw new Error(`Server error: ${response.status}`);
-       }
-       
-       const result = await response.json();
-       
-       if (result.success) {
-           console.log('✅ Карта сохранена на сервер:', cardMetadata.cardId);
-           
-           // Также сохраняем локально для быстрого доступа
-           const lightMetadata = { ...cardMetadata };
-           delete lightMetadata.previewImageUrl;
-           localStorage.setItem(`card_${cardMetadata.cardId}`, JSON.stringify(lightMetadata));
-           
-           return cardMetadata;
-       } else {
-           throw new Error(result.error || 'Ошибка сохранения на сервер');
-       }
-       
-   } catch (error) {
-       console.error('❌ Ошибка сохранения карты:', error);
-       
-       // Fallback к localStorage
-       const lightMetadata = { ...cardMetadata };
-       delete lightMetadata.previewImageUrl;
-       localStorage.setItem(`card_${cardMetadata.cardId}`, JSON.stringify(lightMetadata));
-       
-       console.log('💾 Карта сохранена локально как fallback');
-       return cardMetadata;
-   }
 }
 
 // ✅ Показать приветствие нового пользователя
@@ -5398,200 +4858,16 @@ if (window.ethereum) {
    });
 }
 
-// ==================== ✅ ФУНКЦИИ ОТЛАДКИ (для разработки) ====================
-
-window.cardGiftDebug = {
-   // Информация о текущем пользователе
-   currentUser: () => {
-       console.log('Current User:', currentUser);
-       return currentUser;
-   },
-   
-   // Сброс пользователя
-   resetUser: () => {
-       currentUser = { 
-           userId: generateUserId(), 
-           level: 0, 
-           isActive: false, 
-           walletAddress: null,
-           cardCount: 0,
-           archiveCount: 0
-       };
-       localStorage.setItem('currentUser', JSON.stringify(currentUser));
-       levelManager.updateUserInterface(currentUser);
-       checkArchiveAccess();
-       console.log('User reset to:', currentUser);
-   },
-   
-   // Установка уровня пользователя
-   setLevel: (level) => {
-       const newLevel = parseInt(level);
-       if (newLevel >= 0 && newLevel <= 6) {
-           currentUser.level = newLevel;
-           localStorage.setItem('currentUser', JSON.stringify(currentUser));
-           levelManager.updateUserInterface(currentUser);
-           checkArchiveAccess();
-           console.log('User level set to:', newLevel);
-           
-           notificationManager.show(
-               `Debug: Level set to ${newLevel} (${levelManager.getLevelInfo(newLevel).name})`,
-               'info'
-           );
-       } else {
-           console.error('Invalid level. Use 0-6');
-           notificationManager.show('Invalid level. Use 0-6', 'error');
-       }
-   },
-   
-   // Установка количества карт
-   setCardCount: (count) => {
-       const newCount = parseInt(count);
-       if (newCount >= 0) {
-           currentUser.cardCount = newCount;
-           localStorage.setItem('currentUser', JSON.stringify(currentUser));
-           levelManager.updateUserInterface(currentUser);
-           console.log('Card count set to:', newCount);
-           notificationManager.show(`Debug: Card count set to ${newCount}`, 'info');
-       } else {
-           console.error('Invalid count. Use positive number');
-       }
-   },
-   
-   // Установка количества архивных карт
-   setArchiveCount: (count) => {
-       const newCount = parseInt(count);
-       if (newCount >= 0) {
-           currentUser.archiveCount = newCount;
-           localStorage.setItem('currentUser', JSON.stringify(currentUser));
-           levelManager.updateUserInterface(currentUser);
-           console.log('Archive count set to:', newCount);
-           notificationManager.show(`Debug: Archive count set to ${newCount}`, 'info');
-       } else {
-           console.error('Invalid count. Use positive number');
-       }
-   },
-   
-   // Очистка всего хранилища
-   clearStorage: () => {
-       localStorage.clear();
-       console.log('Storage cleared');
-       notificationManager.show('Debug: Storage cleared', 'warning');
-       setTimeout(() => location.reload(), 1000);
-   },
-   
-   // Экспорт отладочных данных
-   exportDebugData: () => {
-       const debugData = {
-           currentUser,
-           walletConnected,
-           currentLanguage,
-           selectedStyle,
-           selectedTextPosition,
-           selectedCTAPosition,
-           uploadedMedia: uploadedMedia ? {
-               type: uploadedMedia.type,
-               hasData: !!uploadedMedia.data,
-               hasFile: !!uploadedMedia.file
-           } : null,
-           localStorage: {...localStorage},
-           timestamp: Date.now(),
-           userAgent: navigator.userAgent,
-           url: window.location.href
-       };
-       console.log('Debug Data:', debugData);
-       
-       // Скачиваем как JSON файл
-       const dataStr = JSON.stringify(debugData, null, 2);
-       const dataBlob = new Blob([dataStr], {type: 'application/json'});
-       const link = document.createElement('a');
-       link.href = URL.createObjectURL(dataBlob);
-       link.download = `cardgift_debug_${Date.now()}.json`;
-       document.body.appendChild(link);
-       link.click();
-       document.body.removeChild(link);
-       
-       return debugData;
-   },
-   
-   // Симуляция создания карты без сохранения
-   simulateCardCreation: () => {
-       console.log('🎭 Simulating card creation...');
-       
-       // Заполняем тестовыми данными
-       const greetingText = document.getElementById('greetingText');
-       if (greetingText) {
-           greetingText.value = '🎉 Test Card\nThis is a debug test card!';
-       }
-       
-       checkCreateButtonState();
-       notificationManager.show('Debug: Test data filled', 'info');
-   },
-   
-   // Тест уведомлений
-   testNotifications: () => {
-       notificationManager.show('Test Success Notification', 'success');
-       setTimeout(() => notificationManager.show('Test Error Notification', 'error'), 1000);
-       setTimeout(() => notificationManager.show('Test Warning Notification', 'warning'), 2000);
-       setTimeout(() => notificationManager.show('Test Info Notification', 'info'), 3000);
-   },
-   
-   // Информация о лимитах
-   showLimits: () => {
-       const level = currentUser.level;
-       const levelInfo = levelManager.getLevelInfo(level);
-       
-       console.log('Current Level Info:', {
-           level: level,
-           name: levelInfo.name,
-           cardLimit: levelInfo.cardLimit,
-           archiveLimit: levelInfo.archiveLimit,
-           features: levelInfo.features,
-           currentCards: currentUser.cardCount || 0,
-           currentArchive: currentUser.archiveCount || 0,
-           canCreateCard: levelManager.canCreateCard(level, currentUser.cardCount || 0),
-           canSaveToArchive: levelManager.canSaveToArchive(level, currentUser.archiveCount || 0)
-       });
-   },
-   
-   // Версия и информация о системе
-   version: () => {
-       const info = {
-           version: '2.0.0',
-           buildDate: '2025-01-31',
-           environment: 'production',
-           features: [
-               'Web3 Integration',
-               'opBNB Network Support',
-               'Multi-level User System',
-               'Advanced Archive System',
-               'Enhanced Video Support',
-               'Social Media Sharing',
-               'Multi-language Support'
-           ],
-           browser: navigator.userAgent,
-           screen: `${screen.width}x${screen.height}`,
-           viewport: `${window.innerWidth}x${window.innerHeight}`,
-           language: currentLanguage,
-           walletSupport: !!window.ethereum,
-           localStorage: localStorage.length + ' items'
-       };
-       
-       console.log('CardGift Generator Info:', info);
-       return info;
-   }
-};
-
 // ==================== ✅ ФИНАЛЬНАЯ ИНИЦИАЛИЗАЦИЯ ====================
 
 // Показываем информацию о загрузке
 console.log('🎉 CardGift Generator полностью загружен!');
-console.log('💡 Доступные команды отладки:');
-console.log('  cardGiftDebug.currentUser() - информация о пользователе');
-console.log('  cardGiftDebug.setLevel(1-6) - установить уровень пользователя');
-console.log('  cardGiftDebug.simulateCardCreation() - заполнить тестовыми данными');
-console.log('  cardGiftDebug.testNotifications() - тест уведомлений');
-console.log('  cardGiftDebug.showLimits() - показать лимиты');
-console.log('  cardGiftDebug.version() - информация о версии');
+console.log('🔗 Правильный порядок работы:');
+console.log('1. Generator → создает карту → отправляет на СЕРВЕР');
+console.log('2. Dashboard → показывает список карт С СЕРВЕРА');
+console.log('3. Отправка → ссылка api/card/123');
+console.log('4. Мессенджер → запрашивает ссылку → получает превью!');
+console.log('✅ LocalStorage больше НЕ используется для превью!');
 
 // ✅ Проверка совместимости браузера
 function checkBrowserCompatibility() {
@@ -5632,44 +4908,17 @@ function checkBrowserCompatibility() {
    return features;
 }
 
-// ✅ Автоматическая проверка сети при загрузке
-async function autoNetworkCheck() {
-   if (window.ethereum && walletConnected) {
-       try {
-           const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-           const currentChainId = parseInt(chainId, 16);
-           
-           if (currentChainId !== 204) {
-               console.log('⚠️ Wrong network detected. Suggesting opBNB switch...');
-               
-               setTimeout(() => {
-                   if (confirm(
-                       currentLanguage === 'en' ? 'Switch to opBNB network for better performance?' :
-                       currentLanguage === 'ru' ? 'Переключиться на сеть opBNB для лучшей производительности?' :
-                       'Перемикнутися на мережу opBNB для кращої продуктивності?'
-                   )) {
-                       connectWallet();
-                   }
-               }, 3000);
-           }
-       } catch (error) {
-           console.warn('Auto network check failed:', error);
-       }
-   }
-}
-
 // ✅ Запуск финальных проверок
 setTimeout(() => {
    checkBrowserCompatibility();
-   autoNetworkCheck();
    
    // Показываем готовность системы
    if (currentUser && currentUser.userId) {
        notificationManager.show(
-           currentLanguage === 'en' ? '🎨 CardGift ready! Start creating amazing cards!' :
-           currentLanguage === 'ru' ? '🎨 CardGift готов! Создавайте потрясающие открытки!' :
-           '🎨 CardGift готовий! Створюйте приголомшливі листівки!',
-           'success', 3000
+           currentLanguage === 'en' ? '🎨 CardGift ready! Create cards that will be saved on SERVER!' :
+           currentLanguage === 'ru' ? '🎨 CardGift готов! Создавайте карты, которые сохраняются на СЕРВЕРЕ!' :
+           '🎨 CardGift готовий! Створюйте карти, які зберігаються на СЕРВЕРІ!',
+           'success', 4000
        );
    }
 }, 2000);
@@ -5756,34 +5005,30 @@ window.addEventListener('beforeunload', function() {
    console.log('🧹 Cleanup completed');
 });
 
-// ==================== 🎉 ФИНАЛ ====================
+// ==================== 🎉 ФИНАЛЬНОЕ СООБЩЕНИЕ ====================
 
 console.log(`
 🎨 ====================================
-🎁 CardGift Generator v2.0 ГОТОВ!
+🎁 CardGift Generator v2.1 ИСПРАВЛЕН!
 🎨 ====================================
 
-✅ Возможности:
-  🔗 Web3 интеграция с opBNB
-  👥 6 уровней пользователей  
-  💾 Умная архивная система
-  🎬 Поддержка YouTube/TikTok/Instagram
-  📱 Адаптивный дизайн
-  🌍 3 языка (EN/RU/UA)
-  🎨 5 стилей дизайна
-  📊 Система уведомлений
-  🛡️ Фильтрация контента
-  🔄 Автосохранение настроек
+✅ ПРОБЛЕМЫ ИСПРАВЛЕНЫ:
+  🚫 LocalStorage больше НЕ используется для превью
+  📡 Все карты сохраняются ТОЛЬКО на сервере
+  🎨 Превью генерируется на сервере для соцсетей
+  🗂️ Dashboard загружает данные С СЕРВЕРА
+  💾 Архив работает через API
+  🔄 Полная очистка памяти браузера
 
-🚀 Готов к работе!
-💡 Используйте cardGiftDebug для отладки
+✅ ПРАВИЛЬНЫЙ ПОРЯДОК:
+  1. Генератор → создает карту → сервер
+  2. Dashboard → показывает С СЕРВЕРА  
+  3. Отправка → ссылка api/card/123
+  4. Мессенджер → получает превью!
+
+🚀 Готов к работе БЕЗ проблем с памятью!
 `);
 
 </script>
 </body>
 </html>
-
-
-
-
-
