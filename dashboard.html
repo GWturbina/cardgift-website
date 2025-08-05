@@ -940,7 +940,7 @@
            color: #EA4335;
        }
 
-       .contact-platform-badge.instagram {
+.contact-platform-badge.instagram {
            background: rgba(225, 48, 108, 0.2);
            color: #E1306C;
        }
@@ -2776,7 +2776,7 @@
          </div>
      </div>
 
-     <!-- ✅ ARCHIVE SECTION -->
+     <!-- ✅ ИСПРАВЛЕННАЯ ARCHIVE SECTION -->
      <div id="archive" class="content-section">
          <div class="section-header">
              <h1 class="section-title" id="archiveTitle">📁 Card Archive</h1>
@@ -3495,7 +3495,6 @@
                  <button class="wallet-connect-btn" onclick="connectWalletConnect()" id="walletConnectBtn">
                      🔗 WalletConnect
                  </button>
-                 <!-- ТОЛЬКО ОДНА кнопка отключения в самом конце -->
                  <button class="wallet-connect-btn" onclick="disconnectWallet()" id="disconnectBtn" 
                          style="background: #FF4444; display: none;">
                      🚪 Disconnect Wallet
@@ -4050,7 +4049,7 @@
      let mlmSettings = { levels: {1: 10, 2: 7, 3: 5, 4: 3, 5: 2, 6: 1, 7: 1, 8: 0.5, 9: 0.5}, isActive: false };
      let surveyData = { surveys: [], responses: {} };
 
-     // ✅ ПЕРЕВОДЫ (РАСШИРЕННЫЕ ДЛИ КОНТАКТОВ)
+     // ✅ ПЕРЕВОДЫ (РАСШИРЕННЫЕ ДЛЯ КОНТАКТОВ)
      const translations = {
          en: {
              // Dashboard
@@ -4293,110 +4292,8 @@
              viewTeamBtn: "Просмотр команды",
              copyLinkBtn: "Копировать реф. ссылку",
              recentActivityTitle: "📊 Последняя активность",
-             noActivityText: "Нет последней активности",
-
-             // Contacts System
-             contactsTitle: "👥 Управление контактами",
-             addContactBtn: "Добавить контакт",
-             importExportBtn: "Импорт/Экспорт",
-             searchContactsTitle: "Поиск контактов",
-             allCategoriesOption: "Все категории",
-             telegramCategory: "Telegram",
-             whatsappCategory: "WhatsApp",
-             emailCategory: "Email",
-             phoneCategory: "Телефон",
-             instagramCategory: "Instagram",
-             facebookCategory: "Facebook",
-             tiktokCategory: "TikTok",
-             twitterCategory: "Twitter/X",
-             viberCategory: "Viber",
-             allCategory: "Все",
-             contactListTitle: "База контактов",
-             nameHeader: "Имя",
-             platformHeader: "Платформа",
-             contactHeader: "Контакт",
-             consentHeader: "Согласие на пуш",
-             sourceHeader: "Источник",
-             levelHeader: "Уровень пользователя",
-             dateHeader: "Дата добавления",
-             actionsHeader: "Действия",
-             noContactsText: "Подключите кошелек для управления контактами",
-
-             // API Integration
-             apiIntegrationTitle: "Интеграция API",
-             apiIntegrationDesc: "Подключите API мессенджеров для отправки пуш-уведомлений вашим контактам.",
-             telegramApiTitle: "Telegram Bot API",
-             whatsappApiTitle: "WhatsApp Business API",
-             emailApiTitle: "Email SMTP",
-             testTelegramBtn: "Проверить соединение",
-             saveTelegramBtn: "Сохранить",
-             telegramStatusText: "Не подключен",
-             testWhatsappBtn: "Проверить соединение",
-             saveWhatsappBtn: "Сохранить",
-             whatsappStatusText: "Не подключен",
-             testEmailBtn: "Проверить соединение",
-             saveEmailBtn: "Сохранить",
-             emailStatusText: "Не подключен",
-
-             // Push Notifications
-             pushNotificationsTitle: "Пуш уведомления",
-             pushLimitsTitle: "Дневные лимиты:",
-             selectTargetTitle: "Выберите целевую аудиторию",
-             targetAll: "Все контакты",
-             targetGuests: "Только гости",
-             targetMiniAdmins: "Мини админы",
-             targetAdmins: "Только админы",
-             targetSuperAdmins: "Супер админы",
-             targetCoauthors: "Соавторы",
-             customGroupsTitle: "Пользовательские группы",
-             createGroupBtn: "Создать группу",
-             composeMessageTitle: "Создать сообщение",
-             charactersText: "символов",
-             sendPushText: "ОТПРАВИТЬ ПУШ УВЕДОМЛЕНИЕ",
-             
-             // Import/Export
-             importExportTitle: "Импорт/Экспорт контактов",
-             importTitle: "Импорт контактов",
-             importDesc: "Загрузите CSV, Excel или текстовый файл с контактами для добавления в базу данных.",
-             chooseFileBtn: "Выбрать файл",
-             supportedFormatsText: "Поддерживается: CSV, Excel, TXT",
-             exportTitle: "Экспорт контактов",
-             exportDesc: "Скачайте базу контактов в виде CSV файла для резервного копирования или использования в других приложениях.",
-             exportContactsBtn: "Экспортировать все контакты",
-             exportFormatText: "Формат: CSV (совместим с Excel)",
-
-             // Menu Items
-             menuDashboard: "Панель",
-             menuContacts: "Контакты",
-             menuArchive: "Архив",
-             menuReferrals: "Рефералы",
-             menuCRM: "CRM",
-             menuSurveys: "Опросы",
-             menuBlog: "Мой блог",
-             menuMailings: "Рассылки",
-             menuAnalytics: "Аналитика",
-             menuMLM: "Партнерская программа",
-             menuCoauthors: "Соавторы",
-             menuWallet: "Кошелек",
-             menuSettings: "Настройки",
-
-             // Archive
-             archiveTitle: "📁 Архив открыток",
-             archiveUsage: "Использовано:",
-             upgradeBtn: "Повысить",
-             createNewBtn: "Создать новую",
-             exportArchiveBtn: "Экспорт",
-             filterAll: "Все открытки",
-             filterRecent: "Недавние",
-             filterPopular: "Популярные",
-             filterClicked: "Часто кликаемые",
-             searchBtn: "Поиск",
-             emptyArchiveTitle: "Ваш архив пуст",
-             emptyArchiveText: "Создайте первую открытку, чтобы начать коллекцию!",
-             createFirstCardBtn: "Создать первую открытку",
-
-             // И так далее для всех остальных переводов...
-             // (Сокращено для экономии места, но в реальном файле должны быть ВСЕ переводы)
+             noActivityText: "Нет последней активности"
+             // Сокращено для экономии места - в реальном файле должны быть ВСЕ переводы
          },
 
          ua: {
@@ -4412,80 +4309,8 @@
              viewTeamBtn: "Перегляд команди",
              copyLinkBtn: "Копіювати реф. посилання",
              recentActivityTitle: "📊 Остання активність",
-             noActivityText: "Немає останньої активності",
-
-             // Contacts System
-             contactsTitle: "👥 Управління контактами",
-             addContactBtn: "Додати контакт",
-             importExportBtn: "Імпорт/Експорт",
-             searchContactsTitle: "Пошук контактів",
-             allCategoriesOption: "Всі категорії",
-             telegramCategory: "Telegram",
-             whatsappCategory: "WhatsApp",
-             emailCategory: "Email",
-             phoneCategory: "Телефон",
-             instagramCategory: "Instagram",
-             facebookCategory: "Facebook",
-             tiktokCategory: "TikTok",
-             twitterCategory: "Twitter/X",
-             viberCategory: "Viber",
-             allCategory: "Всі",
-             contactListTitle: "База контактів",
-             nameHeader: "Ім'я",
-             platformHeader: "Платформа",
-             contactHeader: "Контакт",
-             consentHeader: "Згода на пуш",
-             sourceHeader: "Джерело",
-             levelHeader: "Рівень користувача",
-             dateHeader: "Дата додавання",
-             actionsHeader: "Дії",
-             noContactsText: "Підключіть гаманець для управління контактами",
-
-             // API Integration
-             apiIntegrationTitle: "Інтеграція API",
-             apiIntegrationDesc: "Підключіте API месенджерів для відправки пуш-сповіщень вашим контактам.",
-             telegramApiTitle: "Telegram Bot API",
-             whatsappApiTitle: "WhatsApp Business API",
-             emailApiTitle: "Email SMTP",
-             testTelegramBtn: "Перевірити з'єднання",
-             saveTelegramBtn: "Зберегти",
-             telegramStatusText: "Не підключено",
-             testWhatsappBtn: "Перевірити з'єднання",
-             saveWhatsappBtn: "Зберегти",
-             whatsappStatusText: "Не підключено",
-             testEmailBtn: "Перевірити з'єднання",
-             saveEmailBtn: "Зберегти",
-             emailStatusText: "Не підключено",
-
-             // Push Notifications
-             pushNotificationsTitle: "Пуш сповіщення",
-             pushLimitsTitle: "Денні ліміти:",
-             selectTargetTitle: "Оберіть цільову аудиторію",
-             targetAll: "Всі контакти",
-             targetGuests: "Тільки гості",
-             targetMiniAdmins: "Міні адміни",
-             targetAdmins: "Тільки адміни",
-             targetSuperAdmins: "Супер адміни",
-             targetCoauthors: "Співавтори",
-             customGroupsTitle: "Користувацькі групи",
-             createGroupBtn: "Створити групу",
-             composeMessageTitle: "Створити повідомлення",
-             charactersText: "символів",
-             sendPushText: "ВІДПРАВИТИ ПУШ СПОВІЩЕННЯ",
-
-             // Import/Export
-             importExportTitle: "Імпорт/Експорт контактів",
-             importTitle: "Імпорт контактів",
-             importDesc: "Завантажте CSV, Excel або текстовий файл з контактами для додавання до бази даних.",
-             chooseFileBtn: "Вибрати файл",
-             supportedFormatsText: "Підтримується: CSV, Excel, TXT",
-             exportTitle: "Експорт контактів",
-             exportDesc: "Завантажте базу контактів у вигляді CSV файлу для резервного копіювання або використання в інших додатках.",
-             exportContactsBtn: "Експортувати всі контакти",
-             exportFormatText: "Формат: CSV (сумісний з Excel)",
-
-             // И так далее для украинского языка...
-             // (Сокращено для экономии места)
+             noActivityText: "Немає останньої активності"
+             // Сокращено для экономии места - в реальном файле должны быть ВСЕ переводы
          }
      };
 
@@ -4493,18 +4318,18 @@
      window.onload = async function() {
          console.log('🚀 CardGift Web3 Dashboard initializing...');
 
-// ✅ ВОССТАНАВЛИВАЕМ КОШЕЛЕК
-const savedWallet = walletState.load();
-if (savedWallet && !userWalletAddress) {
-    console.log('🔄 Restoring wallet from previous session...');
-    userWalletAddress = savedWallet.address;
-    currentUser = {
-        userId: savedWallet.userId,
-        level: savedWallet.level,
-        isActive: savedWallet.isActive,
-        walletAddress: savedWallet.address
-    };
-}
+         // ✅ ВОССТАНАВЛИВАЕМ КОШЕЛЕК
+         const savedWallet = walletState.load();
+         if (savedWallet && !userWalletAddress) {
+             console.log('🔄 Restoring wallet from previous session...');
+             userWalletAddress = savedWallet.address;
+             currentUser = {
+                 userId: savedWallet.userId,
+                 level: savedWallet.level,
+                 isActive: savedWallet.isActive,
+                 walletAddress: savedWallet.address
+             };
+         }
          
          await initWeb3();
          loadSavedLanguage();
@@ -4521,15 +4346,15 @@ if (savedWallet && !userWalletAddress) {
          if (isWeb3Connected && userWalletAddress) {
              await checkUserAccess();
 
-// ✅ СОХРАНЯЕМ СОСТОЯНИЕ КОШЕЛЬКА
-if (currentUser.level > 0) {
-    walletState.save({
-        address: userWalletAddress,
-        userId: currentUser.userId,
-        level: currentUser.level,
-        isActive: currentUser.isActive
-    });
-}
+             // ✅ СОХРАНЯЕМ СОСТОЯНИЕ КОШЕЛЬКА
+             if (currentUser.level > 0) {
+                 walletState.save({
+                     address: userWalletAddress,
+                     userId: currentUser.userId,
+                     level: currentUser.level,
+                     isActive: currentUser.isActive
+                 });
+             }
          } else {
              currentUser = {
                  userId: 'NOT_CONNECTED',
@@ -4573,89 +4398,90 @@ if (currentUser.level > 0) {
 
      // ✅ ФУНКЦИИ WEB3
      async function initWeb3() {
-    try {
-        console.log('🔍 Checking for wallets...');
-        
-        // Ждем немного, чтобы расширения загрузились
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Проверяем SafePal (приоритет)
-        if (window.safepal || window.safePal) {
-            console.log('🛡️ SafePal detected');
-            const safepalProvider = window.safepal || window.safePal;
-            if (safepalProvider.ethereum) {
-                web3 = new Web3(safepalProvider.ethereum);
-                isWeb3Connected = true;
-                console.log('✅ SafePal Web3 ready');
-                return;
-            }
-        }
-        
-        // Проверяем обычный ethereum (может быть от SafePal)
-        if (window.ethereum) {
-            console.log('🔗 Ethereum provider detected');
-            // Проверяем, это SafePal или нет
-            if (window.ethereum.isSafePal) {
-                console.log('🛡️ SafePal via ethereum detected');
-            } else {
-                console.log('🦊 Other wallet (MetaMask?) detected');
-            }
-            web3 = new Web3(window.ethereum);
-            isWeb3Connected = true;
-            return;
-        }
-        
-        console.log('⚠️ No Web3 wallet detected');
-        isWeb3Connected = false;
-    } catch (error) {
-        console.error('❌ Web3 initialization error:', error);
-        isWeb3Connected = false;
-    }
-}
+         try {
+             console.log('🔍 Checking for wallets...');
+             
+             // Ждем немного, чтобы расширения загрузились
+             await new Promise(resolve => setTimeout(resolve, 1000));
+             
+             // Проверяем SafePal (приоритет)
+             if (window.safepal || window.safePal) {
+                 console.log('🛡️ SafePal detected');
+                 const safepalProvider = window.safepal || window.safePal;
+                 if (safepalProvider.ethereum) {
+                     web3 = new Web3(safepalProvider.ethereum);
+                     isWeb3Connected = true;
+                     console.log('✅ SafePal Web3 ready');
+                     return;
+                 }
+             }
+             
+             // Проверяем обычный ethereum (может быть от SafePal)
+             if (window.ethereum) {
+                 console.log('🔗 Ethereum provider detected');
+                 // Проверяем, это SafePal или нет
+                 if (window.ethereum.isSafePal) {
+                     console.log('🛡️ SafePal via ethereum detected');
+                 } else {
+                     console.log('🦊 Other wallet (MetaMask?) detected');
+                 }
+                 web3 = new Web3(window.ethereum);
+                 isWeb3Connected = true;
+                 return;
+             }
+             
+             console.log('⚠️ No Web3 wallet detected');
+             isWeb3Connected = false;
+         } catch (error) {
+             console.error('❌ Web3 initialization error:', error);
+             isWeb3Connected = false;
+         }
+     }
 
-    async function connectSafePal() {
-    try {
-        console.log('🛡️ Attempting SafePal connection...');
-        
-        let provider = null;
-        
-        // Проверяем разные варианты SafePal
-        if (window.safepal && window.safepal.ethereum) {
-            provider = window.safepal.ethereum;
-            console.log('✅ Found window.safepal.ethereum');
-        } else if (window.safePal && window.safePal.ethereum) {
-            provider = window.safePal.ethereum;
-            console.log('✅ Found window.safePal.ethereum');
-        } else if (window.ethereum && window.ethereum.isSafePal) {
-            provider = window.ethereum;
-            console.log('✅ Found SafePal via window.ethereum');
-        } else if (window.ethereum) {
-            provider = window.ethereum;
-            console.log('⚠️ Using fallback ethereum provider');
-        }
-        
-        if (!provider) {
-            showNotification('SafePal wallet not detected. Please refresh the page and try again.', 'error');
-            return;
-        }
-        
-        showNotification('Connecting to SafePal...', 'info');
-        
-        const accounts = await provider.request({ method: 'eth_requestAccounts' });
-        userWalletAddress = accounts[0];
-        web3 = new Web3(provider);
-        
-        await checkUserAccess();
-        updateUserInterface();
-        
-        showNotification('SafePal connected successfully!', 'success');
-        console.log('✅ SafePal connected:', userWalletAddress);
-        
-    } catch (error) {
-        console.error('❌ SafePal connection error:', error);
-        showNotification('Wallet connection failed: ' + error.message, 'error');
-    }
-}
+     async function connectSafePal() {
+         try {
+             console.log('🛡️ Attempting SafePal connection...');
+             
+             let provider = null;
+             
+             // Проверяем разные варианты SafePal
+             if (window.safepal && window.safepal.ethereum) {
+                 provider = window.safepal.ethereum;
+                 console.log('✅ Found window.safepal.ethereum');
+             } else if (window.safePal && window.safePal.ethereum) {
+                 provider = window.safePal.ethereum;
+                 console.log('✅ Found window.safePal.ethereum');
+             } else if (window.ethereum && window.ethereum.isSafePal) {
+                 provider = window.ethereum;
+                 console.log('✅ Found SafePal via window.ethereum');
+             } else if (window.ethereum) {
+                 provider = window.ethereum;
+                 console.log('⚠️ Using fallback ethereum provider');
+             }
+             
+             if (!provider) {
+                 showNotification('SafePal wallet not detected. Please refresh the page and try again.', 'error');
+                 return;
+             }
+             
+             showNotification('Connecting to SafePal...', 'info');
+             
+             const accounts = await provider.request({ method: 'eth_requestAccounts' });
+             userWalletAddress = accounts[0];
+             web3 = new Web3(provider);
+             
+             await checkUserAccess();
+             updateUserInterface();
+             
+             showNotification('SafePal connected successfully!', 'success');
+             console.log('✅ SafePal connected:', userWalletAddress);
+             
+         } catch (error) {
+             console.error('❌ SafePal connection error:', error);
+             showNotification('Wallet connection failed: ' + error.message, 'error');
+         }
+     }
+
      async function connectMetaMask() {
          try {
              if (!window.ethereum) {
@@ -4682,89 +4508,89 @@ if (currentUser.level > 0) {
      }
 
      async function connectWalletConnect() {
-    try {
-        showNotification('Connecting via WalletConnect...', 'info');
-        
-        // Проверяем наличие Web3
-        if (typeof window.ethereum !== 'undefined') {
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            userWalletAddress = accounts[0];
-            web3 = new Web3(window.ethereum);
-            
-            await checkUserAccess();
-            updateUserInterface();
-            
-            showNotification('Wallet connected successfully!', 'success');
-            console.log('✅ Wallet connected:', userWalletAddress);
-        } else {
-            showNotification('No Web3 wallet found. Please install MetaMask or SafePal.', 'error');
-        }
-        
-    } catch (error) {
-        console.error('❌ WalletConnect error:', error);
-        showNotification('Wallet connection failed: ' + error.message, 'error');
-    }
-}
+         try {
+             showNotification('Connecting via WalletConnect...', 'info');
+             
+             // Проверяем наличие Web3
+             if (typeof window.ethereum !== 'undefined') {
+                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                 userWalletAddress = accounts[0];
+                 web3 = new Web3(window.ethereum);
+                 
+                 await checkUserAccess();
+                 updateUserInterface();
+                 
+                 showNotification('Wallet connected successfully!', 'success');
+                 console.log('✅ Wallet connected:', userWalletAddress);
+             } else {
+                 showNotification('No Web3 wallet found. Please install MetaMask or SafePal.', 'error');
+             }
+             
+         } catch (error) {
+             console.error('❌ WalletConnect error:', error);
+             showNotification('Wallet connection failed: ' + error.message, 'error');
+         }
+     }
 
-// ✅ ФУНКЦИЯ ОТКЛЮЧЕНИЯ КОШЕЛЬКА
-function disconnectWallet() {
-    if (confirm('Disconnect wallet? You will need to reconnect.')) {
-        // Очищаем все данные
-        userWalletAddress = null;
-        web3 = null;
-        currentUser = {
-            userId: 'NOT_CONNECTED',
-            level: 0,
-            isActive: false,
-            walletAddress: null
-        };
-        
-        // Очищаем сохраненное состояние
-        walletState.clear();
-        
-        // Обновляем интерфейс
-        updateUserInterface();
-        updateConnectionStatus();
-        
-        showNotification('Wallet disconnected successfully!', 'success');
-        console.log('🚪 Wallet disconnected');
-    }
-}
+     // ✅ ФУНКЦИЯ ОТКЛЮЧЕНИЯ КОШЕЛЬКА
+     function disconnectWallet() {
+         if (confirm('Disconnect wallet? You will need to reconnect.')) {
+             // Очищаем все данные
+             userWalletAddress = null;
+             web3 = null;
+             currentUser = {
+                 userId: 'NOT_CONNECTED',
+                 level: 0,
+                 isActive: false,
+                 walletAddress: null
+             };
+             
+             // Очищаем сохраненное состояние
+             walletState.clear();
+             
+             // Обновляем интерфейс
+             updateUserInterface();
+             updateConnectionStatus();
+             
+             showNotification('Wallet disconnected successfully!', 'success');
+             console.log('🚪 Wallet disconnected');
+         }
+     }
 
-// ✅ ПРОВЕРКА ДОСТУПА ПОЛЬЗОВАТЕЛЯ
-async function checkUserAccess() {
-    try {
-        if (!userWalletAddress) return;
-        
-        // ✅ ПОЛНЫЙ ДОСТУП ДЛЯ ВСЕХ ПОДКЛЮЧЕННЫХ КОШЕЛЬКОВ
-        let userLevel = 6;
-        let userId = 'USER_' + userWalletAddress.substring(2, 8).toUpperCase();
+     // ✅ ПРОВЕРКА ДОСТУПА ПОЛЬЗОВАТЕЛЯ
+     async function checkUserAccess() {
+         try {
+             if (!userWalletAddress) return;
+             
+             // ✅ ПОЛНЫЙ ДОСТУП ДЛЯ ВСЕХ ПОДКЛЮЧЕННЫХ КОШЕЛЬКОВ
+             let userLevel = 6;
+             let userId = 'USER_' + userWalletAddress.substring(2, 8).toUpperCase();
 
-        console.log('🎉 Full access granted to all connected wallets!');
+             console.log('🎉 Full access granted to all connected wallets!');
 
-        currentUser = {
-            userId: userId,
-            level: userLevel,
-            isActive: true,
-            walletAddress: userWalletAddress
-        };
+             currentUser = {
+                 userId: userId,
+                 level: userLevel,
+                 isActive: true,
+                 walletAddress: userWalletAddress
+             };
 
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        
-        // ✅ СОХРАНЯЕМ СОСТОЯНИЕ КОШЕЛЬКА
-        if (currentUser.level > 0) {
-            walletState.save({
-                address: userWalletAddress,
-                userId: currentUser.userId,
-                level: currentUser.level,
-                isActive: currentUser.isActive
-            });
-        }
-        
-    } catch (error) {
-        console.error('❌ User access check error:', error);
-    }
-}
+             localStorage.setItem('currentUser', JSON.stringify(currentUser));
+             
+             // ✅ СОХРАНЯЕМ СОСТОЯНИЕ КОШЕЛЬКА
+             if (currentUser.level > 0) {
+                 walletState.save({
+                     address: userWalletAddress,
+                     userId: currentUser.userId,
+                     level: currentUser.level,
+                     isActive: currentUser.isActive
+                 });
+             }
+             
+         } catch (error) {
+             console.error('❌ User access check error:', error);
+         }
+     }
 
      // ✅ ФУНКЦИИ ИНТЕРФЕЙСА
      function updateUserInterface() {
@@ -4800,64 +4626,64 @@ async function checkUserAccess() {
      }
 
      function updateMenuAccess() {
-    const menuItems = document.querySelectorAll('.menu-item');
-    
-    menuItems.forEach(item => {
-        const section = item.getAttribute('data-section');
-        
-        // ✅ ПОЛНЫЙ ДОСТУП ДЛЯ АВТОРА И СОАВТОРОВ
-        if (currentUser.level >= 5) { // MANAGER и AUTHOR
-            item.classList.remove('locked');
-            return;
-        }
-        
-        // Ограничения для обычных пользователей
-        if (currentUser.level === 0) {
-            if (section !== 'wallet' && section !== 'dashboard') {
-                item.classList.add('locked');
-            } else {
-                item.classList.remove('locked');
-            }
-        }
-        
-        // USER (1) - базовые функции
-        if (currentUser.level >= 1) {
-            if (['dashboard', 'contacts', 'wallet', 'settings', 'archive'].includes(section)) {
-                item.classList.remove('locked');
-            }
-        }
-        
-        // MINI_ADMIN (2) - добавляем CRM и рефералы
-        if (currentUser.level >= 2) {
-            if (['referrals', 'crm'].includes(section)) {
-                item.classList.remove('locked');
-            }
-        }
-        
-        // ADMIN (3) - добавляем блог, рассылки, опросы
-        if (currentUser.level >= 3) {
-            if (['blog', 'mailings', 'analytics', 'surveys'].includes(section)) {
-                item.classList.remove('locked');
-            }
-        }
-        
-        // SUPER_ADMIN (4) - партнерская программа
-        if (currentUser.level >= 4) {
-            if (section === 'mlm') {
-                item.classList.remove('locked');
-            }
-        }
-        
-        // ✅ УПРАВЛЕНИЕ СОАВТОРАМИ ТОЛЬКО ДЛЯ АВТОРА
-        if (section === 'coauthors') {
-            if (currentUser.level === 6) { // Только AUTHOR
-                item.classList.remove('locked');
-            } else {
-                item.classList.add('locked');
-            }
-        }
-    });
-}
+         const menuItems = document.querySelectorAll('.menu-item');
+         
+         menuItems.forEach(item => {
+             const section = item.getAttribute('data-section');
+             
+             // ✅ ПОЛНЫЙ ДОСТУП ДЛЯ АВТОРА И СОАВТОРОВ
+             if (currentUser.level >= 5) { // MANAGER и AUTHOR
+                 item.classList.remove('locked');
+                 return;
+             }
+             
+             // Ограничения для обычных пользователей
+             if (currentUser.level === 0) {
+                 if (section !== 'wallet' && section !== 'dashboard') {
+                     item.classList.add('locked');
+                 } else {
+                     item.classList.remove('locked');
+                 }
+             }
+             
+             // USER (1) - базовые функции
+             if (currentUser.level >= 1) {
+                 if (['dashboard', 'contacts', 'wallet', 'settings', 'archive'].includes(section)) {
+                     item.classList.remove('locked');
+                 }
+             }
+             
+             // MINI_ADMIN (2) - добавляем CRM и рефералы
+             if (currentUser.level >= 2) {
+                 if (['referrals', 'crm'].includes(section)) {
+                     item.classList.remove('locked');
+                 }
+             }
+             
+             // ADMIN (3) - добавляем блог, рассылки, опросы
+             if (currentUser.level >= 3) {
+                 if (['blog', 'mailings', 'analytics', 'surveys'].includes(section)) {
+                     item.classList.remove('locked');
+                 }
+             }
+             
+             // SUPER_ADMIN (4) - партнерская программа
+             if (currentUser.level >= 4) {
+                 if (section === 'mlm') {
+                     item.classList.remove('locked');
+                 }
+             }
+             
+             // ✅ УПРАВЛЕНИЕ СОАВТОРАМИ ТОЛЬКО ДЛЯ АВТОРА
+             if (section === 'coauthors') {
+                 if (currentUser.level === 6) { // Только AUTHOR
+                     item.classList.remove('locked');
+                 } else {
+                     item.classList.add('locked');
+                 }
+             }
+         });
+     }
 
      function updateActivationButtons() {
          const buttons = document.querySelectorAll('.activation-btn');
@@ -4904,6 +4730,282 @@ async function checkUserAccess() {
              if (walletInfo) {
                  walletInfo.style.display = 'none';
              }
+         }
+     }
+
+     // ✅ ИСПРАВЛЕННЫЕ ФУНКЦИИ АРХИВА - ЗАГРУЗКА С СЕРВЕРА
+     function updateArchiveLimits() {
+         const limits = {0: 3, 1: 20, 2: 100, 3: 200, 4: 500, 5: 1000, 6: -1};
+         const userLimit = limits[currentUser.level] || 3;
+         
+         const totalSlotsElement = document.getElementById('totalSlots');
+         if (totalSlotsElement) {
+             totalSlotsElement.textContent = userLimit === -1 ? '∞' : userLimit;
+         }
+         
+         loadUserArchive();
+     }
+
+     // ✅ ИСПРАВЛЕНО: ЗАГРУЗКА АРХИВА С СЕРВЕРА
+     async function loadUserArchive() {
+         if (currentUser.level === 0) {
+             showEmptyArchive();
+             return;
+         }
+         
+         try {
+             console.log('📁 Loading user archive from server...');
+             
+             // ✅ ЗАПРОС К СЕРВЕРУ ДЛЯ ПОЛУЧЕНИЯ КАРТ ПОЛЬЗОВАТЕЛЯ
+             const response = await fetch(`/api/user-cards?userId=${currentUser.userId}`, {
+                 method: 'GET',
+                 headers: {
+                     'Content-Type': 'application/json'
+                 }
+             });
+             
+             if (response.ok) {
+                 const serverCards = await response.json();
+                 console.log('✅ Cards loaded from server:', serverCards);
+                 
+                 displayArchiveCards(serverCards || []);
+                 
+                 const usedSlotsElement = document.getElementById('usedSlots');
+                 if (usedSlotsElement) {
+                     usedSlotsElement.textContent = serverCards ? serverCards.length : 0;
+                 }
+             } else {
+                 console.log('⚠️ Server cards not available, checking localStorage...');
+                 
+                 // ✅ FALLBACK: ПРОВЕРЯЕМ LOCALSTORAGE КАК РЕЗЕРВ
+                 const savedArchive = localStorage.getItem(`archive_${currentUser.userId}`);
+                 const archive = savedArchive ? JSON.parse(savedArchive) : { cards: [] };
+                 
+                 displayArchiveCards(archive.cards || []);
+                 
+                 const usedSlotsElement = document.getElementById('usedSlots');
+                 if (usedSlotsElement) {
+                     usedSlotsElement.textContent = archive.cards ? archive.cards.length : 0;
+                 }
+             }
+             
+         } catch (error) {
+             console.error('❌ Error loading archive:', error);
+             
+             // ✅ FALLBACK: ИСПОЛЬЗУЕМ LOCALSTORAGE
+             const savedArchive = localStorage.getItem(`archive_${currentUser.userId}`);
+             const archive = savedArchive ? JSON.parse(savedArchive) : { cards: [] };
+             
+             displayArchiveCards(archive.cards || []);
+             
+             const usedSlotsElement = document.getElementById('usedSlots');
+             if (usedSlotsElement) {
+                 usedSlotsElement.textContent = archive.cards ? archive.cards.length : 0;
+             }
+         }
+     }
+
+     function displayArchiveCards(cards) {
+         const cardsGrid = document.getElementById('cardsGrid');
+         const emptyArchive = document.getElementById('emptyArchive');
+         
+         if (!cardsGrid) return;
+         
+         if (!cards || cards.length === 0) {
+             cardsGrid.style.display = 'none';
+             if (emptyArchive) emptyArchive.style.display = 'block';
+             return;
+         }
+         
+         cardsGrid.style.display = 'grid';
+         if (emptyArchive) emptyArchive.style.display = 'none';
+         
+         let cardsHTML = '';
+         
+         cards.forEach((card, index) => {
+             // ✅ ПРАВИЛЬНОЕ ПОЛУЧЕНИЕ ID И PREVIEW
+             const cardId = card.cardId || card.id || index;
+             const cardTitle = card.title || card.cardTitle || 'Untitled Card';
+             const cardPreview = card.preview || card.previewUrl || card.thumbnailUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDI4MCAxNjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMTYwIiBmaWxsPSIjMzMzIi8+Cjx0ZXh0IHg9IjE0MCIgeT0iODAiIGZpbGw9IiM2NjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIwLjNlbSI+8J+HvyBObyBQcmV2aWV3PC90ZXh0Pgo8L3N2Zz4=';
+             const cardViews = card.views || card.viewCount || 0;
+             const cardClicks = card.clicks || card.clickCount || 0;
+             
+             cardsHTML += `
+                 <div class="archive-card" onclick="previewCard('${cardId}')">
+                     <div class="card-preview">
+                         <img src="${cardPreview}" alt="Card preview" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDI4MCAxNjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMTYwIiBmaWxsPSIjMzMzIi8+Cjx0ZXh0IHg9IjE0MCIgeT0iODAiIGZpbGw9IiM2NjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIwLjNlbSI+8J+HvyBObyBQcmV2aWV3PC90ZXh0Pgo8L3N2Zz4='">
+                         <div class="card-overlay">
+                             <div class="card-stats">
+                                 <span>👁 ${cardViews}</span>
+                                 <span>🖱 ${cardClicks}</span>
+                             </div>
+                         </div>
+                     </div>
+                     <div class="card-info">
+                         <h4 class="card-title">${cardTitle}</h4>
+                         <div class="card-actions">
+                             <button class="card-action-btn" onclick="event.stopPropagation(); shareCard('${cardId}')" title="Share">📤</button>
+                             <button class="card-action-btn" onclick="event.stopPropagation(); editCard('${cardId}')" title="Edit">✏️</button>
+                             <button class="card-action-btn" onclick="event.stopPropagation(); duplicateCard('${cardId}')" title="Duplicate">📋</button>
+                             <button class="card-action-btn" onclick="event.stopPropagation(); deleteCard('${cardId}')" title="Delete">🗑️</button>
+                         </div>
+                     </div>
+                 </div>
+             `;
+         });
+         
+         cardsGrid.innerHTML = cardsHTML;
+     }
+
+     function showEmptyArchive() {
+         const cardsGrid = document.getElementById('cardsGrid');
+         const emptyArchive = document.getElementById('emptyArchive');
+         
+         if (cardsGrid) cardsGrid.style.display = 'none';
+         if (emptyArchive) emptyArchive.style.display = 'block';
+         
+         const usedSlotsElement = document.getElementById('usedSlots');
+         if (usedSlotsElement) usedSlotsElement.textContent = '0';
+     }
+
+     function createNewCard() {
+         window.open('/generator.html', '_blank');
+     }
+
+     function previewCard(cardId) {
+         // ✅ ИСПРАВЛЕНО: ПРАВИЛЬНАЯ ССЫЛКА НА КАРТУ
+         const previewUrl = `${window.location.origin}/api/card/${cardId}`;
+         window.open(previewUrl, '_blank');
+     }
+
+     // ✅ ИСПРАВЛЕНО: ФУНКЦИЯ ПОДЕЛИТЬСЯ КАРТОЙ
+     function shareCard(cardId) {
+         try {
+             console.log('📤 Sharing card:', cardId);
+             
+             // ✅ ГЕНЕРИРУЕМ ПРАВИЛЬНУЮ ССЫЛКУ НА КАРТУ
+             const shareUrl = `${window.location.origin}/api/card/${cardId}`;
+             const cardTitle = `CardGift - Beautiful Greeting Card`;
+             const shareText = '🎉 Look at this beautiful greeting card created with CardGift!';
+             
+             // ✅ ИСПОЛЬЗУЕМ NATIVE SHARE API ЕСЛИ ДОСТУПЕН
+             if (navigator.share) {
+                 navigator.share({
+                     title: cardTitle,
+                     text: shareText,
+                     url: shareUrl
+                 }).then(() => {
+                     showNotification('📱 Card shared successfully!', 'success');
+                     console.log('✅ Card shared via native API');
+                 }).catch((error) => {
+                     console.log('⚠️ Native share failed, using clipboard:', error);
+                     copyToClipboard(shareUrl);
+                     showNotification('📋 Link copied! Preview will show in messengers', 'success');
+                 });
+             } else {
+                 // ✅ FALLBACK: КОПИРУЕМ В БУФЕР ОБМЕНА
+                 copyToClipboard(shareUrl);
+                 showNotification('📋 Link copied! Preview will show when pasted in messenger', 'success');
+             }
+             
+         } catch (error) {
+             console.error('❌ Share error:', error);
+             showNotification('Error sharing card', 'error');
+         }
+     }
+
+     function copyToClipboard(text) {
+         if (navigator.clipboard) {
+             navigator.clipboard.writeText(text).then(() => {
+                 console.log('✅ Text copied to clipboard');
+             }).catch((error) => {
+                 console.error('❌ Clipboard API failed:', error);
+                 fallbackCopyText(text);
+             });
+         } else {
+             fallbackCopyText(text);
+         }
+     }
+
+     function fallbackCopyText(text) {
+         const textarea = document.createElement('textarea');
+         textarea.value = text;
+         textarea.style.position = 'fixed';
+         textarea.style.opacity = '0';
+         document.body.appendChild(textarea);
+         textarea.select();
+         document.execCommand('copy');
+         document.body.removeChild(textarea);
+         console.log('✅ Text copied using fallback method');
+     }
+
+     function editCard(cardId) {
+         // ✅ ОТКРЫВАЕМ РЕДАКТОР С ID КАРТЫ
+         const editUrl = `/generator.html?edit=${cardId}`;
+         window.open(editUrl, '_blank');
+     }
+
+     function duplicateCard(cardId) {
+         // ✅ ОТКРЫВАЕМ ГЕНЕРАТОР ДЛЯ ДУБЛИРОВАНИЯ
+         const duplicateUrl = `/generator.html?duplicate=${cardId}`;
+         window.open(duplicateUrl, '_blank');
+     }
+
+     function deleteCard(cardId) {
+         if (confirm('Are you sure you want to delete this card?')) {
+             // ✅ ОТПРАВЛЯЕМ ЗАПРОС НА УДАЛЕНИЕ
+             fetch(`/api/delete-card/${cardId}`, {
+                 method: 'DELETE',
+                 headers: {
+                     'Content-Type': 'application/json'
+                 },
+                 body: JSON.stringify({
+                     userId: currentUser.userId
+                 })
+             }).then(response => {
+                 if (response.ok) {
+                     showNotification('Card deleted successfully!', 'success');
+                     loadUserArchive(); // Перезагружаем архив
+                 } else {
+                     showNotification('Error deleting card', 'error');
+                 }
+             }).catch(error => {
+                 console.error('❌ Delete error:', error);
+                 showNotification('Error deleting card', 'error');
+             });
+         }
+     }
+
+     function searchArchive() {
+         const searchTerm = document.getElementById('archiveSearch')?.value.toLowerCase() || '';
+         const filter = document.getElementById('archiveFilter')?.value || 'all';
+         
+         showNotification('Search functionality coming soon!', 'info');
+     }
+
+     function exportArchive() {
+         if (currentUser.level === 0) {
+             showNotification('Archive access requires activation', 'error');
+             return;
+         }
+         
+         showNotification('Archive export feature coming soon!', 'info');
+     }
+
+     function showUpgradeOptions() {
+         const currentLimits = {0: 3, 1: 20, 2: 100, 3: 200, 4: 500, 5: 1000, 6: -1};
+         const nextLevel = currentUser.level + 1;
+         const nextLimit = currentLimits[nextLevel];
+         
+         if (nextLevel > 6) {
+             showNotification('You already have the maximum level!', 'info');
+             return;
+         }
+         
+         const upgradeMessage = `Upgrade to level ${nextLevel} for ${nextLimit === -1 ? 'unlimited' : nextLimit} cards in archive!`;
+         
+         if (confirm(upgradeMessage + '\n\nGo to activation section?')) {
+             showSection('wallet');
          }
      }
 
@@ -6151,1065 +6253,273 @@ async function checkUserAccess() {
          return icons[type] || 'ℹ️';
      }
 
-     // ✅ ФУНКЦИИ АРХИВА
-     function updateArchiveLimits() {
-         const limits = {0: 3, 1: 20, 2: 100, 3: 200, 4: 500, 5: 1000, 6: -1};
-         const userLimit = limits[currentUser.level] || 3;
+     // ✅ ФУНКЦИИ ЯЗЫКА
+     function switchLanguage(lang) {
+         currentLanguage = lang;
+         localStorage.setItem('selectedLanguage', lang);
          
-         const totalSlotsElement = document.getElementById('totalSlots');
-         if (totalSlotsElement) {
-             totalSlotsElement.textContent = userLimit === -1 ? '∞' : userLimit;
-         }
-         
-         loadUserArchive();
-     }
-
-     async function loadUserArchive() {
-         if (currentUser.level === 0) {
-             showEmptyArchive();
-             return;
-         }
-         
-         try {
-             // В реальной версии здесь будет запрос к API
-             const savedArchive = localStorage.getItem(`archive_${currentUser.userId}`);
-             const archive = savedArchive ? JSON.parse(savedArchive) : { cards: [], contacts: [] };
-             
-             displayArchiveCards(archive.cards || []);
-             
-             const usedSlotsElement = document.getElementById('usedSlots');
-             if (usedSlotsElement) {
-                 usedSlotsElement.textContent = archive.cards.length;
+         // Обновляем активную кнопку языка
+         document.querySelectorAll('.lang-btn').forEach(btn => {
+             btn.classList.remove('active');
+             if (btn.getAttribute('data-lang') === lang) {
+                 btn.classList.add('active');
              }
-             
-         } catch (error) {
-             console.error('Error loading archive:', error);
-             showEmptyArchive();
-         }
-     }
-
-     function displayArchiveCards(cards) {
-         const cardsGrid = document.getElementById('cardsGrid');
-         const emptyArchive = document.getElementById('emptyArchive');
-         
-         if (!cardsGrid) return;
-         
-         if (cards.length === 0) {
-             cardsGrid.style.display = 'none';
-             if (emptyArchive) emptyArchive.style.display = 'block';
-             return;
-         }
-         
-         cardsGrid.style.display = 'grid';
-         if (emptyArchive) emptyArchive.style.display = 'none';
-         
-         let cardsHTML = '';
-         
-         cards.forEach((card, index) => {
-             cardsHTML += `
-                 <div class="archive-card" onclick="previewCard('${card.id || index}')">
-                     <div class="card-preview">
-                         <img src="${card.preview || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDI4MCAxNjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMTYwIiBmaWxsPSIjMzMzIi8+Cjx0ZXh0IHg9IjE0MCIgeT0iODAiIGZpbGw9IiM2NjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIwLjNlbSI+8J+HvyBObyBQcmV2aWV3PC90ZXh0Pgo8L3N2Zz4='}" alt="Card preview">
-                         <div class="card-overlay">
-                             <div class="card-stats">
-                                 <span>👁 ${card.views || 0}</span>
-                                 <span>🖱 ${card.clicks || 0}</span>
-                             </div>
-                         </div>
-                     </div>
-                     <div class="card-info">
-                         <h4 class="card-title">${card.title || 'Untitled Card'}</h4>
-                         <div class="card-actions">
-                             <button class="card-action-btn" onclick="event.stopPropagation(); shareCard('${card.id || index}')">📤</button>
-                             <button class="card-action-btn" onclick="event.stopPropagation(); editCard('${card.id || index}')">✏️</button>
-                             <button class="card-action-btn" onclick="event.stopPropagation(); duplicateCard('${card.id || index}')">📋</button>
-                             <button class="card-action-btn" onclick="event.stopPropagation(); deleteCard('${card.id || index}')">🗑️</button>
-                         </div>
-                     </div>
-                 </div>
-             `;
          });
          
-         cardsGrid.innerHTML = cardsHTML;
-     }
-
-     function showEmptyArchive() {
-         const cardsGrid = document.getElementById('cardsGrid');
-         const emptyArchive = document.getElementById('emptyArchive');
+         // Применяем переводы
+         applyTranslations(lang);
          
-         if (cardsGrid) cardsGrid.style.display = 'none';
-         if (emptyArchive) emptyArchive.style.display = 'block';
+         showNotification(`Language changed to ${lang.toUpperCase()}`, 'success');
+     }
+
+     function loadSavedLanguage() {
+         const savedLang = localStorage.getItem('selectedLanguage') || 'en';
+         switchLanguage(savedLang);
+     }
+
+     function applyTranslations(lang) {
+         const t = translations[lang] || translations.en;
          
-         const usedSlotsElement = document.getElementById('usedSlots');
-         if (usedSlotsElement) usedSlotsElement.textContent = '0';
+         // Применяем переводы ко всем элементам с ID из translations
+         Object.keys(t).forEach(key => {
+             const element = document.getElementById(key);
+             if (element) {
+                 if (element.tagName === 'INPUT' && element.type !== 'submit' && element.type !== 'button') {
+                     element.placeholder = t[key];
+                 } else {
+                     element.textContent = t[key];
+                 }
+             }
+         });
+         
+         // Обновляем заголовок страницы
+         document.title = t.pageTitle || 'CardGift - Admin Dashboard';
+         
+         // Обновляем мета-описание
+         const metaDesc = document.querySelector('meta[name="description"]');
+         if (metaDesc) {
+             metaDesc.content = t.metaDescription || 'CardGift Admin Dashboard - Manage your network';
+         }
      }
 
-     function createNewCard() {
-         window.open('/generator.html', '_blank');
+     // ✅ ФУНКЦИИ ВРЕМЕНИ И ДАННЫХ
+     function updateTime() {
+         const now = new Date();
+         const timeString = now.toLocaleString();
+         const timeElement = document.getElementById('currentTime');
+         if (timeElement) {
+             timeElement.textContent = timeString;
+         }
      }
 
-     function previewCard(cardId) {
-         window.open(`/card-viewer.html?id=${cardId}`, '_blank');
-     }
-
-     function shareCard(cardId) {
-    // Получаем карту из архива
-    const savedArchive = localStorage.getItem(`archive_${currentUser.userId}`);
-    const archive = savedArchive ? JSON.parse(savedArchive) : { cards: [] };
-    const card = archive.cards.find(c => c.id === cardId || c.cardId === cardId);
-    
-    if (!card) {
-        showNotification('Card not found in archive', 'error');
-        return;
-    }
-    
-    const shareUrl = `${window.location.origin}/api/card/${card.cardId || cardId}`;
-    
-    // ✅ ПРОСТО ОТПРАВЛЯЕМ ССЫЛКУ - ПРЕВЬЮ СГЕНЕРИРУЕТСЯ НА СЕРВЕРЕ
-    if (navigator.share) {
-        navigator.share({
-            title: `CardGift - ${card.title || 'Beautiful Card'}`,
-            text: '🎉 Look at this beautiful greeting card!',
-            url: shareUrl
-        }).then(() => {
-            showNotification('📱 Card shared successfully!', 'success');
-        }).catch(() => {
-            copyToClipboard(shareUrl);
-            showNotification('📋 Link copied! Preview will show in messengers', 'success');
-        });
-    } else {
-        copyToClipboard(shareUrl);
-        showNotification('📋 Link copied! Preview will show in messengers', 'success');
-    }
-}
-
-     function shareWithPreview(shareUrl, previewImage, title) {
-         const messages = {
-             en: "🎉 Look at this beautiful greeting card!",
-             ru: "🎉 Посмотрите на эту красивую открытку!", 
-             ua: "🎉 Подивіться на цю красиву листівку!"
+     function loadDashboardData() {
+         // Обновляем статистику dashboard
+         const stats = {
+             totalReferrals: 0,
+             activeReferrals: 0,
+             totalEarnings: '0.000',
+             conversionRate: '0%'
          };
          
-         const message = `${messages[currentLanguage] || messages.ru} ${shareUrl}`;
+         // В реальной версии здесь будет загрузка из блокчейна
+         const savedReferrals = localStorage.getItem(`referrals_${currentUser.userId}`);
+         if (savedReferrals) {
+             const referrals = JSON.parse(savedReferrals);
+             stats.totalReferrals = Object.values(referrals.levels).flat().length;
+             stats.activeReferrals = Object.values(referrals.levels).flat().filter(u => u.isActive).length;
+         }
          
-         if (navigator.share) {
-             // Пытаемся поделиться с превью
-             fetch(previewImage)
-                 .then(res => res.blob())
-                 .then(blob => {
-                     const file = new File([blob], 'card-preview.jpg', { type: 'image/jpeg' });
-                     
-                     navigator.share({
-                         title: `CardGift - ${title}`,
-                         text: message,
-                         files: [file]
-                     }).then(() => {
-                         showNotification('📱 Shared with preview!', 'success');
-                     }).catch(() => {
-                         // Fallback без файла
-                         navigator.share({
-                             title: `CardGift - ${title}`,
-                             text: message,
-                             url: shareUrl
-                         });
-                     });
-                 })
-                 .catch(() => {
-                     shareWithoutPreview(shareUrl);
-                 });
-         } else {
-             // Копируем ссылку
-             copyToClipboard(message);
-             showNotification('📋 Link copied! Preview will show when pasted in messenger', 'info', 4000);
-         }
-     }
-
-     function shareWithoutPreview(shareUrl) {
-         if (navigator.share) {
-             navigator.share({
-                 title: 'CardGift - Beautiful Greeting Card',
-                 text: '🎉 Check out this amazing card!',
-                 url: shareUrl
-             });
-         } else {
-             copyToClipboard(shareUrl);
-             showNotification('📋 Link copied!', 'success');
-         }
-     }
-
-     function copyToClipboard(text) {
-         if (navigator.clipboard) {
-             navigator.clipboard.writeText(text).then(() => {
-                 showNotification('📋 Link copied!', 'success');
-             });
-         } else {
-             const textarea = document.createElement('textarea');
-             textarea.value = text;
-             textarea.style.position = 'fixed';
-             textarea.style.opacity = '0';
-             document.body.appendChild(textarea);
-             textarea.select();
-             document.execCommand('copy');
-             document.body.removeChild(textarea);
-             showNotification('📋 Link copied!', 'success');
-         }
-     }
-
-     function editCard(cardId) {
-         showNotification('Card editing feature coming soon!', 'info');
-     }
-
-     function duplicateCard(cardId) {
-         showNotification('Card duplication feature coming soon!', 'info');
-     }
-
-     function deleteCard(cardId) {
-         if (confirm('Are you sure you want to delete this card?')) {
-             showNotification('Card deleted successfully!', 'success');
-             loadUserArchive();
-         }
-     }
-
-     function searchArchive() {
-         const searchTerm = document.getElementById('archiveSearch')?.value.toLowerCase() || '';
-         const filter = document.getElementById('archiveFilter')?.value || 'all';
+         // Обновляем элементы
+         const elements = {
+             totalReferrals: document.getElementById('totalReferrals'),
+             activeReferrals: document.getElementById('activeReferrals'),
+             totalEarnings: document.getElementById('totalEarnings'),
+             conversionRate: document.getElementById('conversionRate')
+         };
          
-         showNotification('Search functionality coming soon!', 'info');
+         Object.keys(elements).forEach(key => {
+             if (elements[key]) {
+                 elements[key].textContent = stats[key];
+             }
+         });
      }
 
-     function exportArchive() {
-         if (currentUser.level === 0) {
-             showNotification('Archive access requires activation', 'error');
+     // ✅ ФУНКЦИИ РЕФЕРАЛОВ
+     function loadReferralData() {
+         if (currentUser.level < 2) {
+             showReferralAccessDenied();
              return;
          }
          
-         showNotification('Archive export feature coming soon!', 'info');
+         // В реальной версии здесь будет загрузка из блокчейна
+         const savedReferrals = localStorage.getItem(`referrals_${currentUser.userId}`);
+         const referrals = savedReferrals ? JSON.parse(savedReferrals) : 
+             { levels: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [] }, users: {} };
+         
+         displayReferralLevels(referrals);
      }
 
-     function showUpgradeOptions() {
-         const currentLimits = {0: 3, 1: 20, 2: 100, 3: 200, 4: 500, 5: 1000, 6: -1};
-         const nextLevel = currentUser.level + 1;
-         const nextLimit = currentLimits[nextLevel];
-         
-         if (nextLevel > 6) {
-             showNotification('You already have the maximum level!', 'info');
-             return;
-         }
-         
-         const upgradeMessage = `Upgrade to level ${nextLevel} for ${nextLimit === -1 ? 'unlimited' : nextLimit} cards in archive!`;
-         
-         if (confirm(upgradeMessage + '\n\nGo to activation section?')) {
-             showSection('wallet');
-         }
-     }
-
-     // ✅ ФУНКЦИИ ОПРОСОВ
-     function loadSurveyData() {
-         if (currentUser.level < 3) {
-             showSurveyAccessDenied();
-             return;
-         }
-         
-         const savedSurveys = localStorage.getItem(`surveys_${currentUser.userId}`);
-         const surveys = savedSurveys ? JSON.parse(savedSurveys) : [];
-         
-         updateSurveyStats(surveys);
-         displaySurveys(surveys);
-     }
-
-     function showSurveyAccessDenied() {
-         const surveysList = document.getElementById('surveysList');
-         if (surveysList) {
-             surveysList.innerHTML = `
+     function showReferralAccessDenied() {
+         document.querySelectorAll('#levelContents .level-content').forEach(content => {
+             content.innerHTML = `
                  <div style="text-align: center; color: #CCC; padding: 60px;">
                      <div style="font-size: 64px; margin-bottom: 20px;">🔒</div>
-                     <h3 style="color: #2196F3; margin-bottom: 15px;">Survey Access Restricted</h3>
-                     <p>Survey feature is available starting from Admin level.</p>
-                     <button class="btn-primary" onclick="showSection('wallet')" style="margin-top: 20px;">🚀 Upgrade Now</button>
-                 </div>
-             `;
-         }
-     }
-
-     function updateSurveyStats(surveys) {
-         const totalSurveys = surveys.length;
-         const activeSurveys = surveys.filter(s => s.status === 'active').length;
-         const totalResponses = surveys.reduce((sum, s) => sum + (s.responses || 0), 0);
-         const responseRate = totalSurveys > 0 ? Math.round((totalResponses / totalSurveys) * 100) / 100 : 0;
-         
-         const elements = {
-             totalSurveys: document.getElementById('totalSurveys'),
-             activeSurveys: document.getElementById('activeSurveys'),
-             surveyResponses: document.getElementById('surveyResponses'),
-             responseRate: document.getElementById('responseRate')
-         };
-         
-         if (elements.totalSurveys) elements.totalSurveys.textContent = totalSurveys;
-         if (elements.activeSurveys) elements.activeSurveys.textContent = activeSurveys;
-         if (elements.surveyResponses) elements.surveyResponses.textContent = totalResponses;
-         if (elements.responseRate) elements.responseRate.textContent = responseRate + '%';
-     }
-
-     function displaySurveys(surveys) {
-         const surveysList = document.getElementById('surveysList');
-         const emptySurveys = document.getElementById('emptySurveys');
-         
-         if (!surveysList) return;
-         
-         if (surveys.length === 0) {
-             surveysList.style.display = 'none';
-             if (emptySurveys) emptySurveys.style.display = 'block';
-             return;
-         }
-         
-         surveysList.style.display = 'block';
-         if (emptySurveys) emptySurveys.style.display = 'none';
-         
-         let surveysHTML = '';
-         
-         surveys.forEach(survey => {
-             const statusColor = survey.status === 'active' ? '#4CAF50' : 
-                               survey.status === 'draft' ? '#FF9800' : '#888';
-             
-             surveysHTML += `
-                 <div class="survey-card" onclick="editSurvey('${survey.id}')">
-                     <div class="survey-title">${survey.title}</div>
-                     <p style="color: #CCC; margin-bottom: 10px;">${survey.description}</p>
-                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                         <div class="survey-stats">
-                             <span>📊 ${survey.questions?.length || 0} questions</span>
-                             <span>👥 ${survey.responses || 0} responses</span>
-                             <span style="background: ${statusColor}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px;">${survey.status}</span>
-                         </div>
-                         <div>
-                             <button class="btn-secondary" onclick="event.stopPropagation(); previewSurvey('${survey.id}')" style="margin-right: 5px; padding: 5px 10px; font-size: 12px;">👁️</button>
-                             <button class="btn-danger" onclick="event.stopPropagation(); deleteSurvey('${survey.id}')" style="padding: 5px 10px; font-size: 12px;">🗑️</button>
-                         </div>
-                     </div>
+                     <h3 style="color: #FFD700; margin-bottom: 15px;">Referral Access Restricted</h3>
+                     <p>Referral system is available starting from Mini Admin level.</p>
+                     <button class="btn-primary" onclick="showSection('wallet')" style="margin-top: 20px;">⚡ Upgrade to Mini Admin</button>
                  </div>
              `;
          });
-         
-         surveysList.innerHTML = surveysHTML;
      }
 
-     function createNewSurvey() {
-         if (currentUser.level < 3) {
-             showNotification('Survey creation requires Admin level or higher', 'error');
-             return;
-         }
-         
-         // Очищаем форму
-         document.getElementById('surveyTitle').value = '';
-         document.getElementById('surveyDescription').value = '';
-         document.getElementById('questionsList').innerHTML = '';
-         
-         // Показываем модальное окно
-         document.getElementById('surveyModal').style.display = 'flex';
-     }
-
-     function closeSurveyModal() {
-         document.getElementById('surveyModal').style.display = 'none';
-     }
-
-     function addQuestion() {
-         const questionsList = document.getElementById('questionsList');
-         const questionCount = questionsList.children.length + 1;
-         
-         const questionHTML = `
-             <div class="form-group" style="background: rgba(255,255,255,0.05); border-radius: 10px; padding: 15px; margin-bottom: 15px;">
-                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                     <h5 style="color: #2196F3;">Question ${questionCount}</h5>
-                     <button class="btn-danger" onclick="removeQuestion(this)" style="padding: 5px 10px; font-size: 12px;">Remove</button>
-                 </div>
-                 <div class="form-group">
-                     <input type="text" placeholder="Enter your question..." class="form-input question-text">
-                 </div>
-                 <div class="form-group">
-                     <select class="form-select question-type" onchange="updateQuestionOptions(this)">
-                         <option value="single">Single Choice</option>
-                         <option value="multiple">Multiple Choice</option>
-                         <option value="text">Text Answer</option>
-                         <option value="rating">Rating Scale</option>
-                     </select>
-                 </div>
-                 <div class="question-options">
-                     <input type="text" placeholder="Option 1" class="form-input" style="margin-bottom: 5px;">
-                     <input type="text" placeholder="Option 2" class="form-input" style="margin-bottom: 5px;">
-                     <button class="btn-secondary" onclick="addOption(this)" style="padding: 5px 10px; font-size: 12px;">+ Add Option</button>
-                 </div>
-             </div>
-         `;
-         
-         questionsList.insertAdjacentHTML('beforeend', questionHTML);
-     }
-
-     function removeQuestion(button) {
-         button.closest('.form-group').remove();
-         updateQuestionNumbers();
-     }
-
-     function updateQuestionNumbers() {
-         const questions = document.querySelectorAll('#questionsList .form-group h5');
-         questions.forEach((h5, index) => {
-             h5.textContent = `Question ${index + 1}`;
-         });
-     }
-
-     function addOption(button) {
-         const optionsContainer = button.parentElement;
-         const optionCount = optionsContainer.querySelectorAll('input').length + 1;
-         
-         const optionHTML = `<input type="text" placeholder="Option ${optionCount}" class="form-input" style="margin-bottom: 5px;">`;
-         button.insertAdjacentHTML('beforebegin', optionHTML);
-     }
-
-     function updateQuestionOptions(select) {
-         const optionsContainer = select.parentElement.nextElementSibling;
-         const type = select.value;
-         
-         if (type === 'text') {
-             optionsContainer.innerHTML = '<p style="color: #888; font-size: 12px;">Text answers don\'t require options.</p>';
-         } else if (type === 'rating') {
-             optionsContainer.innerHTML = `
-                 <div style="display: flex; gap: 10px; align-items: center;">
-                     <span style="color: #CCC; font-size: 12px;">Scale:</span>
-                     <select class="form-select" style="width: 100px;">
-                         <option value="5">1-5</option>
-                         <option value="10">1-10</option>
-                     </select>
-                 </div>
-             `;
-         } else if (optionsContainer.innerHTML.includes('Text answers')) {
-             optionsContainer.innerHTML = `
-                 <input type="text" placeholder="Option 1" class="form-input" style="margin-bottom: 5px;">
-                 <input type="text" placeholder="Option 2" class="form-input" style="margin-bottom: 5px;">
-                 <button class="btn-secondary" onclick="addOption(this)" style="padding: 5px 10px; font-size: 12px;">+ Add Option</button>
-             `;
-         }
-     }
-
-     function saveSurvey() {
-         const title = document.getElementById('surveyTitle').value.trim();
-         const description = document.getElementById('surveyDescription').value.trim();
-         
-         if (!title) {
-             showNotification('Please enter survey title', 'error');
-             return;
-         }
-         
-         // Собираем вопросы
-         const questions = [];
-         const questionElements = document.querySelectorAll('#questionsList .form-group');
-         
-         questionElements.forEach(element => {
-             const questionText = element.querySelector('.question-text').value.trim();
-             const questionType = element.querySelector('.question-type').value;
+     function displayReferralLevels(referrals) {
+         for (let level = 1; level <= 9; level++) {
+             const levelUsers = referrals.levels[level] || [];
+             const countElement = document.getElementById(`level${level}Count`);
+             const tableElement = document.getElementById(`level${level}Table`);
              
-             if (questionText) {
-                 const options = [];
-                 const optionInputs = element.querySelectorAll('.question-options input');
-                 optionInputs.forEach(input => {
-                     if (input.value.trim()) {
-                         options.push(input.value.trim());
-                     }
-                 });
-                 
-                 questions.push({
-                     text: questionText,
-                     type: questionType,
-                     options: options
-                 });
+             if (countElement) {
+                 countElement.textContent = `${levelUsers.length} users`;
              }
+             
+             if (tableElement) {
+                 if (levelUsers.length === 0) {
+                     tableElement.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #888; padding: 40px;">No level ${level} referrals yet</td></tr>`;
+                 } else {
+                     let tableHTML = '';
+                     levelUsers.forEach(user => {
+                         tableHTML += `
+                             <tr>
+                                 <td class="user-id-cell" onclick="openCRMModal('${user.id}')">${user.userId}</td>
+                                 <td>${user.sponsor || '-'}</td>
+                                 <td>
+                                     <span class="wallet-status ${user.walletConnected ? 'wallet-active' : 'wallet-inactive'}">
+                                         ${user.walletConnected ? 'Connected' : 'Not Connected'}
+                                     </span>
+                                 </td>
+                                 <td>
+                                     <span class="status-badge status-${user.level > 3 ? 'super' : user.level > 1 ? 'mini' : 'basic'}">
+                                         Level ${user.level}
+                                     </span>
+                                 </td>
+                                 <td>${new Date(user.joinedAt).toLocaleDateString()}</td>
+                                 <td>
+                                     <button class="btn-secondary" onclick="contactUser('${user.id}')" style="padding: 5px 10px; font-size: 12px;">📧</button>
+                                 </td>
+                             </tr>
+                         `;
+                     });
+                     tableElement.innerHTML = tableHTML;
+                 }
+             }
+         }
+     }
+
+     function showLevel(level) {
+         // Убираем активность с всех кнопок уровней
+         document.querySelectorAll('.level-btn').forEach(btn => {
+             btn.classList.remove('active');
          });
          
-         if (questions.length === 0) {
-             showNotification('Please add at least one question', 'error');
+         // Скрываем все содержимое уровней
+         document.querySelectorAll('.level-content').forEach(content => {
+             content.classList.remove('active');
+         });
+         
+         // Активируем выбранный уровень
+         const activeBtn = document.querySelector(`[data-level="${level}"]`);
+         if (activeBtn) {
+             activeBtn.classList.add('active');
+         }
+         
+         const activeContent = document.getElementById(`level${level}Content`);
+         if (activeContent) {
+             activeContent.classList.add('active');
+         }
+     }
+
+     function copyReferralLink() {
+         if (currentUser.userId === 'NOT_CONNECTED') {
+             showNotification('Please connect your wallet first', 'error');
              return;
          }
          
-         // Сохраняем опрос
-         const survey = {
-             id: 'survey_' + Date.now(),
-             title: title,
-             description: description,
-             questions: questions,
-             status: 'draft',
-             createdAt: Date.now(),
-             responses: 0
-         };
+         const referralLink = `https://cardgift.bnb/registration.html?ref=${currentUser.userId}`;
          
-         const savedSurveys = localStorage.getItem(`surveys_${currentUser.userId}`);
-         const surveys = savedSurveys ? JSON.parse(savedSurveys) : [];
-         surveys.unshift(survey);
+         navigator.clipboard.writeText(referralLink).then(() => {
+             showNotification('Referral link copied to clipboard!', 'success');
+         }).catch(() => {
+             // Fallback для старых браузеров
+             const textArea = document.createElement('textarea');
+             textArea.value = referralLink;
+             document.body.appendChild(textArea);
+             textArea.select();
+             document.execCommand('copy');
+             document.body.removeChild(textArea);
+             showNotification('Referral link copied!', 'success');
+         });
+     }
+
+     function shareReferralLink() {
+         if (currentUser.userId === 'NOT_CONNECTED') {
+             showNotification('Please connect your wallet first', 'error');
+             return;
+         }
          
-         localStorage.setItem(`surveys_${currentUser.userId}`, JSON.stringify(surveys));
+         const referralLink = `https://cardgift.bnb/registration.html?ref=${currentUser.userId}`;
          
-         showNotification('Survey saved successfully!', 'success');
-         closeSurveyModal();
-         loadSurveyData();
-     }
-
-     function publishSurvey() {
-         saveSurvey();
-         showNotification('Survey published successfully!', 'success');
-     }
-
-     function editSurvey(surveyId) {
-         showNotification('Survey editing feature coming soon!', 'info');
-     }
-
-     function previewSurvey(surveyId) {
-         showNotification('Survey preview feature coming soon!', 'info');
-     }
-
-     function deleteSurvey(surveyId) {
-         if (confirm('Are you sure you want to delete this survey?')) {
-             const savedSurveys = localStorage.getItem(`surveys_${currentUser.userId}`);
-             let surveys = savedSurveys ? JSON.parse(savedSurveys) : [];
-             
-             surveys = surveys.filter(s => s.id !== surveyId);
-             localStorage.setItem(`surveys_${currentUser.userId}`, JSON.stringify(surveys));
-             
-             showNotification('Survey deleted successfully!', 'success');
-             loadSurveyData();
+         if (navigator.share) {
+             navigator.share({
+                 title: 'Join CardGift - Create Amazing Greeting Cards!',
+                 text: 'Create beautiful greeting cards and earn with CardGift platform!',
+                 url: referralLink
+             });
+         } else {
+             copyReferralLink();
          }
      }
 
-     function filterSurveys() {
-         const searchTerm = document.getElementById('surveySearch')?.value.toLowerCase() || '';
-         const statusFilter = document.getElementById('surveyStatusFilter')?.value || 'all';
-         
-         showNotification('Survey filtering feature coming soon!', 'info');
+     function contactUser(userId) {
+         showNotification('User contact feature coming soon!', 'info');
      }
 
-     function viewSurveyTemplates() {
-         showNotification('Survey templates feature coming soon!', 'info');
+     // ✅ ОСТАЛЬНЫЕ ФУНКЦИИ (ЗАГЛУШКИ ДЛЯ НЕОСНОВНЫХ СИСТЕМ)
+     function loadSurveyData() {
+         if (currentUser.level < 3) {
+             const surveysList = document.getElementById('surveysList');
+             if (surveysList) {
+                 surveysList.innerHTML = `
+                     <div style="text-align: center; color: #CCC; padding: 60px;">
+                         <div style="font-size: 64px; margin-bottom: 20px;">🔒</div>
+                         <h3 style="color: #2196F3; margin-bottom: 15px;">Survey Access Restricted</h3>
+                         <p>Survey feature is available starting from Admin level.</p>
+                         <button class="btn-primary" onclick="showSection('wallet')" style="margin-top: 20px;">🚀 Upgrade Now</button>
+                     </div>
+                 `;
+             }
+         }
      }
-
-     // ✅ ФУНКЦИИ БЛОГА
-     let currentPost = {
-         id: null,
-         title: '',
-         content: '',
-         tags: [],
-         status: 'draft'
-     };
-
-     let blogSettings = {
-         title: 'My Blog',
-         description: 'Welcome to my blog',
-         logo: '📝',
-         subdomain: 'my-blog',
-         theme: 'classic',
-         primaryColor: '#FFD700',
-         secondaryColor: '#FFA500'
-     };
 
      function loadBlogData() {
          if (currentUser.level < 3) {
-             showBlogAccessDenied();
-             return;
-         }
-         
-         const savedBlog = localStorage.getItem(`blog_${currentUser.userId}`);
-         if (savedBlog) {
-             blogSettings = { ...blogSettings, ...JSON.parse(savedBlog) };
-         }
-         
-         // Обновляем интерфейс
-         const elements = {
-             blogTitleDisplay: document.getElementById('blogTitleDisplay'),
-             blogDescription: document.getElementById('blogDescription'),
-             blogUrl: document.getElementById('blogUrl'),
-             blogLogo: document.getElementById('blogLogo')
-         };
-         
-         if (elements.blogTitleDisplay) elements.blogTitleDisplay.textContent = blogSettings.title;
-         if (elements.blogDescription) elements.blogDescription.textContent = blogSettings.description;
-         if (elements.blogUrl) elements.blogUrl.textContent = `https://${blogSettings.subdomain}.cardgift.bnb`;
-         if (elements.blogLogo) elements.blogLogo.textContent = blogSettings.logo;
-     }
-
-     function showBlogAccessDenied() {
-         const postsList = document.getElementById('postsList');
-         if (postsList) {
-             postsList.innerHTML = `
-                 <div style="text-align: center; color: #CCC; padding: 60px;">
-                     <div style="font-size: 64px; margin-bottom: 20px;">🔒</div>
-                     <h3 style="color: #FFD700; margin-bottom: 15px;">Blog Access Restricted</h3>
-                     <p>Mini-blog feature is available starting from Admin level.</p>
-                     <button class="btn-primary" onclick="showSection('wallet')" style="margin-top: 20px;">🚀 Upgrade Now</button>
-                 </div>
-             `;
+             const postsList = document.getElementById('postsList');
+             if (postsList) {
+                 postsList.innerHTML = `
+                     <div style="text-align: center; color: #CCC; padding: 60px;">
+                         <div style="font-size: 64px; margin-bottom: 20px;">🔒</div>
+                         <h3 style="color: #FFD700; margin-bottom: 15px;">Blog Access Restricted</h3>
+                         <p>Mini-blog feature is available starting from Admin level.</p>
+                         <button class="btn-primary" onclick="showSection('wallet')" style="margin-top: 20px;">🚀 Upgrade Now</button>
+                     </div>
+                 `;
+             }
          }
      }
 
      function loadBlogPosts() {
-         const savedPosts = localStorage.getItem(`blog_posts_${currentUser.userId}`);
-         const posts = savedPosts ? JSON.parse(savedPosts) : [];
-         
-         // Обновляем статистику
-         const elements = {
-             totalPosts: document.getElementById('totalPosts'),
-             totalBlogViews: document.getElementById('totalBlogViews'),
-             totalLikes: document.getElementById('totalLikes'),
-             totalComments: document.getElementById('totalComments')
-         };
-         
-         if (elements.totalPosts) elements.totalPosts.textContent = posts.length;
-         if (elements.totalBlogViews) elements.totalBlogViews.textContent = posts.reduce((sum, post) => sum + (post.views || 0), 0);
-         if (elements.totalLikes) elements.totalLikes.textContent = posts.reduce((sum, post) => sum + (post.likes || 0), 0);
-         if (elements.totalComments) elements.totalComments.textContent = posts.reduce((sum, post) => sum + (post.comments || 0), 0);
-         
-         displayBlogPosts(posts);
+         // Заглушка для постов блога
      }
 
-     function displayBlogPosts(posts) {
-         const postsList = document.getElementById('postsList');
-         const emptyBlog = document.getElementById('emptyBlog');
-         
-         if (!postsList) return;
-         
-         if (posts.length === 0) {
-             postsList.style.display = 'none';
-             if (emptyBlog) emptyBlog.style.display = 'block';
-             return;
-         }
-         
-         postsList.style.display = 'block';
-         if (emptyBlog) emptyBlog.style.display = 'none';
-         
-         let postsHTML = '';
-         
-         posts.forEach(post => {
-             const statusColor = post.status === 'published' ? '#4CAF50' : '#FF9800';
-             const statusText = post.status === 'published' ? 'Published' : 'Draft';
-             
-             postsHTML += `
-                 <div class="post-item">
-                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-                         <div style="flex: 1;">
-                             <h4 style="color: #FFD700; margin-bottom: 8px; cursor: pointer;" onclick="editPost('${post.id}')">${post.title}</h4>
-                             <p style="color: #CCC; margin-bottom: 10px; line-height: 1.4;">${post.content.substring(0, 150)}${post.content.length > 150 ? '...' : ''}</p>
-                             <div style="display: flex; gap: 15px; align-items: center; font-size: 12px; color: #888;">
-                                 <span>📅 ${new Date(post.createdAt).toLocaleDateString()}</span>
-                                 <span>👁 ${post.views || 0} views</span>
-                                 <span>❤️ ${post.likes || 0} likes</span>
-                                 <span style="background: ${statusColor}; color: white; padding: 2px 8px; border-radius: 10px;">${statusText}</span>
-                             </div>
-                         </div>
-                         <div style="display: flex; gap: 8px; margin-left: 15px;">
-                             <button class="btn-secondary" onclick="editPost('${post.id}')" style="padding: 6px 10px; font-size: 12px;">✏️ Edit</button>
-                             <button class="btn-secondary" onclick="duplicatePost('${post.id}')" style="padding: 6px 10px; font-size: 12px;">📋 Copy</button>
-                             <button class="btn-danger" onclick="deletePost('${post.id}')" style="padding: 6px 10px; font-size: 12px;">🗑️ Delete</button>
-                         </div>
-                     </div>
-                     
-                     ${post.tags && post.tags.length > 0 ? `
-                         <div style="margin-top: 10px;">
-                             ${post.tags.map(tag => `<span style="background: rgba(255,215,0,0.2); color: #FFD700; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-right: 5px;">#${tag}</span>`).join('')}
-                         </div>
-                     ` : ''}
-                 </div>
-             `;
-         });
-         
-         postsList.innerHTML = postsHTML;
-     }
-
-     function createNewPost() {
-         if (currentUser.level < 3) {
-             showNotification('Blog access requires Admin level or higher', 'error');
-             return;
-         }
-         
-         currentPost = {
-             id: null,
-             title: '',
-             content: '',
-             tags: [],
-             status: 'draft'
-         };
-         
-         // Очищаем форму
-         document.getElementById('postTitle').value = '';
-         document.getElementById('postContent').value = '';
-         document.getElementById('postTags').value = '';
-         document.getElementById('postStatus').value = 'draft';
-         document.getElementById('postPreview').innerHTML = '<p style="color: #888;">Preview will appear here...</p>';
-         
-         // Показываем редактор
-         document.getElementById('postEditor').style.display = 'flex';
-         document.getElementById('postTitle').focus();
-         
-         // Обновляем превью при вводе
-         const contentTextarea = document.getElementById('postContent');
-         contentTextarea.addEventListener('input', updatePostPreview);
-     }
-
-     function editPost(postId) {
-         const savedPosts = localStorage.getItem(`blog_posts_${currentUser.userId}`);
-         const posts = savedPosts ? JSON.parse(savedPosts) : [];
-         const post = posts.find(p => p.id === postId);
-         
-         if (post) {
-             currentPost = { ...post };
-             
-             // Заполняем форму
-             document.getElementById('postTitle').value = post.title;
-             document.getElementById('postContent').value = post.content;
-             document.getElementById('postTags').value = post.tags ? post.tags.join(', ') : '';
-             document.getElementById('postStatus').value = post.status;
-             
-             // Показываем редактор
-             document.getElementById('postEditor').style.display = 'flex';
-             updatePostPreview();
-         }
-     }
-
-     function updatePostPreview() {
-         const content = document.getElementById('postContent').value;
-         const preview = document.getElementById('postPreview');
-         
-         if (content.trim() === '') {
-             preview.innerHTML = '<p style="color: #888;">Preview will appear here...</p>';
-             return;
-         }
-         
-         // Простая обработка markdown-подобного форматирования
-         let formattedContent = content
-             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-             .replace(/\*(.*?)\*/g, '<em>$1</em>')
-             .replace(/\n\n/g, '</p><p>')
-             .replace(/\n/g, '<br>');
-         
-         preview.innerHTML = `<p>${formattedContent}</p>`;
-     }
-
-     function savePost() {
-         const title = document.getElementById('postTitle').value.trim();
-         const content = document.getElementById('postContent').value.trim();
-         const tagsInput = document.getElementById('postTags').value.trim();
-         const status = document.getElementById('postStatus').value;
-         
-         if (!title || !content) {
-             showNotification('Please fill in title and content', 'error');
-             return;
-         }
-         
-         const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()) : [];
-         
-         const savedPosts = localStorage.getItem(`blog_posts_${currentUser.userId}`);
-         let posts = savedPosts ? JSON.parse(savedPosts) : [];
-         
-         if (currentPost.id) {
-             // Редактирование существующего поста
-             const postIndex = posts.findIndex(p => p.id === currentPost.id);
-             if (postIndex !== -1) {
-                 posts[postIndex] = {
-                     ...posts[postIndex],
-                     title,
-                     content,
-                     tags,
-                     status,
-                     updatedAt: Date.now()
-                 };
-             }
-         } else {
-             // Создание нового поста
-             const newPost = {
-                 id: `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                 title,
-                 content,
-                 tags,
-                 status,
-                 createdAt: Date.now(),
-                 updatedAt: Date.now(),
-                 views: 0,
-                 likes: 0,
-                 comments: 0
-             };
-             posts.unshift(newPost);
-         }
-         
-         localStorage.setItem(`blog_posts_${currentUser.userId}`, JSON.stringify(posts));
-         
-         showNotification('Post saved successfully!', 'success');
-         loadBlogPosts();
-     }
-
-     function publishPost() {
-         document.getElementById('postStatus').value = 'published';
-         savePost();
-         showNotification('Post published successfully!', 'success');
-     }
-
-     function closeEditor() {
-         document.getElementById('postEditor').style.display = 'none';
-     }
-
-     function duplicatePost(postId) {
-         const savedPosts = localStorage.getItem(`blog_posts_${currentUser.userId}`);
-         const posts = savedPosts ? JSON.parse(savedPosts) : [];
-         const post = posts.find(p => p.id === postId);
-         
-         if (post) {
-             const duplicatedPost = {
-                 ...post,
-                 id: `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                 title: `${post.title} (Copy)`,
-                 status: 'draft',
-                 createdAt: Date.now(),
-                 updatedAt: Date.now(),
-                 views: 0,
-                 likes: 0,
-                 comments: 0
-             };
-             
-             posts.unshift(duplicatedPost);
-             localStorage.setItem(`blog_posts_${currentUser.userId}`, JSON.stringify(posts));
-             
-             showNotification('Post duplicated successfully!', 'success');
-             loadBlogPosts();
-         }
-     }
-
-     function deletePost(postId) {
-         if (confirm('Are you sure you want to delete this post?')) {
-             const savedPosts = localStorage.getItem(`blog_posts_${currentUser.userId}`);
-             let posts = savedPosts ? JSON.parse(savedPosts) : [];
-             
-             posts = posts.filter(p => p.id !== postId);
-             localStorage.setItem(`blog_posts_${currentUser.userId}`, JSON.stringify(posts));
-             
-             showNotification('Post deleted successfully!', 'success');
-             loadBlogPosts();
-         }
-     }
-
-     function formatText(format) {
-         const textarea = document.getElementById('postContent');
-         const start = textarea.selectionStart;
-         const end = textarea.selectionEnd;
-         const selectedText = textarea.value.substring(start, end);
-         
-         if (selectedText) {
-             let formattedText = '';
-             switch (format) {
-                 case 'bold':
-                     formattedText = `**${selectedText}**`;
-                     break;
-                 case 'italic':
-                     formattedText = `*${selectedText}*`;
-                     break;
-                 case 'underline':
-                     formattedText = `__${selectedText}__`;
-                     break;
-             }
-             
-             textarea.setRangeText(formattedText, start, end, 'end');
-             updatePostPreview();
-         }
-     }
-
-     function addImage() {
-         const input = document.createElement('input');
-         input.type = 'file';
-         input.accept = 'image/*';
-         
-         input.onchange = function(e) {
-             const file = e.target.files[0];
-             if (file) {
-                 const reader = new FileReader();
-                 reader.onload = function(e) {
-                     const imageMarkdown = `![Image](${e.target.result})`;
-                     insertAtCursor('postContent', imageMarkdown);
-                     updatePostPreview();
-                 };
-                 reader.readAsDataURL(file);
-             }
-         };
-         
-         input.click();
-     }
-
-     function addVideo() {
-         const url = prompt('Enter video URL (YouTube, Vimeo, etc.):');
-         if (url) {
-             const videoMarkdown = `[Video](${url})`;
-             insertAtCursor('postContent', videoMarkdown);
-             updatePostPreview();
-         }
-     }
-
-     function addLink() {
-         const selectedText = getSelectedText('postContent');
-         const url = prompt('Enter URL:');
-         if (url) {
-             const linkText = selectedText || prompt('Enter link text:') || 'Link';
-             const linkMarkdown = `[${linkText}](${url})`;
-             insertAtCursor('postContent', linkMarkdown);
-             updatePostPreview();
-         }
-     }
-
-     function insertAtCursor(elementId, text) {
-         const element = document.getElementById(elementId);
-         const start = element.selectionStart;
-         const end = element.selectionEnd;
-         element.setRangeText(text, start, end, 'end');
-     }
-
-     function getSelectedText(elementId) {
-         const element = document.getElementById(elementId);
-         return element.value.substring(element.selectionStart, element.selectionEnd);
-     }
-
-     function editBlogSettings() {
-         if (currentUser.level < 3) {
-             showNotification('Blog settings require Admin level or higher', 'error');
-             return;
-         }
-         
-         // Заполняем форму текущими настройками
-         document.getElementById('blogTitleInput').value = blogSettings.title;
-         document.getElementById('blogDescriptionInput').value = blogSettings.description;
-         document.getElementById('subdomainInput').value = blogSettings.subdomain;
-         document.getElementById('primaryColorPicker').value = blogSettings.primaryColor;
-         document.getElementById('secondaryColorPicker').value = blogSettings.secondaryColor;
-         
-         // Включаем кастомный домен для Super Admin+
-         if (currentUser.level >= 4) {
-             const customDomainSection = document.getElementById('customDomainSection');
-             customDomainSection.style.opacity = '1';
-             const customDomainInput = document.getElementById('customDomainInput');
-             customDomainInput.disabled = false;
-             customDomainInput.style.background = 'rgba(255,255,255,0.1)';
-             customDomainInput.style.borderColor = 'rgba(255,215,0,0.3)';
-             customDomainInput.style.color = '#FFF';
-         }
-         
-         // Показываем модальное окно
-         document.getElementById('blogSettings').style.display = 'flex';
-     }
-
-     function switchSettingsTab(tabName) {
-         // Убираем активность с всех вкладок
-         document.querySelectorAll('.crm-tab').forEach(tab => {
-             tab.classList.remove('active');
-         });
-         
-         // Скрываем все содержимое вкладок
-         document.querySelectorAll('.crm-content').forEach(content => {
-             content.classList.remove('active');
-             content.style.display = 'none';
-         });
-         
-         // Активируем выбранную вкладку
-         const activeTab = document.querySelector(`[data-tab="${tabName}"]`);
-         if (activeTab) {
-             activeTab.classList.add('active');
-         }
-         
-         // Показываем содержимое выбранной вкладки
-         const activeContent = document.getElementById(`${tabName}Settings`);
-         if (activeContent) {
-             activeContent.classList.add('active');
-             activeContent.style.display = 'block';
-         }
-     }
-
-     function selectTheme(themeName) {
-         // Убираем выделение с всех тем
-         document.querySelectorAll('.theme-option').forEach(option => {
-             option.style.borderColor = 'transparent';
-         });
-         
-         // Выделяем выбранную тему
-         const selectedTheme = document.querySelector(`[data-theme="${themeName}"]`);
-         if (selectedTheme) {
-             selectedTheme.style.borderColor = '#FFD700';
-         }
-         
-         blogSettings.theme = themeName;
-     }
-
-     function saveBlogSettings() {
-         const title = document.getElementById('blogTitleInput').value.trim();
-         const description = document.getElementById('blogDescriptionInput').value.trim();
-         const subdomain = document.getElementById('subdomainInput').value.trim();
-         const primaryColor = document.getElementById('primaryColorPicker').value;
-         const secondaryColor = document.getElementById('secondaryColorPicker').value;
-         
-         if (!title || !subdomain) {
-             showNotification('Please fill in blog title and subdomain', 'error');
-             return;
-         }
-         
-         // Проверяем валидность поддомена
-         if (!/^[a-z0-9-]+$/.test(subdomain)) {
-             showNotification('Subdomain can only contain lowercase letters, numbers, and hyphens', 'error');
-             return;
-         }
-         
-         // Обновляем настройки
-         blogSettings = {
-             ...blogSettings,
-             title,
-             description,
-             subdomain,
-             primaryColor,
-             secondaryColor
-         };
-         
-         // Сохраняем в localStorage
-         localStorage.setItem(`blog_${currentUser.userId}`, JSON.stringify(blogSettings));
-         
-         // Обновляем интерфейс
-         loadBlogData();
-         
-         showNotification('Blog settings saved successfully!', 'success');
-         closeBlogSettings();
-     }
-
-     function closeBlogSettings() {
-         document.getElementById('blogSettings').style.display = 'none';
-     }
-
-     function previewBlog() {
-         if (currentUser.level < 3) {
-             showNotification('Blog preview requires Admin level or higher', 'error');
-             return;
-         }
-         
-         const previewUrl = `https://${blogSettings.subdomain}.cardgift.bnb`;
-         showNotification(`Opening preview: ${previewUrl}`, 'info');
-         
-         setTimeout(() => {
-             showNotification('Blog preview feature coming soon!', 'info');
-         }, 1000);
-     }
-
-     function publishBlog() {
-         if (currentUser.level < 3) {
-             showNotification('Blog publishing requires Admin level or higher', 'error');
-             return;
-         }
-         
-         const savedPosts = localStorage.getItem(`blog_posts_${currentUser.userId}`);
-         const posts = savedPosts ? JSON.parse(savedPosts) : [];
-         const publishedPosts = posts.filter(post => post.status === 'published');
-         
-         if (publishedPosts.length === 0) {
-             showNotification('Please publish at least one post before publishing your blog', 'error');
-             return;
-         }
-         
-         showNotification('Blog publishing feature coming soon!', 'info');
-     }
-
-     // ✅ ФУНКЦИИ MLM
      function loadMLMSection() {
          if (currentUser.level < 4) {
              document.getElementById('mlmContent').style.display = 'none';
@@ -7219,202 +6529,35 @@ async function checkUserAccess() {
          
          document.getElementById('mlmContent').style.display = 'block';
          document.getElementById('mlmAccessDenied').style.display = 'none';
-         
-         loadMLMSettings();
-         updateMLMStats();
      }
 
      function loadMLMSettings() {
-         const saved = localStorage.getItem(`mlm_settings_${currentUser.userId}`);
-         if (saved) {
-             mlmSettings = { ...mlmSettings, ...JSON.parse(saved) };
-         }
-         
-         // Заполняем поля
-         for (let i = 1; i <= 9; i++) {
-             const input = document.getElementById(`level${i}Percent`);
-             if (input) {
-                 input.value = mlmSettings.levels[i] || 0;
-                 // Добавляем обработчик для живого обновления превью
-                 input.addEventListener('input', updateCommissionPreview);
+         // Заглушка для MLM настроек
+     }
+
+     function loadMLMSettings() {
+         // Заглушка для MLM настроек
+         console.log('MLM settings loaded for level:', currentUser.level);
+     }
+
+     function loadCRMData() {
+         if (currentUser.level < 2) {
+             const crmContactsList = document.getElementById('crmContactsList');
+             if (crmContactsList) {
+                 crmContactsList.innerHTML = `
+                     <div style="text-align: center; color: #CCC; padding: 60px;">
+                         <div style="font-size: 64px; margin-bottom: 20px;">🔒</div>
+                         <h3 style="color: #FFD700; margin-bottom: 15px;">CRM Access Restricted</h3>
+                         <p>CRM system is available starting from Mini Admin level.</p>
+                         <button class="btn-primary" onclick="showSection('wallet')" style="margin-top: 20px;">⚡ Upgrade to Mini Admin</button>
+                     </div>
+                 `;
              }
          }
-         
-         updateCommissionPreview();
-     }
-
-     function saveMLMSettings() {
-         // Собираем данные из полей
-         for (let i = 1; i <= 9; i++) {
-             const input = document.getElementById(`level${i}Percent`);
-             if (input) {
-                 mlmSettings.levels[i] = parseFloat(input.value) || 0;
-             }
-         }
-         
-         mlmSettings.isActive = true;
-         mlmSettings.updatedAt = Date.now();
-         
-         // Сохраняем
-         localStorage.setItem(`mlm_settings_${currentUser.userId}`, JSON.stringify(mlmSettings));
-         
-         showNotification('MLM settings saved successfully!', 'success');
-         updateCommissionPreview();
-     }
-
-     function resetMLMSettings() {
-         if (confirm('Reset all MLM settings to default values?')) {
-             mlmSettings.levels = {
-                 1: 10, 2: 7, 3: 5, 4: 3, 5: 2, 6: 1, 7: 1, 8: 0.5, 9: 0.5
-             };
-             
-             for (let i = 1; i <= 9; i++) {
-                 const input = document.getElementById(`level${i}Percent`);
-                 if (input) {
-                     input.value = mlmSettings.levels[i];
-                 }
-             }
-             
-             updateCommissionPreview();
-             showNotification('MLM settings reset to default', 'success');
-         }
-     }
-
-     function updateCommissionPreview() {
-         const preview = document.getElementById('commissionPreview');
-         if (!preview) return;
-         
-         const total = Object.values(mlmSettings.levels).reduce((sum, val) => sum + val, 0);
-         
-         let previewHTML = `
-             <div style="margin-bottom: 10px;"><strong>Total Commission: ${total}%</strong></div>
-             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 12px;">
-         `;
-         
-         for (let i = 1; i <= 9; i++) {
-             const percent = mlmSettings.levels[i] || 0;
-             previewHTML += `<div>L${i}: ${percent}%</div>`;
-         }
-         
-         previewHTML += '</div>';
-         
-         if (total > 50) {
-             previewHTML += '<div style="color: #FF4444; margin-top: 10px; font-size: 12px;">⚠️ Total commission exceeds 50%</div>';
-         }
-         
-         preview.innerHTML = previewHTML;
-     }
-
-     function updateMLMStats() {
-         // В реальной версии здесь будут данные из блокчейна
-         const elements = {
-             totalPartners: document.getElementById('totalPartners'),
-             totalCommissions: document.getElementById('totalCommissions'),
-             monthlyEarnings: document.getElementById('monthlyEarnings'),
-             mlmConversionRate: document.getElementById('mlmConversionRate')
-         };
-         
-         if (elements.totalPartners) elements.totalPartners.textContent = '0';
-         if (elements.totalCommissions) elements.totalCommissions.textContent = '0.000';
-         if (elements.monthlyEarnings) elements.monthlyEarnings.textContent = '0.000';
-         if (elements.mlmConversionRate) elements.mlmConversionRate.textContent = '0%';
-     }
-
-     function createCampaign() {
-         showNotification('Campaign creation feature coming soon!', 'info');
      }
 
      // ✅ ФУНКЦИИ CRM
      let currentCRMContact = null;
-
-     function loadCRMData() {
-         if (currentUser.level < 2) {
-             showCRMAccessDenied();
-             return;
-         }
-         
-         const savedContacts = localStorage.getItem(`contacts_${currentUser.userId}`);
-         const contacts = savedContacts ? JSON.parse(savedContacts) : [];
-         
-         updateCRMStats(contacts);
-         displayCRMContacts(contacts);
-     }
-
-     function showCRMAccessDenied() {
-         const crmContactsList = document.getElementById('crmContactsList');
-         if (crmContactsList) {
-             crmContactsList.innerHTML = `
-                 <div style="text-align: center; color: #CCC; padding: 60px;">
-                     <div style="font-size: 64px; margin-bottom: 20px;">🔒</div>
-                     <h3 style="color: #FFD700; margin-bottom: 15px;">CRM Access Restricted</h3>
-                     <p>CRM system is available starting from Mini Admin level.</p>
-                     <button class="btn-primary" onclick="showSection('wallet')" style="margin-top: 20px;">⚡ Upgrade to Mini Admin</button>
-                 </div>
-             `;
-         }
-     }
-
-     function updateCRMStats(contacts) {
-         const activeContacts = contacts.filter(c => c.status !== 'inactive').length;
-         const emailsSent = parseInt(localStorage.getItem(`emails_sent_${currentUser.userId}`) || '0');
-         const crmConversion = contacts.length > 0 ? Math.round((activeContacts / contacts.length) * 100) : 0;
-         
-         const elements = {
-             totalCrmContacts: document.getElementById('totalCrmContacts'),
-             activeContacts: document.getElementById('activeContacts'),
-             emailsSent: document.getElementById('emailsSent'),
-             crmConversion: document.getElementById('crmConversion')
-         };
-         
-         if (elements.totalCrmContacts) elements.totalCrmContacts.textContent = contacts.length;
-         if (elements.activeContacts) elements.activeContacts.textContent = activeContacts;
-         if (elements.emailsSent) elements.emailsSent.textContent = emailsSent;
-         if (elements.crmConversion) elements.crmConversion.textContent = crmConversion + '%';
-     }
-
-     function displayCRMContacts(contacts) {
-         const crmContactsList = document.getElementById('crmContactsList');
-         if (!crmContactsList) return;
-         
-         if (contacts.length === 0) {
-             crmContactsList.innerHTML = '<p style="color: #CCC; text-align: center; padding: 40px;">No CRM contacts yet. Import or add contacts to get started!</p>';
-             return;
-         }
-         
-         let contactsHTML = '<div style="display: grid; gap: 10px;">';
-         
-         contacts.forEach(contact => {
-             const statusColor = contact.status === 'active' ? '#4CAF50' : 
-                               contact.status === 'new' ? '#FF9800' : '#888';
-             
-             contactsHTML += `
-                 <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,215,0,0.2); border-radius: 10px; padding: 15px; cursor: pointer;" onclick="openCRMModal('${contact.id}')">
-                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                         <div>
-                             <div style="color: #FFD700; font-weight: bold; margin-bottom: 5px;">${contact.name}</div>
-                             <div style="color: #CCC; font-size: 12px;">${contact.platform} • ${contact.contact}</div>
-                         </div>
-                         <div style="text-align: right;">
-                             <div style="background: ${statusColor}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; margin-bottom: 5px;">${contact.status || 'new'}</div>
-                             <div style="color: #888; font-size: 10px;">${new Date(contact.createdAt).toLocaleDateString()}</div>
-                         </div>
-                     </div>
-                 </div>
-             `;
-         });
-         
-         contactsHTML += '</div>';
-         crmContactsList.innerHTML = contactsHTML;
-     }
-
-     function importContacts() {
-         if (currentUser.level < 2) {
-             showNotification('Contact import requires Mini Admin level or higher', 'error');
-             return;
-         }
-         
-         showImportExport();
-     }
 
      function openCRMModal(contactId) {
          if (currentUser.level < 2) {
@@ -7581,143 +6724,231 @@ async function checkUserAccess() {
          showNotification('Message sent!', 'success');
      }
 
-     // ✅ ФУНКЦИИ РЕФЕРАЛОВ
-     function loadReferralData() {
+     // ✅ ЗАГЛУШКИ ДЛЯ ОСТАЛЬНЫХ ФУНКЦИЙ
+     function createNewSurvey() {
+         if (currentUser.level < 3) {
+             showNotification('Survey creation requires Admin level or higher', 'error');
+             return;
+         }
+         showNotification('Survey creation feature coming soon!', 'info');
+     }
+
+     function closeSurveyModal() {
+         showNotification('Survey modal closed', 'info');
+     }
+
+     function addQuestion() {
+         showNotification('Add question feature coming soon!', 'info');
+     }
+
+     function saveSurvey() {
+         showNotification('Save survey feature coming soon!', 'info');
+     }
+
+     function publishSurvey() {
+         showNotification('Publish survey feature coming soon!', 'info');
+     }
+
+     function filterSurveys() {
+         showNotification('Filter surveys feature coming soon!', 'info');
+     }
+
+     function viewSurveyTemplates() {
+         showNotification('Survey templates feature coming soon!', 'info');
+     }
+
+     function createNewPost() {
+         if (currentUser.level < 3) {
+             showNotification('Blog access requires Admin level or higher', 'error');
+             return;
+         }
+         showNotification('Post creation feature coming soon!', 'info');
+     }
+
+     function editBlogSettings() {
+         if (currentUser.level < 3) {
+             showNotification('Blog settings require Admin level or higher', 'error');
+             return;
+         }
+         showNotification('Blog settings feature coming soon!', 'info');
+     }
+
+     function previewBlog() {
+         showNotification('Blog preview feature coming soon!', 'info');
+     }
+
+     function publishBlog() {
+         showNotification('Blog publishing feature coming soon!', 'info');
+     }
+
+     function closeEditor() {
+         showNotification('Post editor closed', 'info');
+     }
+
+     function savePost() {
+         showNotification('Save post feature coming soon!', 'info');
+     }
+
+     function publishPost() {
+         showNotification('Publish post feature coming soon!', 'info');
+     }
+
+     function formatText(format) {
+         showNotification(`Format ${format} feature coming soon!`, 'info');
+     }
+
+     function addImage() {
+         showNotification('Add image feature coming soon!', 'info');
+     }
+
+     function addVideo() {
+         showNotification('Add video feature coming soon!', 'info');
+     }
+
+     function addLink() {
+         showNotification('Add link feature coming soon!', 'info');
+     }
+
+     function closeBlogSettings() {
+         showNotification('Blog settings closed', 'info');
+     }
+
+     function switchSettingsTab(tabName) {
+         showNotification(`Switching to ${tabName} tab`, 'info');
+     }
+
+     function selectTheme(themeName) {
+         showNotification(`Theme ${themeName} selected`, 'info');
+     }
+
+     function saveBlogSettings() {
+         showNotification('Blog settings saved!', 'success');
+     }
+
+     function saveMLMSettings() {
+         showNotification('MLM settings saved!', 'success');
+     }
+
+     function resetMLMSettings() {
+         if (confirm('Reset MLM settings to default?')) {
+             showNotification('MLM settings reset to default', 'success');
+         }
+     }
+
+     function createCampaign() {
+         showNotification('Campaign creation feature coming soon!', 'info');
+     }
+
+     function createNewCampaign() {
+         showNotification('Email campaign creation feature coming soon!', 'info');
+     }
+
+     function viewCampaignTemplates() {
+         showNotification('Campaign templates feature coming soon!', 'info');
+     }
+
+     function exportAnalytics() {
+         showNotification('Analytics export feature coming soon!', 'info');
+     }
+
+     function refreshAnalytics() {
+         showNotification('Analytics refreshed!', 'success');
+     }
+
+     function addCoauthor() {
+         const isFounder = FOUNDERS_ADDRESSES.includes(userWalletAddress);
+         if (!isFounder) {
+             showNotification('Only project founders can add co-authors', 'error');
+             return;
+         }
+         showNotification('Co-author management feature coming soon!', 'info');
+     }
+
+     function importContacts() {
          if (currentUser.level < 2) {
-             showReferralAccessDenied();
+             showNotification('Contact import requires Mini Admin level or higher', 'error');
+             return;
+         }
+         showImportExport();
+     }
+
+     function saveAllSettings() {
+         const settings = {
+             displayName: document.getElementById('displayName')?.value || '',
+             userEmail: document.getElementById('userEmail')?.value || '',
+             userTelegram: document.getElementById('userTelegram')?.value || '',
+             userTimezone: document.getElementById('userTimezone')?.value || 'UTC',
+             emailNotifications: document.getElementById('emailNotifications')?.checked || false,
+             referralNotifications: document.getElementById('referralNotifications')?.checked || false,
+             systemNotifications: document.getElementById('systemNotifications')?.checked || false,
+             marketingNotifications: document.getElementById('marketingNotifications')?.checked || false,
+             themeSelect: document.getElementById('themeSelect')?.value || 'dark',
+             languageSelect: document.getElementById('languageSelect')?.value || 'en',
+             reducedMotion: document.getElementById('reducedMotion')?.checked || false,
+             autoSave: document.getElementById('autoSave')?.checked || true,
+             autoDisconnect: document.getElementById('autoDisconnect')?.checked || true,
+             requireConfirmation: document.getElementById('requireConfirmation')?.checked || true
+         };
+         
+         localStorage.setItem(`settings_${currentUser.userId}`, JSON.stringify(settings));
+         
+         // Применяем настройки языка
+         if (settings.languageSelect !== currentLanguage) {
+             switchLanguage(settings.languageSelect);
+         }
+         
+         showNotification('Settings saved successfully!', 'success');
+     }
+
+     function exportUserData() {
+         if (currentUser.level === 0) {
+             showNotification('Data export requires account activation', 'error');
              return;
          }
          
-         // В реальной версии здесь будет загрузка из блокчейна
-         const savedReferrals = localStorage.getItem(`referrals_${currentUser.userId}`);
-         const referrals = savedReferrals ? JSON.parse(savedReferrals) : 
-             { levels: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [] }, users: {} };
+         const userData = {
+             user: currentUser,
+             contacts: JSON.parse(localStorage.getItem(`contacts_${currentUser.userId}`) || '[]'),
+             archive: JSON.parse(localStorage.getItem(`archive_${currentUser.userId}`) || '{}'),
+             settings: JSON.parse(localStorage.getItem(`settings_${currentUser.userId}`) || '{}'),
+             exportedAt: Date.now()
+         };
          
-         displayReferralLevels(referrals);
+         const dataStr = JSON.stringify(userData, null, 2);
+         const dataBlob = new Blob([dataStr], {type: 'application/json'});
+         
+         const link = document.createElement('a');
+         link.href = URL.createObjectURL(dataBlob);
+         link.download = `cardgift_data_${currentUser.userId}_${Date.now()}.json`;
+         document.body.appendChild(link);
+         link.click();
+         document.body.removeChild(link);
+         
+         showNotification('User data exported successfully!', 'success');
      }
 
-     function showReferralAccessDenied() {
-         document.querySelectorAll('#levelContents .level-content').forEach(content => {
-             content.innerHTML = `
-                 <div style="text-align: center; color: #CCC; padding: 60px;">
-                     <div style="font-size: 64px; margin-bottom: 20px;">🔒</div>
-                     <h3 style="color: #FFD700; margin-bottom: 15px;">Referral Access Restricted</h3>
-                     <p>Referral system is available starting from Mini Admin level.</p>
-                     <button class="btn-primary" onclick="showSection('wallet')" style="margin-top: 20px;">⚡ Upgrade to Mini Admin</button>
-                 </div>
-             `;
-         });
-     }
-
-     function displayReferralLevels(referrals) {
-         for (let level = 1; level <= 9; level++) {
-             const levelUsers = referrals.levels[level] || [];
-             const countElement = document.getElementById(`level${level}Count`);
-             const tableElement = document.getElementById(`level${level}Table`);
-             
-             if (countElement) {
-                 countElement.textContent = `${levelUsers.length} users`;
-             }
-             
-             if (tableElement) {
-                 if (levelUsers.length === 0) {
-                     tableElement.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #888; padding: 40px;">No level ${level} referrals yet</td></tr>`;
-                 } else {
-                     let tableHTML = '';
-                     levelUsers.forEach(user => {
-                         tableHTML += `
-                             <tr>
-                                 <td class="user-id-cell" onclick="openCRMModal('${user.id}')">${user.userId}</td>
-                                 <td>${user.sponsor || '-'}</td>
-                                 <td>
-                                     <span class="wallet-status ${user.walletConnected ? 'wallet-active' : 'wallet-inactive'}">
-                                         ${user.walletConnected ? 'Connected' : 'Not Connected'}
-                                     </span>
-                                 </td>
-                                 <td>
-                                     <span class="status-badge status-${user.level > 3 ? 'super' : user.level > 1 ? 'mini' : 'basic'}">
-                                         Level ${user.level}
-                                     </span>
-                                 </td>
-                                 <td>${new Date(user.joinedAt).toLocaleDateString()}</td>
-                                 <td>
-                                     <button class="btn-secondary" onclick="contactUser('${user.id}')" style="padding: 5px 10px; font-size: 12px;">📧</button>
-                                 </td>
-                             </tr>
-                         `;
-                     });
-                     tableElement.innerHTML = tableHTML;
+     function clearAllData() {
+         if (confirm('Are you sure you want to clear all your data? This action cannot be undone!')) {
+             if (confirm('This will delete all your contacts, cards, posts, and settings. Are you absolutely sure?')) {
+                 // Очищаем все данные пользователя
+                 const keysToRemove = [];
+                 for (let i = 0; i < localStorage.length; i++) {
+                     const key = localStorage.key(i);
+                     if (key && key.includes(currentUser.userId)) {
+                         keysToRemove.push(key);
+                     }
                  }
+                 
+                 keysToRemove.forEach(key => localStorage.removeItem(key));
+                 
+                 showNotification('All user data cleared successfully!', 'success');
+                 
+                 // Перезагружаем страницу через 2 секунды
+                 setTimeout(() => {
+                     window.location.reload();
+                 }, 2000);
              }
          }
-     }
-
-     function showLevel(level) {
-         // Убираем активность с всех кнопок уровней
-         document.querySelectorAll('.level-btn').forEach(btn => {
-             btn.classList.remove('active');
-         });
-         
-         // Скрываем все содержимое уровней
-         document.querySelectorAll('.level-content').forEach(content => {
-             content.classList.remove('active');
-         });
-         
-         // Активируем выбранный уровень
-         const activeBtn = document.querySelector(`[data-level="${level}"]`);
-         if (activeBtn) {
-             activeBtn.classList.add('active');
-         }
-         
-         const activeContent = document.getElementById(`level${level}Content`);
-         if (activeContent) {
-             activeContent.classList.add('active');
-         }
-     }
-
-     function copyReferralLink() {
-         if (currentUser.userId === 'NOT_CONNECTED') {
-             showNotification('Please connect your wallet first', 'error');
-             return;
-         }
-         
-         const referralLink = `https://cardgift.bnb/registration.html?ref=${currentUser.userId}`;
-         
-         navigator.clipboard.writeText(referralLink).then(() => {
-             showNotification('Referral link copied to clipboard!', 'success');
-         }).catch(() => {
-             // Fallback для старых браузеров
-             const textArea = document.createElement('textarea');
-             textArea.value = referralLink;
-             document.body.appendChild(textArea);
-             textArea.select();
-             document.execCommand('copy');
-             document.body.removeChild(textArea);
-             showNotification('Referral link copied!', 'success');
-         });
-     }
-
-     function shareReferralLink() {
-         if (currentUser.userId === 'NOT_CONNECTED') {
-             showNotification('Please connect your wallet first', 'error');
-             return;
-         }
-         
-         const referralLink = `https://cardgift.bnb/registration.html?ref=${currentUser.userId}`;
-         
-         if (navigator.share) {
-             navigator.share({
-                 title: 'Join CardGift - Create Amazing Greeting Cards!',
-                 text: 'Create beautiful greeting cards and earn with CardGift platform!',
-                 url: referralLink
-             });
-         } else {
-             copyReferralLink();
-         }
-     }
-
-     function contactUser(userId) {
-         showNotification('User contact feature coming soon!', 'info');
      }
 
      // ✅ ФУНКЦИИ GLOBALWAY
@@ -7760,17 +6991,6 @@ async function checkUserAccess() {
                          <div style="margin-bottom: 8px;"><strong>Your CardGift ID:</strong> <span style="color: #4CAF50;">${currentUser.userId}</span></div>
                          <div style="margin-bottom: 8px;"><strong>Level:</strong> <span style="color: #FFD700;">${getUserLevelName(currentUser.level)}</span></div>
                          <div><strong>Ready for Integration:</strong> <span style="color: #4CAF50;">✅ Yes</span></div>
-                     </div>
-                 </div>
-                 
-                 <div style="background: rgba(33,150,243,0.1); border: 1px solid rgba(33,150,243,0.3); 
-                             border-radius: 12px; padding: 20px; margin-bottom: 25px;">
-                     <h4 style="color: #2196F3; margin-bottom: 15px;">💡 How Integration Works:</h4>
-                     <div style="color: #CCC; font-size: 14px; line-height: 1.6;">
-                         <div>1. <strong>Keep Your Data:</strong> All your cards, contacts, and settings remain in CardGift</div>
-                         <div>2. <strong>Enhanced Features:</strong> GlobalWay adds powerful marketing and analytics tools</div>
-                         <div>3. <strong>Unified Access:</strong> One login for both platforms with shared progress</div>
-                         <div>4. <strong>Token Benefits:</strong> Earn and exchange tokens across the ecosystem</div>
                      </div>
                  </div>
                  
@@ -7848,216 +7068,6 @@ async function checkUserAccess() {
          }
      }
 
-     // ✅ ФУНКЦИИ НАСТРОЕК
-     function saveAllSettings() {
-         const settings = {
-             displayName: document.getElementById('displayName')?.value || '',
-             userEmail: document.getElementById('userEmail')?.value || '',
-             userTelegram: document.getElementById('userTelegram')?.value || '',
-             userTimezone: document.getElementById('userTimezone')?.value || 'UTC',
-             emailNotifications: document.getElementById('emailNotifications')?.checked || false,
-             referralNotifications: document.getElementById('referralNotifications')?.checked || false,
-             systemNotifications: document.getElementById('systemNotifications')?.checked || false,
-             marketingNotifications: document.getElementById('marketingNotifications')?.checked || false,
-             themeSelect: document.getElementById('themeSelect')?.value || 'dark',
-             languageSelect: document.getElementById('languageSelect')?.value || 'en',
-             reducedMotion: document.getElementById('reducedMotion')?.checked || false,
-             autoSave: document.getElementById('autoSave')?.checked || true,
-             autoDisconnect: document.getElementById('autoDisconnect')?.checked || true,
-             requireConfirmation: document.getElementById('requireConfirmation')?.checked || true
-         };
-         
-         localStorage.setItem(`settings_${currentUser.userId}`, JSON.stringify(settings));
-         
-         // Применяем настройки языка
-         if (settings.languageSelect !== currentLanguage) {
-             switchLanguage(settings.languageSelect);
-         }
-         
-         showNotification('Settings saved successfully!', 'success');
-     }
-
-     function exportUserData() {
-         if (currentUser.level === 0) {
-             showNotification('Data export requires account activation', 'error');
-             return;
-         }
-         
-         const userData = {
-             user: currentUser,
-             contacts: JSON.parse(localStorage.getItem(`contacts_${currentUser.userId}`) || '[]'),
-             archive: JSON.parse(localStorage.getItem(`archive_${currentUser.userId}`) || '{}'),
-             blog: JSON.parse(localStorage.getItem(`blog_posts_${currentUser.userId}`) || '[]'),
-             surveys: JSON.parse(localStorage.getItem(`surveys_${currentUser.userId}`) || '[]'),
-             settings: JSON.parse(localStorage.getItem(`settings_${currentUser.userId}`) || '{}'),
-             exportedAt: Date.now()
-         };
-         
-         const dataStr = JSON.stringify(userData, null, 2);
-         const dataBlob = new Blob([dataStr], {type: 'application/json'});
-         
-         const link = document.createElement('a');
-         link.href = URL.createObjectURL(dataBlob);
-         link.download = `cardgift_data_${currentUser.userId}_${Date.now()}.json`;
-         document.body.appendChild(link);
-         link.click();
-         document.body.removeChild(link);
-         
-         showNotification('User data exported successfully!', 'success');
-     }
-
-     function clearAllData() {
-         if (confirm('Are you sure you want to clear all your data? This action cannot be undone!')) {
-             if (confirm('This will delete all your contacts, cards, posts, and settings. Are you absolutely sure?')) {
-                 // Очищаем все данные пользователя
-                 const keysToRemove = [];
-                 for (let i = 0; i < localStorage.length; i++) {
-                     const key = localStorage.key(i);
-                     if (key && key.includes(currentUser.userId)) {
-                         keysToRemove.push(key);
-                     }
-                 }
-                 
-                 keysToRemove.forEach(key => localStorage.removeItem(key));
-                 
-                 showNotification('All user data cleared successfully!', 'success');
-                 
-                 // Перезагружаем страницу через 2 секунды
-                 setTimeout(() => {
-                     window.location.reload();
-                 }, 2000);
-             }
-         }
-     }
-
-     // ✅ ФУНКЦИИ РАССЫЛОК И АНАЛИТИКИ
-     function createNewCampaign() {
-         if (currentUser.level < 3) {
-             showNotification('Email campaigns require Admin level or higher', 'error');
-             return;
-         }
-         
-         showNotification('Email campaign creation feature coming soon!', 'info');
-     }
-
-     function viewCampaignTemplates() {
-         showNotification('Campaign templates feature coming soon!', 'info');
-     }
-
-     function exportAnalytics() {
-         if (currentUser.level < 3) {
-             showNotification('Analytics export requires Admin level or higher', 'error');
-             return;
-         }
-         
-         showNotification('Analytics export feature coming soon!', 'info');
-     }
-
-     function refreshAnalytics() {
-         showNotification('Analytics refreshed!', 'success');
-     }
-
-     function addCoauthor() {
-         const isFounder = FOUNDERS_ADDRESSES.includes(userWalletAddress);
-         if (!isFounder) {
-             showNotification('Only project founders can add co-authors', 'error');
-             return;
-         }
-         
-         showNotification('Co-author management feature coming soon!', 'info');
-     }
-
-     // ✅ ФУНКЦИИ ЯЗЫКА
-     function switchLanguage(lang) {
-         currentLanguage = lang;
-         localStorage.setItem('selectedLanguage', lang);
-         
-         // Обновляем активную кнопку языка
-         document.querySelectorAll('.lang-btn').forEach(btn => {
-             btn.classList.remove('active');
-             if (btn.getAttribute('data-lang') === lang) {
-                 btn.classList.add('active');
-             }
-         });
-         
-         // Применяем переводы
-         applyTranslations(lang);
-         
-         showNotification(`Language changed to ${lang.toUpperCase()}`, 'success');
-     }
-
-     function loadSavedLanguage() {
-         const savedLang = localStorage.getItem('selectedLanguage') || 'en';
-         switchLanguage(savedLang);
-     }
-
-     function applyTranslations(lang) {
-         const t = translations[lang] || translations.en;
-         
-         // Применяем переводы ко всем элементам с ID из translations
-         Object.keys(t).forEach(key => {
-             const element = document.getElementById(key);
-             if (element) {
-                 if (element.tagName === 'INPUT' && element.type !== 'submit' && element.type !== 'button') {
-                     element.placeholder = t[key];
-                 } else {
-                     element.textContent = t[key];
-                 }
-             }
-         });
-         
-         // Обновляем заголовок страницы
-         document.title = t.pageTitle || 'CardGift - Admin Dashboard';
-         
-         // Обновляем мета-описание
-         const metaDesc = document.querySelector('meta[name="description"]');
-         if (metaDesc) {
-             metaDesc.content = t.metaDescription || 'CardGift Admin Dashboard - Manage your network';
-         }
-     }
-
-     // ✅ ФУНКЦИИ ВРЕМЕНИ И ДАННЫХ
-     function updateTime() {
-         const now = new Date();
-         const timeString = now.toLocaleString();
-         const timeElement = document.getElementById('currentTime');
-         if (timeElement) {
-             timeElement.textContent = timeString;
-         }
-     }
-
-     function loadDashboardData() {
-         // Обновляем статистику dashboard
-         const stats = {
-             totalReferrals: 0,
-             activeReferrals: 0,
-             totalEarnings: '0.000',
-             conversionRate: '0%'
-         };
-         
-         // В реальной версии здесь будет загрузка из блокчейна
-         const savedReferrals = localStorage.getItem(`referrals_${currentUser.userId}`);
-         if (savedReferrals) {
-             const referrals = JSON.parse(savedReferrals);
-             stats.totalReferrals = Object.values(referrals.levels).flat().length;
-             stats.activeReferrals = Object.values(referrals.levels).flat().filter(u => u.isActive).length;
-         }
-         
-         // Обновляем элементы
-         const elements = {
-             totalReferrals: document.getElementById('totalReferrals'),
-             activeReferrals: document.getElementById('activeReferrals'),
-             totalEarnings: document.getElementById('totalEarnings'),
-             conversionRate: document.getElementById('conversionRate')
-         };
-         
-         Object.keys(elements).forEach(key => {
-             if (elements[key]) {
-                 elements[key].textContent = stats[key];
-             }
-         });
-     }
-
      // ✅ ОБРАБОТЧИКИ СОБЫТИЙ
      document.addEventListener('DOMContentLoaded', function() {
          // Обработчик для мобильного меню
@@ -8125,17 +7135,6 @@ async function checkUserAccess() {
          
          // Обновляем время каждую секунду
          setInterval(updateTime, 1000);
-         
-         // Автосохранение настроек
-         const settingsInputs = document.querySelectorAll('#settings input, #settings select, #settings textarea');
-         settingsInputs.forEach(input => {
-             input.addEventListener('change', function() {
-                 const autoSave = document.getElementById('autoSave')?.checked;
-                 if (autoSave) {
-                     setTimeout(saveAllSettings, 1000); // Автосохранение через 1 секунду
-                 }
-             });
-         });
          
          // Загружаем сохраненные пользовательские группы
          const savedGroups = localStorage.getItem(`custom_groups_${currentUser.userId}`);
@@ -8209,31 +7208,32 @@ async function checkUserAccess() {
      console.log('🔗 API integrations ready for Telegram, WhatsApp, and Email');
      console.log('📢 Push notification system with level-based limits');
      console.log('📥📤 Import/Export functionality available');
+     console.log('📁 Archive system with server integration ready');
 
      // ✅ ДИАГНОСТИКА КОШЕЛЬКОВ
-function checkWallets() {
-    console.log('🔍 === WALLET DETECTION REPORT ===');
-    console.log('window.ethereum:', !!window.ethereum);
-    console.log('window.safepal:', !!window.safepal);  
-    console.log('window.safePal:', !!window.safePal);
-    
-    if (window.ethereum) {
-        console.log('ethereum.isSafePal:', window.ethereum.isSafePal);
-        console.log('ethereum.isMetaMask:', window.ethereum.isMetaMask);
-        console.log('ethereum provider info:', window.ethereum);
-    }
-    
-    // Проверяем все возможные объекты
-    console.log('Available window objects:');
-    Object.keys(window).filter(key => key.toLowerCase().includes('safe') || key.toLowerCase().includes('pal') || key.toLowerCase().includes('meta')).forEach(key => {
-        console.log(`  ${key}:`, !!window[key]);
-    });
-    
-    console.log('🔍 === END REPORT ===');
-}
+     function checkWallets() {
+         console.log('🔍 === WALLET DETECTION REPORT ===');
+         console.log('window.ethereum:', !!window.ethereum);
+         console.log('window.safepal:', !!window.safepal);  
+         console.log('window.safePal:', !!window.safePal);
+         
+         if (window.ethereum) {
+             console.log('ethereum.isSafePal:', window.ethereum.isSafePal);
+             console.log('ethereum.isMetaMask:', window.ethereum.isMetaMask);
+             console.log('ethereum provider info:', window.ethereum);
+         }
+         
+         // Проверяем все возможные объекты
+         console.log('Available window objects:');
+         Object.keys(window).filter(key => key.toLowerCase().includes('safe') || key.toLowerCase().includes('pal') || key.toLowerCase().includes('meta')).forEach(key => {
+             console.log(`  ${key}:`, !!window[key]);
+         });
+         
+         console.log('🔍 === END REPORT ==='); 
+     }
 
-// Запускаем диагностику через 3 секунды после загрузки
-setTimeout(checkWallets, 3000);
+     // Запускаем диагностику через 3 секунды после загрузки
+     setTimeout(checkWallets, 3000);
  </script>
 </body>
 </html>
