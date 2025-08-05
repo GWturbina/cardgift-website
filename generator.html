@@ -3856,71 +3856,94 @@ console.log('✅ Memory auto-cleaned successfully');
        const cardMetadata = await prepareCardMetadata();
        
        // Генерируем превью
-       console.log('🖼️ Генерируем превью...');
-       const previewResult = await generateCardPreview(cardMetadata);
-       
-       // Отправляем данные на сервер для создания мета-страницы
-       try {
-           console.log('📡 Создаем мета-страницу...');
-           const response = await fetch('/api/save-card', {
-               method: 'POST',
-               headers: {
-                   'Content-Type': 'application/json',
-               },
-               body: JSON.stringify({
-                   cardId: cardMetadata.cardId,
-                   cardData: cardMetadata,
-                   previewImage: previewResult.previewImageUrl
-               })
-           });
-           
-           const result = await response.json();
-           console.log('✅ Данные отправлены на сервер:', result);
-           
-           // Обновляем ссылку для шаринга
-           if (result.shareUrl) {
-               cardMetadata.shareUrl = result.shareUrl;
-           }
-       } catch (error) {
-           console.warn('⚠️ Ошибка создания мета-страницы:', error);
-       }
-       
-       // ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
-       const shareableLink = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
-       cardMetadata.shareUrl = shareableLink;
-       
-       // ✅ Обновляем счетчик карт пользователя
-       currentUser.cardCount = (currentUser.cardCount || 0) + 1;
-       localStorage.setItem('currentUser', JSON.stringify(currentUser));
-       levelManager.updateUserInterface(currentUser);
-       
-       // Показ результата
-       showEnhancedCardResult(cardMetadata, { 
-           ...previewResult, 
-           shareUrl: shareableLink 
-       });
-       
-       const message = currentLanguage === 'en' ? '✨ Card created successfully!' :
-                     currentLanguage === 'ru' ? '✨ Открытка создана успешно!' :
-                     '✨ Листівка створена успішно!';
-       notificationManager.show(message, 'success');
-       
-       // Очищаем форму после успешного создания
-       clearForm();
-       
-   } catch (error) {
-       console.error('❌ Card creation error:', error);
-       const message = error.message || (currentLanguage === 'en' ? 'Card creation error' :
-                                       currentLanguage === 'ru' ? 'Ошибка создания открытки' :
-                                       'Помилка створення листівки');
-       notificationManager.show(message, 'error');
-       
-   } finally {
-       if (createBtn) {
-           createBtn.classList.remove('loading');
-           createBtn.disabled = false;
-       }
-   }
+console.log('🖼️ Генерируем превью...');
+const previewResult = await generateCardPreview(cardMetadata);
+
+// ✅ СОХРАНЯЕМ В АРХИВ С ПРЕВЬЮ
+try {
+    const archiveData = {
+        ...cardMetadata,
+        isArchived: true,
+        archivedAt: new Date().toISOString(),
+        previewImageUrl: previewResult.previewImageUrl, // ПОЛНОЕ превью
+        hasPreview: true
+    };
+    
+    // Сохраняем в архив
+    const userId = getCurrentUserId();
+    const savedArchive = localStorage.getItem(`archive_${userId}`);
+    const archive = savedArchive ? JSON.parse(savedArchive) : { cards: [] };
+    
+    archive.cards.unshift(archiveData);
+    localStorage.setItem(`archive_${userId}`, JSON.stringify(archive));
+    
+    console.log('✅ Card saved to archive with FULL preview');
+} catch (error) {
+    console.warn('Archive save failed:', error);
+}
+
+// Отправляем данные на сервер для создания мета-страницы
+try {
+    console.log('📡 Создаем мета-страницу...');
+    const response = await fetch('/api/save-card', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            cardId: cardMetadata.cardId,
+            cardData: cardMetadata,
+            previewImage: previewResult.previewImageUrl
+        })
+    });
+    
+    const result = await response.json();
+    console.log('✅ Данные отправлены на сервер:', result);
+    
+    // Обновляем ссылку для шаринга
+    if (result.shareUrl) {
+        cardMetadata.shareUrl = result.shareUrl;
+    }
+} catch (error) {
+    console.warn('⚠️ Ошибка создания мета-страницы:', error);
+}
+
+// ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
+const shareableLink = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
+cardMetadata.shareUrl = shareableLink;
+
+// ✅ Обновляем счетчик карт пользователя
+currentUser.cardCount = (currentUser.cardCount || 0) + 1;
+localStorage.setItem('currentUser', JSON.stringify(currentUser));
+levelManager.updateUserInterface(currentUser);
+
+// Показ результата
+showEnhancedCardResult(cardMetadata, { 
+    ...previewResult, 
+    shareUrl: shareableLink 
+});
+
+const message = currentLanguage === 'en' ? '✨ Card created successfully!' :
+              currentLanguage === 'ru' ? '✨ Открытка создана успешно!' :
+              '✨ Листівка створена успішно!';
+notificationManager.show(message, 'success');
+
+// Очищаем форму после успешного создания
+clearForm();
+
+} catch (error) {
+console.error('❌ Card creation error:', error);
+const message = error.message || (currentLanguage === 'en' ? 'Card creation error' :
+                               currentLanguage === 'ru' ? 'Ошибка создания открытки' :
+                               'Помилка створення листівки');
+notificationManager.show(message, 'error');
+
+} finally {
+if (createBtn) {
+    createBtn.classList.remove('loading');
+    createBtn.disabled = false;
+}
+}
 }
 
 // ✅ Очистка формы после создания карты
@@ -5749,5 +5772,6 @@ console.log(`
 </script>
 </body>
 </html>
+
 
 
