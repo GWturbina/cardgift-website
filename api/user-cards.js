@@ -1,21 +1,6 @@
-// /api/user-cards.js
-import { MongoClient } from 'mongodb';
-
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const DATABASE_NAME = 'cardgift';
-
-let cachedClient = null;
-
-async function connectToDatabase() {
-    if (cachedClient) {
-        return cachedClient;
-    }
-    
-    const client = new MongoClient(MONGODB_URI);
-    await client.connect();
-    cachedClient = client;
-    return client;
-}
+// Используем глобальный объект для хранения (как в save-card.js)
+global.cards = global.cards || new Map();
+const cards = global.cards;
 
 export default async function handler(req, res) {
     // ✅ CORS HEADERS
@@ -38,40 +23,46 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'userId is required' });
         }
         
-        // ✅ ПОДКЛЮЧАЕМСЯ К БАЗЕ ДАННЫХ
-        const client = await connectToDatabase();
-        const db = client.db(DATABASE_NAME);
-        const collection = db.collection('cards');
+        console.log(`🔍 Searching cards for user: ${userId}`);
+        console.log(`📊 Total cards in memory: ${cards.size}`);
         
-        // ✅ ПОЛУЧАЕМ КАРТЫ ПОЛЬЗОВАТЕЛЯ
-        const cards = await collection.find({ 
-            userId: userId 
-        }).sort({ 
-            createdAt: -1 
-        }).toArray();
+        // ✅ ПОЛУЧАЕМ ВСЕ КАРТЫ ПОЛЬЗОВАТЕЛЯ ИЗ ГЛОБАЛЬНОЙ ПАМЯТИ
+        const userCards = [];
         
-        // ✅ ФОРМАТИРУЕМ ДАННЫЕ ДЛЯ DASHBOARD
-        const formattedCards = cards.map(card => ({
-            cardId: card.cardId,
-            id: card.cardId,
-            title: card.title || 'Untitled Card',
-            preview: card.previewUrl || card.thumbnailUrl,
-            previewUrl: card.previewUrl,
-            thumbnailUrl: card.thumbnailUrl,
-            views: card.views || 0,
-            clicks: card.clicks || 0,
-            viewCount: card.views || 0,
-            clickCount: card.clicks || 0,
-            createdAt: card.createdAt,
-            userId: card.userId
-        }));
+        for (let [cardId, cardData] of cards.entries()) {
+            // Проверяем принадлежность карты пользователю
+            if (cardData.userId === userId || cardId.includes(userId.replace('USER_', ''))) {
+                userCards.push({
+                    cardId: cardId,
+                    id: cardId,
+                    title: cardData.greeting?.split('\n')[0] || cardData.title || 'Untitled Card',
+                    preview: cardData.previewUrl || cardData.thumbnailUrl,
+                    previewUrl: cardData.previewUrl,
+                    thumbnailUrl: cardData.previewUrl,
+                    views: cardData.views || 0,
+                    clicks: cardData.clicks || 0,
+                    viewCount: cardData.views || 0,
+                    clickCount: cardData.clicks || 0,
+                    createdAt: cardData.createdAt || Date.now(),
+                    userId: cardData.userId || userId,
+                    greeting: cardData.greeting
+                });
+            }
+        }
         
-        console.log(`✅ Found ${formattedCards.length} cards for user ${userId}`);
+        // Сортируем по дате создания (новые первыми)
+        userCards.sort((a, b) => b.createdAt - a.createdAt);
         
-        return res.status(200).json(formattedCards);
+        console.log(`✅ Found ${userCards.length} cards for user ${userId}`);
+        
+        return res.status(200).json(userCards);
         
     } catch (error) {
         console.error('❌ Error fetching user cards:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ 
+            error: 'Internal server error',
+            message: error.message,
+            totalCards: cards.size
+        });
     }
 }
