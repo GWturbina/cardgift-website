@@ -4706,31 +4706,7 @@ if (currentUser.level > 0) {
     }
 }
 
-    // ✅ ФУНКЦИЯ ОТКЛЮЧЕНИЯ КОШЕЛЬКА
-function disconnectWallet() {
-    if (confirm('Disconnect wallet? You will need to reconnect.')) {
-        // Очищаем все данные
-        userWalletAddress = null;
-        web3 = null;
-        currentUser = {
-            userId: 'NOT_CONNECTED',
-            level: 0,
-            isActive: false,
-            walletAddress: null
-        };
-        
-        // Очищаем сохраненное состояние
-        walletState.clear();
-        
-        // Обновляем интерфейс
-        updateUserInterface();
-        updateConnectionStatus();
-        
-        showNotification('Wallet disconnected successfully!', 'success');
-        console.log('🚪 Wallet disconnected');
-    }
-}
-     // ✅ ФУНКЦИЯ ОТКЛЮЧЕНИЯ КОШЕЛЬКА
+// ✅ ФУНКЦИЯ ОТКЛЮЧЕНИЯ КОШЕЛЬКА
 function disconnectWallet() {
     if (confirm('Disconnect wallet? You will need to reconnect.')) {
         // Очищаем все данные
@@ -4924,6 +4900,7 @@ async function checkUserAccess() {
              // ✅ СКРЫВАЕМ КНОПКУ ОТКЛЮЧЕНИЯ
              const disconnectBtn = document.getElementById('disconnectBtn');
              if (disconnectBtn) disconnectBtn.style.display = 'none';
+             
              if (walletInfo) {
                  walletInfo.style.display = 'none';
              }
@@ -6276,18 +6253,97 @@ async function checkUserAccess() {
      }
 
      function shareCard(cardId) {
-         const shortLink = `https://cardgift.bnb/c/${cardId}`;
+         // Получаем карту из архива
+         const savedArchive = localStorage.getItem(`archive_${currentUser.userId}`);
+         const archive = savedArchive ? JSON.parse(savedArchive) : { cards: [] };
+         const card = archive.cards.find(c => c.id === cardId || c.cardId === cardId);
+         
+         if (!card) {
+             showNotification('Card not found in archive', 'error');
+             return;
+         }
+         
+         const shareUrl = `${window.location.origin}/api/card/${card.cardId || cardId}`;
+         
+         // ✅ ПРОВЕРЯЕМ ЕСТЬ ЛИ ПРЕВЬЮ
+         if (card.previewImageUrl) {
+             // Отправляем С превью
+             shareWithPreview(shareUrl, card.previewImageUrl, card.title || 'My Card');
+         } else {
+             // Отправляем без превью (старый способ)
+             shareWithoutPreview(shareUrl);
+         }
+     }
+
+     function shareWithPreview(shareUrl, previewImage, title) {
+         const messages = {
+             en: "🎉 Look at this beautiful greeting card!",
+             ru: "🎉 Посмотрите на эту красивую открытку!", 
+             ua: "🎉 Подивіться на цю красиву листівку!"
+         };
+         
+         const message = `${messages[currentLanguage] || messages.ru} ${shareUrl}`;
          
          if (navigator.share) {
+             // Пытаемся поделиться с превью
+             fetch(previewImage)
+                 .then(res => res.blob())
+                 .then(blob => {
+                     const file = new File([blob], 'card-preview.jpg', { type: 'image/jpeg' });
+                     
+                     navigator.share({
+                         title: `CardGift - ${title}`,
+                         text: message,
+                         files: [file]
+                     }).then(() => {
+                         showNotification('📱 Shared with preview!', 'success');
+                     }).catch(() => {
+                         // Fallback без файла
+                         navigator.share({
+                             title: `CardGift - ${title}`,
+                             text: message,
+                             url: shareUrl
+                         });
+                     });
+                 })
+                 .catch(() => {
+                     shareWithoutPreview(shareUrl);
+                 });
+         } else {
+             // Копируем ссылку
+             copyToClipboard(message);
+             showNotification('📋 Link copied! Preview will show when pasted in messenger', 'info', 4000);
+         }
+     }
+
+     function shareWithoutPreview(shareUrl) {
+         if (navigator.share) {
              navigator.share({
-                 title: 'Beautiful Greeting Card',
-                 text: 'Check out this amazing card created with CardGift!',
-                 url: shortLink
+                 title: 'CardGift - Beautiful Greeting Card',
+                 text: '🎉 Check out this amazing card!',
+                 url: shareUrl
              });
          } else {
-             navigator.clipboard.writeText(shortLink).then(() => {
-                 showNotification('Link copied to clipboard!', 'success');
+             copyToClipboard(shareUrl);
+             showNotification('📋 Link copied!', 'success');
+         }
+     }
+
+     function copyToClipboard(text) {
+         if (navigator.clipboard) {
+             navigator.clipboard.writeText(text).then(() => {
+                 showNotification('📋 Link copied!', 'success');
              });
+         } else {
+             const textarea = document.createElement('textarea');
+             textarea.value = text;
+             textarea.style.position = 'fixed';
+             textarea.style.opacity = '0';
+             document.body.appendChild(textarea);
+             textarea.select();
+             document.execCommand('copy');
+             document.body.removeChild(textarea);
+             showNotification('📋 Link copied!', 'success');
          }
      }
 
@@ -8173,11 +8229,3 @@ setTimeout(checkWallets, 3000);
  </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
