@@ -3616,11 +3616,45 @@ async function connectWallet() {
 
 // ✅ WEB3: Синхронизация пользователя с блокчейном
 async function syncUserWithBlockchain(walletAddress) {
-try {
-  if (!currentUser || !currentUser.userId) {
-      console.warn('⚠️ No current user to sync');
-      return;
-  }
+    try {
+        // ✅ ВРЕМЕННАЯ ПРОВЕРКА АВТОРА И СОАВТОРОВ
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        const userAddress = accounts[0];
+        
+        // Список привилегированных пользователей
+        const privilegedUsers = [
+            '0x0099188030174e381e7a7ee36d2783ecc31b6728', // АВТОР
+            '0xAB17aDbe29c4E1d695C239206682B02ebdB3f707',
+            '0xB5986B808dad481ad86D63DF152cC0ad7B473e48',
+            '0xa3496caCC8523421Dd151f1d92A456c2daFa28c2',
+            '0x8af1BC6B4a5aACED37889CC06bed4569A6B64044',
+            '0x0AB97e3934b1Afc9F1F6447CCF676E4f1D8B9639',
+            '0x03284A899147f5a07F82C622F34DF92198671635',
+            '0xb0E256cA055937a8FD9CA1F5e3D8A6bD44146d50'
+        ];
+        
+        const isPrivileged = privilegedUsers.some(addr => 
+            addr.toLowerCase() === userAddress.toLowerCase()
+        );
+        
+        if (isPrivileged) {
+            console.log('👑 Privileged user detected - full access granted');
+            
+            currentUser.level = userAddress.toLowerCase() === '0x0099188030174e381e7a7ee36d2783ecc31b6728' ? 6 : 5;
+            currentUser.isActive = true;
+            currentUser.userId = userAddress.toLowerCase() === '0x0099188030174e381e7a7ee36d2783ecc31b6728' ? 'AUTHOR' : 'COAUTHOR';
+            
+            levelManager.updateUserInterface(currentUser);
+            console.log('✅ User sync completed');
+            return;
+        }
+
+        if (!currentUser || !currentUser.userId) {
+            console.warn('⚠️ No current user to sync');
+            return;
+        }
+
+        // ЗДЕСЬ ОСТАЛЬНОЙ ТВОЙ СТАРЫЙ КОД...
   
   if (typeof walletManager !== 'undefined' && walletManager.getUser) {
       const web3User = await walletManager.getUser(currentUser.userId);
@@ -5715,4 +5749,5 @@ console.log(`
 </script>
 </body>
 </html>
+
 
