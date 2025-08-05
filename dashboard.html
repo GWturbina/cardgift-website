@@ -6253,27 +6253,35 @@ async function checkUserAccess() {
      }
 
      function shareCard(cardId) {
-         // Получаем карту из архива
-         const savedArchive = localStorage.getItem(`archive_${currentUser.userId}`);
-         const archive = savedArchive ? JSON.parse(savedArchive) : { cards: [] };
-         const card = archive.cards.find(c => c.id === cardId || c.cardId === cardId);
-         
-         if (!card) {
-             showNotification('Card not found in archive', 'error');
-             return;
-         }
-         
-         const shareUrl = `${window.location.origin}/api/card/${card.cardId || cardId}`;
-         
-         // ✅ ПРОВЕРЯЕМ ЕСТЬ ЛИ ПРЕВЬЮ
-         if (card.previewImageUrl) {
-             // Отправляем С превью
-             shareWithPreview(shareUrl, card.previewImageUrl, card.title || 'My Card');
-         } else {
-             // Отправляем без превью (старый способ)
-             shareWithoutPreview(shareUrl);
-         }
-     }
+    // Получаем карту из архива
+    const savedArchive = localStorage.getItem(`archive_${currentUser.userId}`);
+    const archive = savedArchive ? JSON.parse(savedArchive) : { cards: [] };
+    const card = archive.cards.find(c => c.id === cardId || c.cardId === cardId);
+    
+    if (!card) {
+        showNotification('Card not found in archive', 'error');
+        return;
+    }
+    
+    const shareUrl = `${window.location.origin}/api/card/${card.cardId || cardId}`;
+    
+    // ✅ ПРОСТО ОТПРАВЛЯЕМ ССЫЛКУ - ПРЕВЬЮ СГЕНЕРИРУЕТСЯ НА СЕРВЕРЕ
+    if (navigator.share) {
+        navigator.share({
+            title: `CardGift - ${card.title || 'Beautiful Card'}`,
+            text: '🎉 Look at this beautiful greeting card!',
+            url: shareUrl
+        }).then(() => {
+            showNotification('📱 Card shared successfully!', 'success');
+        }).catch(() => {
+            copyToClipboard(shareUrl);
+            showNotification('📋 Link copied! Preview will show in messengers', 'success');
+        });
+    } else {
+        copyToClipboard(shareUrl);
+        showNotification('📋 Link copied! Preview will show in messengers', 'success');
+    }
+}
 
      function shareWithPreview(shareUrl, previewImage, title) {
          const messages = {
