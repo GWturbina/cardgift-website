@@ -3977,13 +3977,6 @@ async function generateCardPreview(cardMetadata) {
        // Сохраняем локально и на сервер
        await saveCard(cardMetadata);
 
-       // ✅ АВТОМАТИЧЕСКИ СОХРАНЯЕМ В АРХИВ
-       try {
-           await saveCurrentToArchive();
-       } catch (error) {
-           console.warn('Archive save failed:', error);
-       }
-       
        return {
            success: true,
            previewImageUrl: previewImage,
@@ -5722,3 +5715,4 @@ console.log(`
 </script>
 </body>
 </html>
+
