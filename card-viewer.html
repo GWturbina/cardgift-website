@@ -2392,6 +2392,15 @@ const levelManager = new UserLevelManager();
           console.log('🐛 Debug mode enabled. Use cardViewerDebug object for debugging.');
           console.log('Available debug commands:', Object.keys(window.cardViewerDebug));
       }
- </script>
+</script>
+<script>
+// Исправляем ошибку levelManager
+if (typeof levelManager === 'undefined') {
+    window.levelManager = { getLevelInfo: () => ({}) };
+}
+if (typeof cardNotifications === 'undefined') {
+    window.cardNotifications = { show: () => {} };
+}
+</script>
 </body>
 </html>
