@@ -3452,6 +3452,22 @@ async function createCard() {
        
        if (result.success) {
            console.log('✅ Карта успешно создана на сервере:', cardMetadata.cardId);
+
+        // ✅ ПОКАЗЫВАЕМ ПРЕВЬЮ СРАЗУ ЗДЕСЬ
+           const canvas = document.getElementById('cardCanvas');
+           if (canvas) {
+               const previewImg = canvas.toDataURL('image/png', 0.9);
+               const previewDiv = document.createElement('div');
+               previewDiv.innerHTML = `
+                   <div style="background: #FFD700; padding: 20px; margin: 20px; border-radius: 10px;">
+                       <h3>✅ КАРТА СОЗДАНА!</h3>
+                       <img src="${previewImg}" style="max-width: 300px; border: 2px solid #000;">
+                       <p>Ссылка: ${shareableLink}</p>
+                       <button onclick="navigator.clipboard.writeText('${shareableLink}')">КОПИРОВАТЬ</button>
+                   </div>
+               `;
+               document.body.appendChild(previewDiv);
+           }
            
            // ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
            const shareableLink = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
@@ -4940,5 +4956,6 @@ console.log(`
 </script>
 </body>
 </html>
+
 
 
