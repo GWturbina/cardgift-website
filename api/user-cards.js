@@ -1,43 +1,16 @@
-// Используем глобальную память
 global.cards = global.cards || new Map();
-const cards = global.cards;
 
 export default function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     
-    if (req.method === 'OPTIONS') return res.status(200).end();
-    if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+    const allCards = Array.from(global.cards.entries()).map(([id, data]) => ({
+        cardId: id,
+        title: 'Greeting Card',
+        preview: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzRDQUY1MCIvPjx0ZXh0IHg9IjEwMCIgeT0iNTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIj5DYXJkPC90ZXh0Pjwvc3ZnPg==',
+        views: 0,
+        clicks: 0,
+        createdAt: Date.now()
+    }));
     
-    const { userId } = req.query;
-    if (!userId) return res.status(400).json({ error: 'userId required' });
-    
-    console.log(`🔍 Looking for cards for user: ${userId}`);
-    console.log(`📊 Total cards in memory: ${cards.size}`);
-    
-    // Ищем карты пользователя
-    const userCards = [];
-    
-    for (let [cardId, cardData] of cards.entries()) {
-        // Проверяем по userId в данных карты ИЛИ по части ID
-        if (cardData.userId === userId || cardId.includes('card_')) {
-            userCards.push({
-                cardId: cardId,
-                id: cardId,
-                title: cardData.greeting || 'Greeting Card',
-                preview: cardData.previewUrl,
-                previewUrl: cardData.previewUrl,
-                views: cardData.views || 0,
-                clicks: cardData.clicks || 0,
-                createdAt: cardData.createdAt || Date.now(),
-                userId: cardData.userId || userId
-            });
-        }
-    }
-    
-    console.log(`✅ Found ${userCards.length} cards for user ${userId}`);
-    console.log('Available card IDs:', Array.from(cards.keys()));
-    
-    return res.status(200).json(userCards);
+    return res.json(allCards);
 }
