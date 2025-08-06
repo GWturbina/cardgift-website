@@ -3583,6 +3583,37 @@ async function prepareCardMetadata() {
    return metadata;
 }
 
+ // ✅ НОВАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ПРЕВЬЮ-ИЗОБРАЖЕНИЯ
+async function generatePreviewImage() {
+    const container = document.getElementById('previewContainer');
+    if (!container) {
+        // Создаем временный контейнер для превью
+        const tempDiv = document.createElement('div');
+        tempDiv.id = 'tempPreviewContainer';
+        tempDiv.style.cssText = 'position: fixed; left: -9999px; width: 400px; height: 400px;';
+        document.body.appendChild(tempDiv);
+        
+        createPreview(); // Используем существующую функцию
+        
+        const canvas = await html2canvas(tempDiv, {
+            backgroundColor: '#000',
+            scale: 2,
+            useCORS: true,
+            logging: false
+        });
+        
+        document.body.removeChild(tempDiv);
+        return canvas.toDataURL('image/png');
+    }
+    
+    return await html2canvas(container, {
+        backgroundColor: '#000',
+        scale: 2,
+        useCORS: true,
+        logging: false
+    });
+}
+
 // ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОКАЗА РЕЗУЛЬТАТА БЕЗ ПРЕВЬЮ В LOCALSTORAGE
 function showEnhancedCardResult(cardMetadata, result) {
 const t = translations[currentLanguage];
@@ -5041,4 +5072,5 @@ console.log(`
 </script>
 </body>
 </html>
+
 
