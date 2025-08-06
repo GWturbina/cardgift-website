@@ -2392,7 +2392,20 @@ const levelManager = new UserLevelManager();
           console.log('🐛 Debug mode enabled. Use cardViewerDebug object for debugging.');
           console.log('Available debug commands:', Object.keys(window.cardViewerDebug));
       }
-</script>
+<script>
+// ✅ ИСПРАВЛЯЕМ ОШИБКИ ИНИЦИАЛИЗАЦИИ В САМОМ НАЧАЛЕ
+window.levelManager = {
+    getLevelInfo: () => ({ cardLimit: 1000 }),
+    updateUserInterface: () => {},
+    canCreateCard: () => true
+};
+
+window.cardNotifications = {
+    show: (message, type) => console.log(`${type}: ${message}`),
+    createContainer: () => document.createElement('div')
+};
+
+// ВСЕ ОСТАЛЬНЫЕ СКРИПТЫ ИДУТ ПОСЛЕ...
 <script>
 // Исправляем ошибку levelManager
 if (typeof levelManager === 'undefined') {
