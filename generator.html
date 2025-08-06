@@ -3614,6 +3614,37 @@ async function generatePreviewImage() {
     });
 }
 
+ if (result.success) {
+    console.log('✅ Карта успешно создана на сервере:', cardMetadata.cardId);
+    
+    // ✅ ДОБАВЛЯЕМ: Генерируем превью и сохраняем в архив
+    try {
+        const previewImage = await generatePreviewImage();
+        
+        // Сохраняем в локальный архив с превью
+        const savedArchive = localStorage.getItem(`archive_${currentUser.userId}`) || '{"cards":[]}';
+        const archive = JSON.parse(savedArchive);
+        
+        archive.cards.unshift({
+            id: cardMetadata.cardId,
+            cardId: cardMetadata.cardId,
+            title: cardMetadata.greeting || 'Untitled Card',
+            preview: previewImage, // Теперь есть превью!
+            createdAt: cardMetadata.createdAt,
+            views: 0,
+            clicks: 0
+        });
+        
+        localStorage.setItem(`archive_${currentUser.userId}`, JSON.stringify(archive));
+        console.log('✅ Карта сохранена в локальный архив с превью');
+    } catch (error) {
+        console.error('Ошибка генерации превью:', error);
+    }
+    
+    // ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
+    const shareableLink = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
+    cardMetadata.shareUrl = shareableLink;
+
 // ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОКАЗА РЕЗУЛЬТАТА БЕЗ ПРЕВЬЮ В LOCALSTORAGE
 function showEnhancedCardResult(cardMetadata, result) {
 const t = translations[currentLanguage];
@@ -5072,5 +5103,6 @@ console.log(`
 </script>
 </body>
 </html>
+
 
 
