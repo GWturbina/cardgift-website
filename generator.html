@@ -43,18 +43,10 @@
   <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script src="js/wallet-state.js"></script>
- 
-  <!-- WEB3 библиотеки -->
-  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-  <script src="js/wallet-state.js"></script>
   
   <!-- Подключение конфигурации и скриптов -->
   <script src="/js/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  
-  <!-- Подключение конфигурации и скриптов -->
-  <script src="/js/config.js"></script>
 
 <!-- ВСЕ ВАШИ СУЩЕСТВУЮЩИЕ СТИЛИ - БЕЗ ИЗМЕНЕНИЙ -->
 <style>
@@ -3461,6 +3453,46 @@ async function createCard() {
        
        if (result.success) {
            console.log('✅ Карта успешно создана на сервере:', cardMetadata.cardId);
+
+           // ✅ ДОБАВЛЯЕМ: Генерируем превью и сохраняем в архив
+       try {
+           const previewImage = await generatePreviewImage();
+           
+           // Сохраняем в локальный архив с превью
+           const savedArchive = localStorage.getItem(`archive_${currentUser.userId}`) || '{"cards":[]}';
+           const archive = JSON.parse(savedArchive);
+           
+           archive.cards.unshift({
+               id: cardMetadata.cardId,
+               cardId: cardMetadata.cardId,
+               title: cardMetadata.greeting || 'Untitled Card',
+               preview: previewImage, // Теперь есть превью!
+               createdAt: cardMetadata.createdAt,
+               views: 0,
+               clicks: 0
+           });
+           
+           localStorage.setItem(`archive_${currentUser.userId}`, JSON.stringify(archive));
+           console.log('✅ Карта сохранена в локальный архив с превью');
+       } catch (error) {
+           console.error('Ошибка генерации превью:', error);
+       }
+
+           // ✅ ПОКАЗЫВАЕМ ПРЕВЬЮ СРАЗУ ЗДЕСЬ
+           const canvas = document.getElementById('cardCanvas');
+           if (canvas) {
+               const previewImg = canvas.toDataURL('image/png', 0.9);
+               const previewDiv = document.createElement('div');
+               previewDiv.innerHTML = `
+                   <div style="background: #FFD700; padding: 20px; margin: 20px; border-radius: 10px;">
+                       <h3>✅ КАРТА СОЗДАНА!</h3>
+                       <img src="${previewImg}" style="max-width: 300px; border: 2px solid #000;">
+                       <p>Ссылка: ${shareableLink}</p>
+                       <button onclick="navigator.clipboard.writeText('${shareableLink}')">КОПИРОВАТЬ</button>
+                   </div>
+               `;
+               document.body.appendChild(previewDiv);
+           }
            
            // ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
            const shareableLink = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
@@ -3471,13 +3503,16 @@ async function createCard() {
            localStorage.setItem('currentUser', JSON.stringify(currentUser));
            levelManager.updateUserInterface(currentUser);
            
-           // ✅ ПОКАЗЫВАЕМ РЕЗУЛЬТАТ БЕЗ ПРЕВЬЮ (оно генерируется на сервере)
+           // ✅ ПОКАЗЫВАЕМ РЕЗУЛЬТАТ С ПРЕВЬЮ
            showEnhancedCardResult(cardMetadata, { 
                success: true,
                shareUrl: shareableLink,
                cardViewUrl: shareableLink,
-               previewImageUrl: null // Превью будет создано сервером для соцсетей
+               previewImageUrl: result.previewUrl || null // Получаем превью с сервера
            });
+           
+           // ✅ ДОБАВЛЯЕМ ОТОБРАЖЕНИЕ ПРЕВЬЮ В ГЕНЕРАТОРЕ
+           displayCardPreview(cardMetadata, shareableLink, result.previewUrl);
            
            const message = currentLanguage === 'en' ? '✨ Card created successfully!' :
                          currentLanguage === 'ru' ? '✨ Открытка создана успешно!' :
@@ -3583,7 +3618,7 @@ async function prepareCardMetadata() {
    return metadata;
 }
 
- // ✅ НОВАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ПРЕВЬЮ-ИЗОБРАЖЕНИЯ
+// ✅ НОВАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ПРЕВЬЮ-ИЗОБРАЖЕНИЯ
 async function generatePreviewImage() {
     const container = document.getElementById('previewContainer');
     if (!container) {
@@ -3614,7 +3649,7 @@ async function generatePreviewImage() {
     });
 }
 
- if (result.success) {
+if (result.success) {
     console.log('✅ Карта успешно создана на сервере:', cardMetadata.cardId);
     
     // ✅ ДОБАВЛЯЕМ: Генерируем превью и сохраняем в архив
@@ -4929,155 +4964,60 @@ if (window.ethereum) {
    });
 }
 
-// ==================== ✅ ФИНАЛЬНАЯ ИНИЦИАЛИЗАЦИЯ ====================
-
-// Показываем информацию о загрузке
-console.log('🎉 CardGift Generator полностью загружен!');
-console.log('🔗 Правильный порядок работы:');
-console.log('1. Generator → создает карту → отправляет на СЕРВЕР');
-console.log('2. Dashboard → показывает список карт С СЕРВЕРА');
-console.log('3. Отправка → ссылка api/card/123');
-console.log('4. Мессенджер → запрашивает ссылку → получает превью!');
-console.log('✅ LocalStorage больше НЕ используется для превью!');
-
-// ✅ Проверка совместимости браузера
-function checkBrowserCompatibility() {
-   const features = {
-       webgl: !!window.WebGLRenderingContext,
-       canvas: !!document.createElement('canvas').getContext,
-       localStorage: !!window.localStorage,
-       fetch: !!window.fetch,
-       crypto: !!(window.crypto && window.crypto.getRandomValues),
-       fileReader: !!window.FileReader,
-       clipboardAPI: !!(navigator.clipboard && navigator.clipboard.writeText),
-       notifications: !!window.Notification,
-       webShare: !!navigator.share,
-       ethereum: !!window.ethereum
-   };
-   
-   const unsupported = Object.keys(features).filter(key => !features[key]);
-   
-   if (unsupported.length > 0) {
-       console.warn('⚠️ Unsupported browser features:', unsupported);
-       
-       if (!features.localStorage) {
-           notificationManager.show(
-               currentLanguage === 'en' ? 'Your browser doesn\'t support localStorage. Some features may not work.' :
-               currentLanguage === 'ru' ? 'Ваш браузер не поддерживает localStorage. Некоторые функции могут не работать.' :
-               'Ваш браузер не підтримує localStorage. Деякі функції можуть не працювати.',
-               'warning', 8000
-           );
-       }
-       
-       if (!features.ethereum) {
-           console.log('ℹ️ No Web3 wallet detected. App will work in local mode.');
-       }
-   } else {
-       console.log('✅ All browser features supported!');
-   }
-   
-   return features;
-}
-
-// ✅ Запуск финальных проверок
-setTimeout(() => {
-   checkBrowserCompatibility();
-   
-   // Показываем готовность системы
-   if (currentUser && currentUser.userId) {
-       notificationManager.show(
-           currentLanguage === 'en' ? '🎨 CardGift ready! Create cards that will be saved on SERVER!' :
-           currentLanguage === 'ru' ? '🎨 CardGift готов! Создавайте карты, которые сохраняются на СЕРВЕРЕ!' :
-           '🎨 CardGift готовий! Створюйте карти, які зберігаються на СЕРВЕРІ!',
-           'success', 4000
-       );
-   }
-}, 2000);
-
-// ==================== ✅ СЛУЖЕБНЫЕ ФУНКЦИИ ====================
-
-// ✅ Определение мобильного устройства
-function isMobileDevice() {
-   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-          window.innerWidth <= 768;
-}
-
-// ✅ Оптимизация для мобильных устройств
-if (isMobileDevice()) {
-   // Отключаем hover эффекты на мобильных
-   document.body.classList.add('mobile-device');
-   
-   // Добавляем стили для мобильных
-   const mobileStyles = document.createElement('style');
-   mobileStyles.textContent = `
-       .mobile-device .style-option:hover,
-       .mobile-device .template-btn:hover,
-       .mobile-device .position-btn:hover {
-           transform: none !important;
-           box-shadow: none !important;
-       }
-       
-       .mobile-device .notification {
-           bottom: 10px !important;
-           margin: 0 10px !important;
-           max-width: calc(100vw - 20px) !important;
-       }
-   `;
-   document.head.appendChild(mobileStyles);
-   
-   console.log('📱 Mobile optimizations applied');
-}
-
-// ✅ Обработка ошибок JavaScript
-window.addEventListener('error', function(event) {
-   console.error('JavaScript Error:', {
-       message: event.message,
-       filename: event.filename,
-       lineno: event.lineno,
-       colno: event.colno,
-       error: event.error
-   });
-   
-   // Показываем пользователю только критические ошибки
-   if (event.message.includes('fetch') || event.message.includes('network')) {
-       notificationManager.show(
-           currentLanguage === 'en' ? 'Network error. Please check your connection.' :
-           currentLanguage === 'ru' ? 'Ошибка сети. Проверьте подключение к интернету.' :
-           'Помилка мережі. Перевірте підключення до інтернету.',
-           'error'
-       );
-   }
-});
-
-// ✅ Обработка unhandled promise rejections
-window.addEventListener('unhandledrejection', function(event) {
-   console.error('Unhandled Promise Rejection:', event.reason);
-   
-   // Предотвращаем показ в консоли браузера для некритических ошибок
-   if (event.reason && event.reason.message && 
-       (event.reason.message.includes('User rejected') || 
-        event.reason.message.includes('User denied'))) {
-       event.preventDefault();
-   }
-});
-
-// ✅ Cleanup функция для освобождения ресурсов
-window.addEventListener('beforeunload', function() {
-   // Очищаем временные данные
-   if (uploadedMedia && uploadedMedia.data && uploadedMedia.data.startsWith('blob:')) {
-       URL.revokeObjectURL(uploadedMedia.data);
-   }
-   
-   // Сохраняем важные данные
+// Сохраняем важные данные
    if (currentUser) {
        localStorage.setItem('currentUser', JSON.stringify(currentUser));
    }
    
    console.log('🧹 Cleanup completed');
-});
+
+// ✅ ЕДИНСТВЕННАЯ ФУНКЦИЯ ПРЕВЬЮ
+function displayCardPreview(cardData, shareUrl, previewUrl) {
+    console.log('🖼️ Showing card preview...');
+    
+    // Удаляем старый контейнер
+    const existing = document.getElementById('cardPreviewContainer');
+    if (existing) existing.remove();
+    
+    // Создаем превью из canvas
+    const canvas = document.getElementById('cardCanvas');
+    let previewImage = null;
+    if (canvas) {
+        previewImage = canvas.toDataURL('image/png', 0.9);
+    }
+    
+    // Создаем контейнер
+    const container = document.createElement('div');
+    container.id = 'cardPreviewContainer';
+    container.innerHTML = `
+        <div style="background: rgba(255,215,0,0.1); border: 2px solid #FFD700; border-radius: 15px; padding: 20px; margin: 20px 0; text-align: center;">
+            <h3 style="color: #FFD700; margin-bottom: 15px;">🎉 Листівка готова!</h3>
+            
+            ${previewImage ? `<div style="margin-bottom: 20px;">
+                <img src="${previewImage}" alt="Preview" style="max-width: 300px; width: 100%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+            </div>` : ''}
+            
+            <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <div style="color: #FFD700; font-size: 14px; word-break: break-all;">${shareUrl}</div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button onclick="navigator.clipboard.writeText('${shareUrl}'); alert('Скопировано!')" style="background: #FFD700; color: #000; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">📋 Копировать</button>
+                <button onclick="window.open('${shareUrl}', '_blank')" style="background: #4CAF50; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">👁️ Открыть</button>
+            </div>
+        </div>
+    `;
+    
+    // Вставляем после кнопки
+    const btn = document.getElementById('createCardBtn');
+    if (btn && btn.parentNode) {
+        btn.parentNode.insertBefore(container, btn.nextSibling);
+    }
+    
+    console.log('✅ Card preview displayed');
+}
 
 // ==================== 🎉 ФИНАЛЬНОЕ СООБЩЕНИЕ ====================
-
 console.log(`
 🎨 ====================================
 🎁 CardGift Generator v2.1 ИСПРАВЛЕН!
@@ -5103,6 +5043,3 @@ console.log(`
 </script>
 </body>
 </html>
-
-
-
