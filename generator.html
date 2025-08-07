@@ -3688,7 +3688,7 @@ async function generatePreviewImage() {
     cardMetadata.shareUrl = shareableLink;
 
 // ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОКАЗА РЕЗУЛЬТАТА БЕЗ ПРЕВЬЮ В LOCALSTORAGE
-function showEnhancedCardResult(cardMetadata, result) {
+async function showEnhancedCardResult(cardMetadata, result) {
 const t = translations[currentLanguage];
 
 // В функции showEnhancedCardResult добавьте следующую проверку в начале:
@@ -5121,3 +5121,4 @@ console.log(`
 </script>
 </body>
 </html>
+
