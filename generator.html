@@ -3444,6 +3444,18 @@ async function createCard() {
                // ✅ БЕЗ ПРЕВЬЮ - сервер сам сгенерирует
            })
        });
+
+       // ✅ ГЕНЕРИРУЕМ ПРЕВЬЮ ЛОКАЛЬНО
+       let previewImageUrl = null;
+       try {
+           const previewImage = await generatePreviewImage();
+           if (previewImage) {
+               previewImageUrl = previewImage;
+               console.log('✅ Preview image generated locally successfully');
+           }
+       } catch (error) {
+           console.error('❌ Failed to generate preview image:', error);
+       }
        
        if (!response.ok) {
            throw new Error(`Server error: ${response.status}`);
@@ -3497,6 +3509,28 @@ async function createCard() {
            // ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
            const shareableLink = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
            cardMetadata.shareUrl = shareableLink;
+
+           // ✅ ДОБАВЛЯЕМ: Генерируем превью и сохраняем в архив
+           try {
+               // Сохраняем в локальный архив с превью
+               const savedArchive = localStorage.getItem(`archive_${currentUser.userId}`) || '{"cards":[]}';
+               const archive = JSON.parse(savedArchive);
+               
+               archive.cards.unshift({
+                   id: cardMetadata.cardId,
+                   cardId: cardMetadata.cardId,
+                   title: cardMetadata.greeting || 'Untitled Card',
+                   preview: previewImageUrl, // Теперь есть превью!
+                   createdAt: cardMetadata.createdAt,
+                   views: 0,
+                   clicks: 0
+               });
+               
+               localStorage.setItem(`archive_${currentUser.userId}`, JSON.stringify(archive));
+               console.log('✅ Карта сохранена в локальный архив с превью');
+           } catch (error) {
+               console.error('Ошибка генерации превью:', error);
+           }
            
            // ✅ Обновляем счетчик карт пользователя
            currentUser.cardCount = (currentUser.cardCount || 0) + 1;
@@ -3649,13 +3683,27 @@ async function generatePreviewImage() {
     });
 }
 
- // ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
+// ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
     const shareableLink = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
     cardMetadata.shareUrl = shareableLink;
 
 // ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОКАЗА РЕЗУЛЬТАТА БЕЗ ПРЕВЬЮ В LOCALSTORAGE
 function showEnhancedCardResult(cardMetadata, result) {
 const t = translations[currentLanguage];
+
+// В функции showEnhancedCardResult добавьте следующую проверку в начале:
+if (!result.previewUrl && cardMetadata && !cardMetadata.previewImageUrl) {
+    // Попытка сгенерировать превью локально, если нет серверного
+    try {
+        const previewImage = await generatePreviewImage();
+        if (previewImage) {
+            result.previewUrl = previewImage;
+            cardMetadata.previewImageUrl = previewImage;
+        }
+    } catch (error) {
+        console.error('❌ Failed to generate preview for result:', error);
+    }
+}
 
 const overlay = document.createElement('div');
 overlay.className = 'share-modal';
@@ -3742,7 +3790,7 @@ overlay.addEventListener('click', function(e) {
 
 // ✅ ИСПРАВЛЕННЫЕ ФУНКЦИИ ДЛЯ ШЕРИНГА
 
-function sharePreviewDirectly(cardId, shareUrl) {
+async function sharePreviewDirectly(cardId, shareUrl) {
    const messages = {
        en: "🎉 Look at this beautiful greeting card!",
        ru: "🎉 Посмотрите на эту красивую открытку!", 
@@ -3751,6 +3799,63 @@ function sharePreviewDirectly(cardId, shareUrl) {
    
    const message = `${messages[currentLanguage] || messages.ru} ${shareUrl}`;
    
+   // Получаем превью из локального архива
+   let previewImage = null;
+   try {
+       const savedArchive = localStorage.getItem(`archive_${currentUser.userId}`);
+       if (savedArchive) {
+           const archive = JSON.parse(savedArchive);
+           const card = archive.cards.find(c => c.cardId === cardId || c.id === cardId);
+           if (card && card.preview) {
+               previewImage = card.preview;
+           }
+       }
+   } catch (error) {
+       console.error('Error getting preview from archive:', error);
+   }
+   
+   // Если в архиве нет превью, пробуем сгенерировать его
+   if (!previewImage && document.getElementById('previewContainer')) {
+       try {
+           previewImage = await generatePreviewImage();
+       } catch (error) {
+           console.error('Error generating preview for sharing:', error);
+       }
+   }
+   
+   // Шаринг с изображением, если возможно
+   if (navigator.share && previewImage) {
+       try {
+           // Создаем blob из Data URL
+           const response = await fetch(previewImage);
+           const blob = await response.blob();
+           const file = new File([blob], `cardgift-${cardId}.png`, {
+               type: 'image/png'
+           });
+           
+           // Проверяем, можно ли поделиться файлами
+           if (navigator.canShare && navigator.canShare({ files: [file] })) {
+               await navigator.share({
+                   title: 'CardGift - Beautiful Greeting Card',
+                   text: message,
+                   url: shareUrl,
+                   files: [file]
+               });
+               
+               notificationManager.show(
+                   currentLanguage === 'en' ? '📱 Shared successfully with preview!' :
+                   currentLanguage === 'ru' ? '📱 Успешно поделились с превью!' :
+                   '📱 Успішно поділились з превью!',
+                   'success'
+               );
+               return;
+           }
+       } catch (error) {
+           console.warn('Share with file failed:', error);
+       }
+   }
+   
+   // Fallback: обычный шаринг без превью
    if (navigator.share) {
        navigator.share({
            title: 'CardGift - Beautiful Greeting Card',
@@ -5016,8 +5121,3 @@ console.log(`
 </script>
 </body>
 </html>
-
-
-
-
-
