@@ -3663,16 +3663,27 @@ async function generatePreviewImage() {
     document.body.appendChild(tempDiv);
     
     try {
-        // Вместо копирования HTML из previewContainer, создаем простую версию превью
-        const cardData = currentCardData || {};
+        // Получаем данные из формы, если они доступны
+        let greeting = '';
+        let message = '';
+        
+        const greetingElement = document.getElementById('greeting');
+        if (greetingElement) {
+            greeting = greetingElement.value || 'Beautiful Greeting Card';
+        }
+        
+        const messageElement = document.getElementById('message');
+        if (messageElement) {
+            message = messageElement.value || 'CardGift';
+        }
         
         // Создаем структуру превью с простыми стилями без градиентов
         tempDiv.innerHTML = `
             <div style="width: 100%; height: 100%; position: relative; background-color: #000000; overflow: hidden;">
                 <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #000000;">
                     <div style="padding: 20px; color: #ffffff; text-align: center; font-family: Arial, sans-serif;">
-                        <h2 style="color: #FFD700; margin-top: 150px; font-size: 24px;">${cardData.greeting || 'Beautiful Greeting Card'}</h2>
-                        <p style="color: #ffffff; margin-top: 20px; font-size: 16px;">${cardData.message || 'CardGift'}</p>
+                        <h2 style="color: #FFD700; margin-top: 150px; font-size: 24px;">${greeting}</h2>
+                        <p style="color: #ffffff; margin-top: 20px; font-size: 16px;">${message}</p>
                         <div style="margin-top: 30px; font-size: 14px; color: #aaaaaa;">🎁 CardGift</div>
                     </div>
                 </div>
@@ -3701,8 +3712,27 @@ async function generatePreviewImage() {
             document.body.removeChild(tempDiv);
         }
         
-        // Возвращаем null, чтобы код выше мог обработать отсутствие превью
-        return null;
+        // Создаем базовое изображение программно
+        const canvas = document.createElement('canvas');
+        canvas.width = 400;
+        canvas.height = 400;
+        const ctx = canvas.getContext('2d');
+        
+        // Черный фон
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, 400, 400);
+        
+        // Золотой текст
+        ctx.fillStyle = '#FFD700';
+        ctx.font = 'bold 24px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('CardGift', 200, 180);
+        
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '18px Arial';
+        ctx.fillText('Beautiful Greeting Card', 200, 220);
+        
+        return canvas.toDataURL('image/jpeg', 0.85);
     }
 }
 
@@ -5144,5 +5174,6 @@ console.log(`
 </script>
 </body>
 </html>
+
 
 
