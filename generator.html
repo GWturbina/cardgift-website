@@ -3648,25 +3648,6 @@ async function generatePreviewImage() {
         logging: false
     });
 }
-    
-    // ✅ ДОБАВЛЯЕМ: Генерируем превью и сохраняем в архив
-    try {
-        const previewImage = await generatePreviewImage();
-        
-        // Сохраняем в локальный архив с превью
-        const savedArchive = localStorage.getItem(`archive_${currentUser.userId}`) || '{"cards":[]}';
-        const archive = JSON.parse(savedArchive);
-        
-        archive.cards.unshift({
-            id: cardMetadata.cardId,
-            cardId: cardMetadata.cardId,
-            title: cardMetadata.greeting || 'Untitled Card',
-            preview: previewImage, // Теперь есть превью!
-            createdAt: cardMetadata.createdAt,
-            views: 0,
-            clicks: 0
-        });
-        
         localStorage.setItem(`archive_${currentUser.userId}`, JSON.stringify(archive));
         console.log('✅ Карта сохранена в локальный архив с превью');
     } catch (error) {
@@ -5040,4 +5021,5 @@ console.log(`
 </script>
 </body>
 </html>
+
 
