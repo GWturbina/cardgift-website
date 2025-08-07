@@ -3649,10 +3649,6 @@ async function generatePreviewImage() {
     });
 }
 
- // ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
-    const shareableLink = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
-    cardMetadata.shareUrl = shareableLink;
-
 // ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОКАЗА РЕЗУЛЬТАТА БЕЗ ПРЕВЬЮ В LOCALSTORAGE
 function showEnhancedCardResult(cardMetadata, result) {
 const t = translations[currentLanguage];
@@ -5016,6 +5012,7 @@ console.log(`
 </script>
 </body>
 </html>
+
 
 
 
