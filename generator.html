@@ -3648,13 +3648,8 @@ async function generatePreviewImage() {
         logging: false
     });
 }
-        localStorage.setItem(`archive_${currentUser.userId}`, JSON.stringify(archive));
-        console.log('✅ Карта сохранена в локальный архив с превью');
-    } catch (error) {
-        console.error('Ошибка генерации превью:', error);
-    }
-    
-    // ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
+
+ // ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
     const shareableLink = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
     cardMetadata.shareUrl = shareableLink;
 
@@ -5021,5 +5016,6 @@ console.log(`
 </script>
 </body>
 </html>
+
 
 
