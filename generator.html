@@ -3693,8 +3693,18 @@ function sharePreviewDirectly(cardId, shareUrl) {
   // ЗАМЕНИТЬ функцию shareWithPreview():
 async function shareWithPreview(cardMetadata) {
     try {
+        // Ищем подходящий элемент для скриншота
+        const preview = document.getElementById('previewContainer') || 
+                       document.getElementById('mediaPreview') || 
+                       document.getElementById('renderCanvas') ||
+                       document.querySelector('.preview-container');
+        
+        if (!preview) {
+            console.error('Не найден элемент для создания превью');
+            throw new Error('Элемент превью не найден');
+        }
+        
         // Генерируем изображение из DOM
-        const preview = document.getElementById('cardPreview');
         const canvas = await html2canvas(preview, {
             scale: 2,
             backgroundColor: '#000',
@@ -3711,7 +3721,7 @@ async function shareWithPreview(cardMetadata) {
                 type: 'image/jpeg'
             });
            
-            const shareUrl = `https://cardgift.bnb/api/save-card?id=${cardMetadata.cardId}`;
+            const shareUrl = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
            
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 await navigator.share({
@@ -3728,7 +3738,8 @@ async function shareWithPreview(cardMetadata) {
         }
     } catch (error) {
         console.error('Ошибка генерации превью:', error);
-        copyToClipboard(`https://cardgift.bnb/api/save-card?id=${cardMetadata.cardId}`);
+        const shareUrl = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
+        copyToClipboard(shareUrl);
         showNotification('📋 Ссылка скопирована!', 'success');
     }
 } 
