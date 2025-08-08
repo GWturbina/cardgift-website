@@ -3410,6 +3410,23 @@ async function createCard() {
     // ✅ ПОЛУЧАЕМ И ПРОВЕРЯЕМ КОНТЕНТ
     const greetingText = document.getElementById('greetingText')?.value?.trim() || '';
     const videoUrl = document.getElementById('videoUrl')?.value?.trim() || '';
+    const uploadedMedia = document.getElementById('backgroundImage')?.src || document.getElementById('videoFile')?.src;
+
+    // ✅ ВАЛИДАЦИЯ КОНТЕНТА
+    if (!greetingText && !uploadedMedia && !videoUrl) {
+        notificationManager.show(
+            currentLanguage === 'en' ? 'Add greeting text or media' :
+            currentLanguage === 'ru' ? 'Добавьте текст поздравления или медиа' :
+            'Додайте текст вітання або медіа',
+            'error'
+        );
+        return;
+    }
+
+    if (!currentUser || !currentUser.userId) {
+        notificationManager.show('Ошибка: пользователь не определен', 'error');
+        return;
+    }
 
     // ✅ ПРОВЕРКА КОНТЕНТА НА БЕЗОПАСНОСТЬ
     const contentCheck = checkContent(greetingText);
@@ -3419,56 +3436,77 @@ async function createCard() {
         return;
     }
 
-    console.log('🎨 Creating Web3 card...');
-    
-    // ✅ СОБИРАЕМ ДАННЫЕ КАРТЫ С ПРАВИЛЬНЫМИ ПОЛЯМИ
-    const cardData = {
-        // Основные данные
-        cardId: generateUniqueCardId(),
-        userId: cardUserId,                    // ✅ Кому принадлежит карта
-        actualCreator: currentUser?.userId,    // ✅ Кто реально создал
-        creatorLevel: userLevel,               // ✅ Уровень создателя
-        walletAddress: userWalletAddress,
-        
-        // Содержимое карты
-        greetingText: greetingText,
-        userName: document.getElementById('userName')?.value || '',
-        style: currentStyle || 'classic',
-        
-        // Медиа контент
-        backgroundImage: document.getElementById('backgroundImage')?.src || null,
-        videoUrl: document.getElementById('videoFile')?.src || videoUrl || null,
-        
-        // Настройки анимации
-        greetingDelay: parseInt(document.getElementById('greetingDelay')?.value) || 1000,
-        buttonDelay: parseInt(document.getElementById('buttonDelay')?.value) || 3000,
-        bannerDelay: parseInt(document.getElementById('bannerDelay')?.value) || 5000,
-        
-        // Дополнительные элементы
-        marqueeText: document.getElementById('marqueeText')?.value || '',
-        bannerHTML: document.getElementById('bannerHTML')?.value || '',
-        ctaButtonText: document.getElementById('ctaButtonText')?.value || '',
-        ctaButtonURL: document.getElementById('ctaButtonURL')?.value || '',
-        ctaPosition: document.getElementById('ctaPosition')?.value || 'bottom-center',
-        
-        // Мета данные
-        createdAt: Date.now(),
-        lastModified: Date.now(),
-        views: 0,
-        clicks: 0,
-        isTemplate: false
-    };
+    // ✅ ПРОВЕРКА ВИДЕО
+    if (videoUrl) {
+        const videoData = videoProcessor.parseVideoUrl(videoUrl);
+        if (!videoData.isValid) {
+            notificationManager.show(
+                currentLanguage === 'en' ? `Video error: ${videoData.error}` :
+                currentLanguage === 'ru' ? `Ошибка видео: ${videoData.error}` :
+                `Помилка відео: ${videoData.error}`,
+                'error'
+            );
+            return;
+        }
+    }
 
-    console.log('📡 Отправляем данные карты на сервер...');
-    console.log('🎯 Card data preview:', {
-        cardId: cardData.cardId,
-        userId: cardData.userId,
-        actualCreator: cardData.actualCreator,
-        creatorLevel: cardData.creatorLevel,
-        greetingText: cardData.greetingText?.substring(0, 50) + '...'
-    });
+    // ✅ УПРАВЛЕНИЕ КНОПКОЙ СОЗДАНИЯ
+    const createBtn = document.getElementById('createCardBtn');
+    if (createBtn) {
+        createBtn.classList.add('loading');
+        createBtn.disabled = true;
+    }
 
     try {
+        console.log('🎨 Creating Web3 card...');
+        
+        // ✅ СОБИРАЕМ ДАННЫЕ КАРТЫ С ПРАВИЛЬНЫМИ ПОЛЯМИ
+        const cardData = {
+            // Основные данные
+            cardId: generateUniqueCardId(),
+            userId: cardUserId,                    // ✅ Кому принадлежит карта
+            actualCreator: currentUser?.userId,    // ✅ Кто реально создал
+            creatorLevel: userLevel,               // ✅ Уровень создателя
+            walletAddress: userWalletAddress,
+            
+            // Содержимое карты
+            greetingText: greetingText,
+            userName: document.getElementById('userName')?.value || '',
+            style: currentStyle || 'classic',
+            
+            // Медиа контент
+            backgroundImage: document.getElementById('backgroundImage')?.src || null,
+            videoUrl: document.getElementById('videoFile')?.src || videoUrl || null,
+            
+            // Настройки анимации
+            greetingDelay: parseInt(document.getElementById('greetingDelay')?.value) || 1000,
+            buttonDelay: parseInt(document.getElementById('buttonDelay')?.value) || 3000,
+            bannerDelay: parseInt(document.getElementById('bannerDelay')?.value) || 5000,
+            
+            // Дополнительные элементы
+            marqueeText: document.getElementById('marqueeText')?.value || '',
+            bannerHTML: document.getElementById('bannerHTML')?.value || '',
+            ctaButtonText: document.getElementById('ctaButtonText')?.value || '',
+            ctaButtonURL: document.getElementById('ctaButtonURL')?.value || '',
+            ctaPosition: document.getElementById('ctaPosition')?.value || 'bottom-center',
+            
+            // Мета данные
+            createdAt: Date.now(),
+            lastModified: Date.now(),
+            views: 0,
+            clicks: 0,
+            isTemplate: false
+        };
+
+        console.log('📡 Отправляем данные карты на сервер...');
+        console.log('🎯 Card data preview:', {
+            cardId: cardData.cardId,
+            userId: cardData.userId,
+            actualCreator: cardData.actualCreator,
+            creatorLevel: cardData.creatorLevel,
+            greetingText: cardData.greetingText?.substring(0, 50) + '...'
+        });
+
         // ✅ ОТПРАВЛЯЕМ НА СЕРВЕР
         const response = await fetch('/api/save-card', {
             method: 'POST',
@@ -3498,25 +3536,39 @@ async function createCard() {
         });
 
         // ✅ ПОКАЗЫВАЕМ РЕЗУЛЬТАТ
-        showCardResult({
-            cardId: cardData.cardId,
+        showEnhancedCardResult(cardData, {
+            success: true,
             shareUrl: result.shareUrl || `${window.location.origin}/api/save-card?id=${cardData.cardId}`,
-            previewImageUrl: result.previewImageUrl || `${window.location.origin}/api/og-image?id=${cardData.cardId}`,
-            greetingText: cardData.greetingText,
-            userName: cardData.userName,
-            userLevel: userLevel,
-            createdFor: cardUserId !== cardData.actualCreator ? cardUserId : null
+            previewImageUrl: result.previewImageUrl || `${window.location.origin}/api/og-image?id=${cardData.cardId}`
         });
 
         // ✅ ОБНОВЛЯЕМ СЧЕТЧИК КАРТ
         updateCardCounter(userLevel, cardUserId);
 
+        // ✅ УВЕДОМЛЕНИЕ ОБ УСПЕХЕ
+        const message = currentLanguage === 'en' ? '✨ Card created successfully!' :
+                       currentLanguage === 'ru' ? '✨ Открытка создана успешно!' :
+                       '✨ Листівка створена успішно!';
+        notificationManager.show(message, 'success');
+
+        // ✅ ОЧИЩАЕМ ФОРМУ
+        clearForm();
+
         return result;
 
     } catch (error) {
         console.error('❌ Ошибка создания карты:', error);
-        notificationManager.show(`❌ Ошибка создания карты: ${error.message}`, 'error');
+        const message = error.message || (currentLanguage === 'en' ? 'Card creation error' :
+                                         currentLanguage === 'ru' ? 'Ошибка создания открытки' :
+                                         'Помилка створення листівки');
+        notificationManager.show(`❌ Ошибка создания карты: ${message}`, 'error');
         throw error;
+    } finally {
+        // ✅ ВОЗВРАЩАЕМ КНОПКУ В ИСХОДНОЕ СОСТОЯНИЕ
+        if (createBtn) {
+            createBtn.classList.remove('loading');
+            createBtn.disabled = false;
+        }
     }
 }
 
@@ -3561,300 +3613,91 @@ function updateCardCounter(userLevel, cardUserId) {
     }
 }
 
-   // Проверка видео
-   if (videoUrl) {
-       const videoData = videoProcessor.parseVideoUrl(videoUrl);
-       if (!videoData.isValid) {
-           notificationManager.show(
-               currentLanguage === 'en' ? `Video error: ${videoData.error}` :
-               currentLanguage === 'ru' ? `Ошибка видео: ${videoData.error}` :
-               `Помилка відео: ${videoData.error}`,
-               'error'
-           );
-       }
-   }
-
-   // Валидация
-   if (!greetingText && !uploadedMedia && !videoUrl) {
-       notificationManager.show(
-           currentLanguage === 'en' ? 'Add greeting text or media' :
-           currentLanguage === 'ru' ? 'Добавьте текст поздравления или медиа' :
-           'Додайте текст вітання або медіа',
-           'error'
-       );
-   }
-
-   if (!currentUser || !currentUser.userId) {
-       notificationManager.show('Ошибка: пользователь не определен', 'error');
-   }
-
-   const createBtn = document.getElementById('createCardBtn');
-   if (createBtn) {
-       createBtn.classList.add('loading');
-       createBtn.disabled = true;
-   }
-
-   try {
-       console.log('🎨 Creating Web3 card...');
-       
-       const cardMetadata = await prepareCardMetadata();
-       
-       // ✅ ИСПРАВЛЕНО: ОТПРАВЛЯЕМ НА СЕРВЕР БЕЗ ПРЕВЬЮ
-       console.log('📡 Отправляем данные карты на сервер...');
-       
-       const response = await fetch('/api/save-card', {
-           method: 'POST',
-           headers: {
-               'Content-Type': 'application/json',
-           },
-           body: JSON.stringify({
-               cardId: cardMetadata.cardId,
-               cardData: cardMetadata
-               // ✅ БЕЗ ПРЕВЬЮ - сервер сам сгенерирует
-           })
-       });
-       
-       if (!response.ok) {
-           throw new Error(`Server error: ${response.status}`);
-       }
-       
-       const result = await response.json();
-       
-       if (result.success) {
-           console.log('✅ Карта успешно создана на сервере:', cardMetadata.cardId);
-
-           // После успешного создания карты
-           console.log('🧾 Карта создана с данными:', {
-               cardId: cardMetadata.cardId,
-               userId: currentUser.userId,
-               walletAddress: currentUser.walletAddress
-           });
-
-           // ✅ ПОКАЗЫВАЕМ ПРЕВЬЮ СРАЗУ ЗДЕСЬ
-           const canvas = document.getElementById('cardCanvas');
-           if (canvas) {
-               const previewImg = canvas.toDataURL('image/png', 0.9);
-               const previewDiv = document.createElement('div');
-               previewDiv.innerHTML = `
-                   <div style="background: #FFD700; padding: 20px; margin: 20px; border-radius: 10px;">
-                       <h3>✅ КАРТА СОЗДАНА!</h3>
-                       <img src="${previewImg}" style="max-width: 300px; border: 2px solid #000;">
-                       <p>Ссылка: ${shareableLink}</p>
-                       <button onclick="navigator.clipboard.writeText('${shareableLink}')">КОПИРОВАТЬ</button>
-                   </div>
-               `;
-               document.body.appendChild(previewDiv);
-           }
-           
-           // ✅ ПРАВИЛЬНАЯ ССЫЛКА С УНИКАЛЬНЫМ ID
-           const shareableLink = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
-           cardMetadata.shareUrl = shareableLink;
-           
-           // ✅ Обновляем счетчик карт пользователя
-           currentUser.cardCount = (currentUser.cardCount || 0) + 1;
-           localStorage.setItem('currentUser', JSON.stringify(currentUser));
-           levelManager.updateUserInterface(currentUser);
-           
-           // ✅ ПОКАЗЫВАЕМ РЕЗУЛЬТАТ С ПРЕВЬЮ
-           showEnhancedCardResult(cardMetadata, { 
-               success: true,
-               shareUrl: shareableLink,
-               cardViewUrl: shareableLink,
-               previewImageUrl: result.previewUrl || null // Получаем превью с сервера
-           });
-           
-           // ✅ ДОБАВЛЯЕМ ОТОБРАЖЕНИЕ ПРЕВЬЮ В ГЕНЕРАТОРЕ
-           displayCardPreview(cardMetadata, shareableLink, result.previewUrl);
-           
-           const message = currentLanguage === 'en' ? '✨ Card created successfully!' :
-                         currentLanguage === 'ru' ? '✨ Открытка создана успешно!' :
-                         '✨ Листівка створена успішно!';
-           notificationManager.show(message, 'success');
-           
-           // Очищаем форму после успешного создания
-           clearForm();
-           
-       } else {
-           throw new Error(result.error || 'Ошибка создания карты на сервере');
-       }
-
-   } catch (error) {
-       console.error('❌ Card creation error:', error);
-       const message = error.message || (currentLanguage === 'en' ? 'Card creation error' :
-                                      currentLanguage === 'ru' ? 'Ошибка создания открытки' :
-                                      'Помилка створення листівки');
-       notificationManager.show(message, 'error');
-
-   } finally {
-       if (createBtn) {
-           createBtn.classList.remove('loading');
-           createBtn.disabled = false;
-       }
-   }
-}
-
-// ✅ Очистка формы после создания карты
-function clearForm() {
-   const greetingText = document.getElementById('greetingText');
-   const videoUrl = document.getElementById('videoUrl');
-   
-   if (greetingText) greetingText.value = '';
-   if (videoUrl) videoUrl.value = '';
-   
-   removeMedia();
-   checkCreateButtonState();
-}
-
-// ✅ WEB3: Подготовка метаданных открытки с улучшениями
-async function prepareCardMetadata() {
-   // ✅ ГЕНЕРИРУЕМ УНИКАЛЬНЫЙ ID КАЖДЫЙ РАЗ
-   const timestamp = Date.now();
-   const randomSuffix = Math.random().toString(36).substring(2, 8);
-   const cardId = `card_${timestamp}_${randomSuffix}`;
-   
-   console.log('🆔 Generated UNIQUE card ID:', cardId);
-   
-   const greetingText = sanitizeInput(document.getElementById('greetingText')?.value?.trim() || '');
-   const videoUrl = sanitizeInput(document.getElementById('videoUrl')?.value?.trim() || '');
-
-   const metadata = {
-       cardId: cardId, // ✅ КАЖДЫЙ РАЗ НОВЫЙ ID
-       userId: currentUser?.userId || generateUserId(),
-       userLevel: currentUser?.level || 0,
-       greeting: greetingText,
-       personalMessage: '',
-       videoUrl: videoUrl,
-       style: selectedStyle,
-       textPosition: selectedTextPosition,
-       ctaEnabled: document.getElementById('ctaToggle')?.checked || false,
-       ctaTitle: sanitizeInput(document.getElementById('ctaTitle')?.value || ''),
-       ctaButton: sanitizeInput(document.getElementById('ctaButton')?.value || ''),
-       ctaUrl: sanitizeInput(document.getElementById('ctaUrl')?.value || ''),
-       ctaPosition: selectedCTAPosition,
-       marqueeEnabled: document.getElementById('marqueeToggle')?.checked || false,
-       marqueeText: sanitizeInput(document.getElementById('marqueeTextInput')?.value || ''),
-       marqueeUrl: sanitizeInput(document.getElementById('marqueeUrl')?.value || ''),
-       marqueeTimer: parseInt(document.getElementById('marqueeTimerInput')?.value) || 7,
-       bannerEnabled: document.getElementById('bannerToggle')?.checked || false,
-       bannerHtml: sanitizeInput(document.getElementById('bannerHtml')?.value || ''),
-       bannerUrl: sanitizeInput(document.getElementById('bannerUrl')?.value || ''),
-       timers: {
-           message: parseInt(document.getElementById('messageTimerInput')?.value) || 0,
-           button: parseInt(document.getElementById('buttonTimerInput')?.value) || 3,
-           banner: parseInt(document.getElementById('bannerTimerInput')?.value) || 5
-       },
-       createdAt: new Date().toISOString(),
-       viewCount: 0,
-       isArchived: false,
-       language: currentLanguage
-   };
-
-   if (uploadedMedia && uploadedMedia.file) {
-       const mediaBase64 = await fileToBase64(uploadedMedia.file);
-       metadata.mediaType = uploadedMedia.type;
-       metadata.mediaUrl = mediaBase64;
-   }
-
-   // Обработка видео URL
-   if (videoUrl) {
-       const videoData = videoProcessor.parseVideoUrl(videoUrl);
-       if (videoData.isValid) {
-           metadata.videoData = videoData;
-           metadata.mediaType = 'video';
-           metadata.videoUrl = videoUrl;
-           metadata.embedUrl = videoData.embedUrl;
-           console.log('✅ Video URL обработан:', videoUrl);
-       }
-   }
-
-   return metadata;
-}
-
-// ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОКАЗА РЕЗУЛЬТАТА БЕЗ ПРЕВЬЮ В LOCALSTORAGE
+// ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОКАЗА РЕЗУЛЬТАТА
 function showEnhancedCardResult(cardMetadata, result) {
-const t = translations[currentLanguage];
+    const t = translations[currentLanguage];
 
-const overlay = document.createElement('div');
-overlay.className = 'share-modal';
+    const overlay = document.createElement('div');
+    overlay.className = 'share-modal';
 
-const modal = document.createElement('div');
-modal.className = 'share-modal-content';
+    const modal = document.createElement('div');
+    modal.className = 'share-modal-content';
 
-modal.innerHTML = `
-  <button onclick="this.parentElement.parentElement.remove(); document.body.style.overflow = 'auto';" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: #FFD700; font-size: 24px; cursor: pointer;">×</button>
-  
-  <h2 style="color: #FFD700; margin-bottom: 20px; text-align: center; font-size: 24px;">${t.shareCardTitle}</h2>
-  
-  <p style="color: #CCC; margin-bottom: 20px; text-align: center;">${t.shareCardDescription}</p>
-  
-  <div class="share-methods">
-      <div class="share-method">
-          <h4>${t.shareImageMethod}</h4>
-          <p>${t.shareImageDescription}</p>
-          <div class="share-method-buttons">
-              <button class="share-method-btn" onclick="sharePreviewDirectly('${cardMetadata.cardId}', '${result.shareUrl}')">
-                  📱 ${t.downloadImage}
-              </button>
-          </div>
-          <div class="social-platforms">
-              <button class="social-platform-btn whatsapp" onclick="shareToMessenger('whatsapp', '${result.shareUrl}')">
-                  📱<br>WhatsApp
-              </button>
-              <button class="social-platform-btn telegram" onclick="shareToMessenger('telegram', '${result.shareUrl}')">
-                  ✈️<br>Telegram
-              </button>
-              <button class="social-platform-btn viber" onclick="shareToMessenger('viber', '${result.shareUrl}')">
-                  💜<br>Viber
-              </button>
-              <button class="social-platform-btn email" onclick="shareToMessenger('email', '${result.shareUrl}')">
-                  📧<br>Email
-              </button>
-          </div>
-      </div>
-      
-      <div class="share-method">
-          <h4>${t.shareLinkMethod}</h4>
-          <p>${t.shareLinkDescription}</p>
-          <div style="background: #333; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-              <div style="color: #FFF; word-break: break-all; font-size: 14px;" id="shareableUrl">${result.shareUrl}</div>
-          </div>
-          <div class="share-method-buttons">
-               <button class="share-method-btn" onclick="copyToClipboard('${result.shareUrl}')">
-                   📋 ${t.copyLink}
-               </button>
-               <button class="share-method-btn secondary" onclick="window.open('${result.shareUrl}', '_blank')">
-                   👁️ ${translations[currentLanguage].preview || 'View'}
-               </button>
-           </div>
-           <div class="social-platforms">
-               <button class="social-platform-btn facebook" onclick="shareToSocial('facebook', '${result.shareUrl}')">
-                   👥<br>Facebook
-               </button>
-               <button class="social-platform-btn x" onclick="shareToSocial('x', '${result.shareUrl}')">
-                   🐦<br>X
-               </button>
-               <button class="social-platform-btn instagram" onclick="shareToSocial('instagram', '${result.shareUrl}')">
-                   📷<br>Instagram
-               </button>
-               <button class="social-platform-btn tiktok" onclick="shareToSocial('tiktok', '${result.shareUrl}')">
-                   🎵<br>TikTok
-               </button>
-           </div>
-      </div>
-  </div>
-`;
+    modal.innerHTML = `
+        <button onclick="this.parentElement.parentElement.remove(); document.body.style.overflow = 'auto';" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: #FFD700; font-size: 24px; cursor: pointer;">×</button>
+        
+        <h2 style="color: #FFD700; margin-bottom: 20px; text-align: center; font-size: 24px;">${t.shareCardTitle || 'Карта создана!'}</h2>
+        
+        <p style="color: #CCC; margin-bottom: 20px; text-align: center;">${t.shareCardDescription || 'Поделитесь своей открыткой'}</p>
+        
+        <div class="share-methods">
+            <div class="share-method">
+                <h4>${t.shareImageMethod || 'Поделиться изображением'}</h4>
+                <p>${t.shareImageDescription || 'Отправьте открытку как изображение'}</p>
+                <div class="share-method-buttons">
+                    <button class="share-method-btn" onclick="sharePreviewDirectly('${cardMetadata.cardId}', '${result.shareUrl}')">
+                        📱 ${t.downloadImage || 'Скачать'}
+                    </button>
+                </div>
+                <div class="social-platforms">
+                    <button class="social-platform-btn whatsapp" onclick="shareToMessenger('whatsapp', '${result.shareUrl}')">
+                        📱<br>WhatsApp
+                    </button>
+                    <button class="social-platform-btn telegram" onclick="shareToMessenger('telegram', '${result.shareUrl}')">
+                        ✈️<br>Telegram
+                    </button>
+                    <button class="social-platform-btn viber" onclick="shareToMessenger('viber', '${result.shareUrl}')">
+                        💜<br>Viber
+                    </button>
+                    <button class="social-platform-btn email" onclick="shareToMessenger('email', '${result.shareUrl}')">
+                        📧<br>Email
+                    </button>
+                </div>
+            </div>
+            
+            <div class="share-method">
+                <h4>${t.shareLinkMethod || 'Поделиться ссылкой'}</h4>
+                <p>${t.shareLinkDescription || 'Отправьте ссылку на открытку'}</p>
+                <div style="background: #333; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                    <div style="color: #FFF; word-break: break-all; font-size: 14px;" id="shareableUrl">${result.shareUrl}</div>
+                </div>
+                <div class="share-method-buttons">
+                     <button class="share-method-btn" onclick="copyToClipboard('${result.shareUrl}')">
+                         📋 ${t.copyLink || 'Копировать'}
+                     </button>
+                     <button class="share-method-btn secondary" onclick="window.open('${result.shareUrl}', '_blank')">
+                         👁️ ${t.preview || 'Просмотр'}
+                     </button>
+                 </div>
+                 <div class="social-platforms">
+                     <button class="social-platform-btn facebook" onclick="shareToSocial('facebook', '${result.shareUrl}')">
+                         👥<br>Facebook
+                     </button>
+                     <button class="social-platform-btn x" onclick="shareToSocial('x', '${result.shareUrl}')">
+                         🐦<br>X
+                     </button>
+                     <button class="social-platform-btn instagram" onclick="shareToSocial('instagram', '${result.shareUrl}')">
+                         📷<br>Instagram
+                     </button>
+                     <button class="social-platform-btn tiktok" onclick="shareToSocial('tiktok', '${result.shareUrl}')">
+                         🎵<br>TikTok
+                     </button>
+                 </div>
+            </div>
+        </div>
+    `;
 
-overlay.appendChild(modal);
-document.body.appendChild(overlay);
-document.body.style.overflow = 'hidden';
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
 
-// Закрытие по клику вне модального окна
-overlay.addEventListener('click', function(e) {
-  if (e.target === overlay) {
-      overlay.remove();
-      document.body.style.overflow = 'auto';
-  }
-});
+    // Закрытие по клику вне модального окна
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+            overlay.remove();
+            document.body.style.overflow = 'auto';
+        }
+    });
 }
 
 // ✅ ИСПРАВЛЕННЫЕ ФУНКЦИИ ДЛЯ ШЕРИНГА
@@ -5240,5 +5083,6 @@ console.log(`
 </script>
 </body>
 </html>
+
 
 
