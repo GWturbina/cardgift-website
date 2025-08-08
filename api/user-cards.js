@@ -1,4 +1,3 @@
-// ИСПРАВЛЕННАЯ ВЕРСИЯ user-cards.js:
 const cards = global.cards || (global.cards = new Map());
 
 export default function handler(req, res) {
@@ -13,78 +12,86 @@ export default function handler(req, res) {
     }
 
     try {
-        console.log('📊 User-cards API: Total cards in system:', cards.size);
+        console.log('📊 Total cards in system:', cards.size);
         
-        // Вывод первых 5 ключей для диагностики
-        const firstKeys = Array.from(cards.keys()).slice(0, 5);
-        console.log('🔑 First card keys in global.cards:', firstKeys);
+        const { userId, walletAddress, level, countOnly } = req.query;
+        const userLevel = parseInt(level) || 0;
         
-        const { userId, walletAddress } = req.query;
-        console.log('🔍 Looking for cards by userId:', userId, 'wallet:', walletAddress);
+        console.log('🔍 Looking for cards:', { userId, userLevel, walletAddress, countOnly });
         
-        // Проверка структуры global.cards
-        if (cards.size === 0) {
-            console.warn('⚠️ WARNING: global.cards is empty! Check if save-card.js is using the same storage.');
-        }
+        let userCards = [];
         
-        // Получаем все карты пользователя
-        const userCards = Array.from(cards.entries())
-            .filter(([id, data]) => {
-                // Проверяем соответствие userId или walletAddress
-                const matchUserId = data.userId === userId;
-                const matchWallet = walletAddress && data.walletAddress === walletAddress;
-                console.log(`Card ${id}: userId match=${matchUserId}, wallet match=${matchWallet || 'N/A'}`);
-                return matchUserId || matchWallet;
-            })
-            .map(([id, data]) => {
-                const greeting = data.greetingText?.split('\n')[0] || 'Открытка';
-                const title = greeting.length > 50 ? greeting.substring(0, 50) + '...' : greeting;
-                
-                return {
-                    cardId: id,
-                    id: id, // Дублируем для совместимости
-                    title: title,
-                    preview: `https://cardgift.bnb/api/og-image?id=${id}`,
-                    previewUrl: `https://cardgift.bnb/api/og-image?id=${id}`,
-                    shareUrl: `https://cardgift.bnb/api/save-card?id=${id}`,
-                    style: data.style || 'classic',
-                    hasMedia: !!(data.backgroundImage || data.videoUrl || data.mediaUrl),
-                    views: data.views || 0,
-                    clicks: data.clicks || 0,
-                    createdAt: data.createdAt || Date.now(),
-                    greetingText: data.greetingText || '',
-                    userId: data.userId,
-                    walletAddress: data.walletAddress
-                };
-            });
-
-        console.log('📊 Found user cards:', userCards.length);
-        
-        if (userCards.length > 0) {
-            console.log('📝 Cards details:');
-            userCards.forEach(card => {
-                console.log(`  - ${card.cardId}: ${card.title}`);
-            });
+        if (userLevel === 6) {
+            // AUTHOR - видит ВСЕ карты в системе
+            userCards = Array.from(cards.entries()).map(([id, data]) => ({
+                ...formatCard(id, data),
+                isOwner: data.userId === userId || data.actualCreator === userId
+            }));
+            console.log('👑 AUTHOR access - showing ALL cards:', userCards.length);
+            
+        } else if (userLevel === 5) {
+            // MANAGER - видит свои + команды
+            userCards = Array.from(cards.entries())
+                .filter(([id, data]) => {
+                    return data.userId === userId || 
+                           data.actualCreator === userId ||
+                           isInTeam(data.actualCreator, userId);
+                })
+                .map(([id, data]) => formatCard(id, data));
+            console.log('👔 MANAGER access - own + team cards:', userCards.length);
+            
         } else {
-            // Проверка наличия ЛЮБЫХ карт у ЛЮБЫХ пользователей
-            const allCards = Array.from(cards.entries());
-            if (allCards.length > 0) {
-                console.log('📝 There are cards in the system, but none for this user. Example card IDs:');
-                allCards.slice(0, 3).forEach(([id, data]) => {
-                    console.log(`  - ${id} (userId: ${data.userId})`);
-                });
-            }
+            // USER, MINI_ADMIN, ADMIN, SUPER_ADMIN, GUEST - только свои
+            userCards = Array.from(cards.entries())
+                .filter(([id, data]) => {
+                    const matchUserId = data.userId === userId;
+                    const matchCreator = data.actualCreator === userId;
+                    const matchWallet = data.walletAddress === walletAddress;
+                    
+                    console.log(`Card ${id}:`, {
+                        userId: data.userId,
+                        actualCreator: data.actualCreator,
+                        walletAddress: data.walletAddress,
+                        matchUserId,
+                        matchCreator,
+                        matchWallet
+                    });
+                    
+                    return matchUserId || matchCreator || matchWallet;
+                })
+                .map(([id, data]) => formatCard(id, data));
+            console.log('👤 USER access - own cards only:', userCards.length);
         }
-
+        
+        // Если запрашивается только количество
+        if (countOnly === 'true') {
+            return res.status(200).json({
+                success: true,
+                total: userCards.length
+            });
+        }
+        
         // Сортируем по дате создания (новые сначала)
         userCards.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        
+        // Логируем каждую найденную карту
+        userCards.forEach((card, index) => {
+            console.log(`Found card ${index + 1}:`, {
+                id: card.cardId,
+                title: card.title?.substring(0, 30) + '...',
+                userId: card.userId,
+                actualCreator: card.actualCreator
+            });
+        });
 
         res.status(200).json({
             success: true,
             cards: userCards,
             total: userCards.length,
+            userLevel: userLevel,
             userId: userId,
-            cardsInSystem: cards.size, // Добавляем информацию о количестве карт в системе
+            cardsInSystem: cards.size,
+            accessType: getAccessType(userLevel),
             timestamp: Date.now()
         });
 
@@ -94,7 +101,44 @@ export default function handler(req, res) {
             success: false, 
             error: 'Failed to fetch user cards',
             cards: [],
-            total: 0
+            total: 0,
+            cardsInSystem: 0
         });
     }
+}
+
+function formatCard(id, data) {
+    const greeting = data.greetingText?.split('\n')[0] || 'Открытка';
+    const title = greeting.length > 50 ? greeting.substring(0, 50) + '...' : greeting;
+    
+    return {
+        cardId: id,
+        id: id, // Дублируем для совместимости
+        title: title,
+        preview: `https://cardgift.bnb/api/og-image?id=${id}`,
+        previewUrl: `https://cardgift.bnb/api/og-image?id=${id}`,
+        shareUrl: `https://cardgift.bnb/api/save-card?id=${id}`,
+        style: data.style || 'classic',
+        hasMedia: !!(data.backgroundImage || data.videoUrl),
+        views: data.views || 0,
+        clicks: data.clicks || 0,
+        createdAt: data.createdAt || Date.now(),
+        greetingText: data.greetingText || '',
+        userId: data.userId,
+        actualCreator: data.actualCreator,
+        creatorLevel: data.creatorLevel || 0,
+        walletAddress: data.walletAddress
+    };
+}
+
+function isInTeam(creatorId, managerId) {
+    // Логика проверки команды - упрощенная версия
+    // В реальности здесь будет проверка реферальной структуры
+    return false; // Заглушка
+}
+
+function getAccessType(level) {
+    if (level === 6) return 'AUTHOR_ALL';
+    if (level === 5) return 'MANAGER_TEAM';
+    return 'USER_OWN';
 }
