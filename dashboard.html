@@ -5153,7 +5153,11 @@ async function loadUserArchive() {
         console.log('archiveCards exists:', !!document.getElementById('archiveCards'));
         console.log('cardsGrid exists:', !!document.getElementById('cardsGrid'));
         
-        const response = await fetch('/api/user-cards');
+        // Добавляем идентификатор пользователя в запрос
+        const userId = currentUser?.userId || 'guest';
+        console.log('🆔 Using user ID for archive:', userId);
+        
+        const response = await fetch(`/api/user-cards?userId=${userId}`);
         console.log('📡 API response status:', response.status);
         
         if (!response.ok) {
