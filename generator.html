@@ -3582,12 +3582,10 @@ function updateCardCounter(userLevel, cardUserId) {
            'Додайте текст вітання або медіа',
            'error'
        );
-       return;
    }
 
    if (!currentUser || !currentUser.userId) {
        notificationManager.show('Ошибка: пользователь не определен', 'error');
-       return;
    }
 
    const createBtn = document.getElementById('createCardBtn');
@@ -5242,4 +5240,5 @@ console.log(`
 </script>
 </body>
 </html>
+
 
