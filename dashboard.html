@@ -3128,7 +3128,7 @@
          <div class="referral-section">
              <h3 style="color: #FFD700; margin-bottom: 15px;" id="referralLinkTitle">🔗 Your Referral Link</h3>
              <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                 <input type="text" id="referralLink" readonly class="form-input" style="flex: 1; min-width: 300px;" value="https://cardgift.bnb/registration.html?ref=YOUR_ID">
+                 <input type="text" id="referralLink" readonly class="form-input" style="flex: 1; min-width: 300px;" value="cardgift-website.vercel.app/registration.html?ref=YOUR_ID">
                  <button class="btn-secondary" onclick="copyReferralLink()">
                      📋 <span id="copyLinkText">Copy</span>
                  </button>
@@ -5017,7 +5017,7 @@ const translations = {
              if (currentUser.userId !== 'NOT_CONNECTED') {
                  const referralLinkInput = document.getElementById('referralLink');
                  if (referralLinkInput) {
-                     referralLinkInput.value = `https://cardgift.bnb/registration.html?ref=${currentUser.userId}`;
+                     referralLinkInput.value = `cardgift-website.vercel.app/registration.html?ref=${currentUser.userId}`;
                  }
              }
          }
@@ -6958,7 +6958,7 @@ async function shareCard(cardId, shareUrl) {
              return;
          }
          
-         const referralLink = `https://cardgift.bnb/registration.html?ref=${currentUser.userId}`;
+         const referralLink = `cardgift-website.vercel.app/registration.html?ref=${currentUser.userId}`;
          
          navigator.clipboard.writeText(referralLink).then(() => {
              showNotification('Referral link copied to clipboard!', 'success');
@@ -6980,7 +6980,7 @@ async function shareCard(cardId, shareUrl) {
              return;
          }
          
-         const referralLink = `https://cardgift.bnb/registration.html?ref=${currentUser.userId}`;
+         const referralLink = `cardgift-website.vercel.app/registration.html?ref=${currentUser.userId}`;
          
          if (navigator.share) {
              navigator.share({
@@ -7751,4 +7751,3 @@ async function shareCard(cardId, shareUrl) {
  </script>
 </body>
 </html>
-
