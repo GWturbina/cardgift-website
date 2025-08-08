@@ -5145,63 +5145,105 @@ const translations = {
      }
 
      // ЗАМЕНИТЬ функцию loadUserArchive():
-     async function loadUserArchive() {
-         try {
-             // Заменяем вызов showLoadingState на простой лог
-             console.log('📁 Loading archive...');
-            
-             const response = await fetch('/api/user-cards');
-             const data = await response.json();
-            
-             if (data.success && data.cards) {
-                 displayArchiveCards(data.cards);
-                 
-                 // Обновление статистики без использования updateArchiveStats
-                 const usedSlotsElement = document.getElementById('usedSlots');
-                 if (usedSlotsElement) {
-                     usedSlotsElement.textContent = data.cards ? data.cards.length : 0;
-                 }
-             } else {
-                 showEmptyArchive();
-             }
-            
-         } catch (error) {
-             console.error('Ошибка загрузки архива:', error);
-             showEmptyArchive();
-             showNotification('❌ Ошибка загрузки архива с сервера', 'error');
-         }
-     }
-
-     // ДОБАВИТЬ функцию отображения карт:
-     function displayArchiveCards(cards) {
-         const container = document.getElementById('archiveCards');
-         if (!container) return;
+async function loadUserArchive() {
+    try {
+        console.log('📁 Loading archive...');
+       
+        // Проверяем, какие элементы есть на странице
+        console.log('archiveCards exists:', !!document.getElementById('archiveCards'));
+        console.log('cardsGrid exists:', !!document.getElementById('cardsGrid'));
         
-         if (cards.length === 0) {
-             showEmptyArchive();
-             return;
-         }
+        const response = await fetch('/api/user-cards');
+        console.log('📡 API response status:', response.status);
+        
+        if (!response.ok) {
+            console.error('❌ API response not OK:', response.status, response.statusText);
+            showEmptyArchive();
+            showNotification('❌ Ошибка загрузки архива с сервера: ' + response.status, 'error');
+            return;
+        }
+        
+        const data = await response.json();
+        console.log('📦 API data received:', data);
+       
+        if (data.success && data.cards && data.cards.length > 0) {
+            console.log('✅ Cards found:', data.cards.length);
+            displayArchiveCards(data.cards);
+            
+            // Обновление статистики
+            const usedSlotsElement = document.getElementById('usedSlots');
+            if (usedSlotsElement) {
+                usedSlotsElement.textContent = data.cards.length;
+                console.log('✅ Updated used slots count:', data.cards.length);
+            } else {
+                console.warn('⚠️ Element usedSlots not found');
+            }
+        } else {
+            console.log('📭 No cards found or success is false');
+            showEmptyArchive();
+        }
+       
+    } catch (error) {
+        console.error('❌ Error loading archive:', error);
+        showEmptyArchive();
+        showNotification('❌ Ошибка загрузки архива с сервера: ' + error.message, 'error');
+    }
+}
+
+     // ЗАМЕНИТЬ функцию displayArchiveCards():
+function displayArchiveCards(cards) {
+    // Проверяем оба возможных контейнера
+    const container = document.getElementById('archiveCards') || document.getElementById('cardsGrid');
+    console.log('🔍 Display cards - container found:', !!container);
+    
+    if (!container) {
+        console.error('❌ Container for archive cards not found');
+        return;
+    }
    
-    container.innerHTML = cards.map(card => `
-        <div class="archive-card" data-card-id="${card.cardId}">
-            <div class="card-preview">
-                <img src="${card.preview}" alt="${card.title}" loading="lazy">
-                <div class="card-overlay">
-                    <button onclick="shareCard('${card.cardId}', '${card.shareUrl}')" class="btn-share">📤</button>
-                    <button onclick="openCard('${card.shareUrl}')" class="btn-open">👁️</button>
+    if (!cards || cards.length === 0) {
+        console.log('📭 No cards to display, showing empty state');
+        showEmptyArchive();
+        return;
+    }
+    
+    console.log('🎴 Displaying', cards.length, 'cards');
+   
+    // Обновленная версия HTML для карточек
+    container.innerHTML = cards.map(card => {
+        // Берем ID и другие свойства с проверками
+        const cardId = card.cardId || card.id || 'unknown';
+        const title = card.title || 'Untitled Card';
+        const preview = card.preview || card.previewUrl || card.thumbnailUrl || '';
+        const shareUrl = card.shareUrl || `${window.location.origin}/api/card/${cardId}`;
+        const views = card.views || card.viewCount || 0;
+        const style = card.style || 'classic';
+        const hasMedia = card.hasMedia || card.mediaUrl || false;
+        const createdAt = card.createdAt ? new Date(card.createdAt).toLocaleDateString() : 'Unknown date';
+        
+        return `
+            <div class="archive-card" data-card-id="${cardId}">
+                <div class="card-preview">
+                    <img src="${preview}" alt="${title}" loading="lazy" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDI4MCAxNjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMTYwIiBmaWxsPSIjMzMzIi8+Cjx0ZXh0IHg9IjE0MCIgeT0iODAiIGZpbGw9IiM2NjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIwLjNlbSI+8J+HvyBObyBQcmV2aWV3PC90ZXh0Pgo8L3N2Zz4='">
+                    <div class="card-overlay">
+                        <button onclick="shareCard('${cardId}', '${shareUrl}')" class="btn-share">📤</button>
+                        <button onclick="openCard('${shareUrl}')" class="btn-open">👁️</button>
+                    </div>
+                </div>
+                <div class="card-info">
+                    <h3>${title}</h3>
+                    <div class="card-stats">
+                        <span>👁️ ${views}</span>
+                        <span>🎨 ${style}</span>
+                        ${hasMedia ? '<span>📸</span>' : ''}
+                    </div>
+                    <div class="card-date">${createdAt}</div>
                 </div>
             </div>
-            <div class="card-info">
-                <h3>${card.title}</h3>
-                <div class="card-stats">
-                    <span>👁️ ${card.views}</span>
-                    <span>🎨 ${card.style}</span>
-                    ${card.hasMedia ? '<span>📸</span>' : ''}
-                </div>
-                <div class="card-date">${new Date(card.createdAt).toLocaleDateString()}</div>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
+    
+    console.log('✅ Cards display complete');
 }
 
      function showEmptyArchive() {
@@ -7572,4 +7614,3 @@ async function shareCard(cardId, shareUrl) {
  </script>
 </body>
 </html>
-
