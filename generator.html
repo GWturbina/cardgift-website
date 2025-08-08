@@ -3412,7 +3412,7 @@ async function createCard() {
         console.log('👤 GUEST card - saving to sponsor:', cardUserId);
     } else {
         // Все остальные уровни - карты сохраняются под собственным ID
-        cardUserId = currentUser?.userId || `USER_${userWalletAddress?.substring(2, 8)}`;
+        cardUserId = currentUser?.userId === "AUTHOR" ? "USER_009918" : (currentUser?.userId || `USER_${userWalletAddress?.substring(2, 8)}`);
         console.log('👑 Level', userLevel, 'card - saving to own account:', cardUserId);
     }
 
@@ -5220,6 +5220,7 @@ function clearForm() {
 </script>
 </body>
 </html>
+
 
 
 
