@@ -2794,6 +2794,10 @@
                      <button class="btn-secondary" onclick="exportArchive()">
                          📥 <span id="exportArchiveBtn">Export</span>
                      </button>
+                     <!-- В archive section, добавь кнопку: -->
+                     <button class="btn-secondary" onclick="forceReloadArchive()" style="margin-left: 10px;">
+                         🔄 Force Reload
+                     </button>
                  </div>
              </div>
          </div>
@@ -5144,7 +5148,7 @@ const translations = {
          loadUserArchive();
      }
 
-    // Функция для тестирования загрузки всех карт
+     // Функция для тестирования загрузки всех карт
      async function loadAllCards() {
          try {
              console.log('🔍 Checking all available cards...');
@@ -5169,32 +5173,154 @@ const translations = {
      }
 
      // Модифицируем функцию loadUserArchive
-     async function loadUserArchive() {
-         try {
-             console.log('📁 Loading archive...');
-            
-             // Проверяем, какие элементы есть на странице
-             console.log('archiveCards exists:', !!document.getElementById('archiveCards'));
-             console.log('cardsGrid exists:', !!document.getElementById('cardsGrid'));
-             
-             // Добавляем идентификатор пользователя в запрос
-             const userId = currentUser?.userId || 'guest';
-             const walletAddress = currentUser?.walletAddress || '';
-             console.log('🆔 Using user ID for archive:', userId);
-             console.log('💼 Using wallet address:', walletAddress);
-             
-             // Пробуем разные варианты URL
-             const url = `/api/user-cards?userId=${userId}&walletAddress=${walletAddress}`;
-             console.log('🔗 Requesting cards from:', url);
-             
-             const response = await fetch(url);
-             console.log('📡 API response status:', response.status);
-             
-             // Остальной код без изменений...
-         } catch (error) {
-             // Обработка ошибок без изменений...
-         }
-     }
+async function loadUserArchive() {
+    try {
+        console.log('📁 Loading archive...');
+       
+        // Проверяем, какие элементы есть на странице
+        console.log('archiveCards exists:', !!document.getElementById('archiveCards'));
+        console.log('cardsGrid exists:', !!document.getElementById('cardsGrid'));
+        
+        // Добавляем идентификатор пользователя в запрос
+        const userId = currentUser?.userId || 'guest';
+        const walletAddress = currentUser?.walletAddress || '';
+        console.log('🆔 Using user ID for archive:', userId);
+        console.log('💼 Using wallet address:', walletAddress);
+        
+        // Пробуем разные варианты URL
+        const url = `/api/user-cards?userId=${userId}&walletAddress=${walletAddress}`;
+        console.log('🔗 Requesting cards from:', url);
+        
+        const response = await fetch(url);
+        console.log('📡 API response status:', response.status);
+        
+        // ✅ ДОБАВЛЯЕМ НЕДОСТАЮЩУЮ ОБРАБОТКУ:
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('📦 Raw API response:', data);
+        
+        // Проверяем разные форматы ответа от сервера
+        let cards = [];
+        if (data && Array.isArray(data)) {
+            cards = data;
+            console.log('📄 Direct array format');
+        } else if (data && data.cards && Array.isArray(data.cards)) {
+            cards = data.cards;
+            console.log('📄 Object with cards property');
+        } else if (data && data.success && data.cards) {
+            cards = data.cards;
+            console.log('📄 Success response format');
+        } else {
+            console.log('📄 Unknown response format:', typeof data);
+            cards = [];
+        }
+        
+        console.log('🎴 Processed cards count:', cards.length);
+        
+        if (cards.length === 0) {
+            console.log('📭 No cards found, showing empty state');
+            showEmptyArchive();
+            return;
+        }
+        
+        // Логируем каждую карту для отладки
+        cards.forEach((card, index) => {
+            console.log(`Card ${index + 1}:`, {
+                id: card.cardId || card.id,
+                title: card.title,
+                preview: card.preview || card.previewUrl
+            });
+        });
+        
+        // Обновляем счетчик использованных слотов
+        const usedSlotsElement = document.getElementById('usedSlots');
+        if (usedSlotsElement) {
+            usedSlotsElement.textContent = cards.length;
+        }
+        
+        // Отображаем карты
+        displayArchiveCards(cards);
+        console.log('✅ Archive display completed');
+        
+        // Скрываем empty state если он был показан
+        const emptyArchive = document.getElementById('emptyArchive');
+        if (emptyArchive) {
+            emptyArchive.style.display = 'none';
+        }
+        
+        // Показываем grid
+        const cardsGrid = document.getElementById('cardsGrid');
+        if (cardsGrid) {
+            cardsGrid.style.display = 'grid';
+        }
+        
+    } catch (error) {
+        console.error('❌ Error loading archive:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack
+        });
+        
+        showEmptyArchive();
+        showNotification(`Ошибка загрузки архива: ${error.message}`, 'error');
+    }
+}
+
+// ✅ ДОБАВИТЬ ПОСЛЕ loadUserArchive:
+async function forceReloadArchive() {
+    console.log('🔄 Force reloading archive...');
+    
+    // Показываем загрузку
+    const container = document.getElementById('cardsGrid');
+    if (container) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #888;"><div class="loading"></div><p>Принудительная загрузка...</p></div>';
+    }
+    
+    // Добавляем timestamp для обхода кеша
+    const userId = currentUser?.userId || 'guest';
+    const walletAddress = currentUser?.walletAddress || '';
+    const timestamp = Date.now();
+    
+    const url = `/api/user-cards?userId=${userId}&walletAddress=${walletAddress}&_t=${timestamp}`;
+    
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
+        });
+        
+        const data = await response.json();
+        console.log('🔄 Force reload response:', data);
+        
+        let cards = [];
+        if (data && Array.isArray(data)) {
+            cards = data;
+        } else if (data && data.cards && Array.isArray(data.cards)) {
+            cards = data.cards;
+        } else if (data && data.success && data.cards) {
+            cards = data.cards;
+        }
+        
+        if (cards.length > 0) {
+            displayArchiveCards(cards);
+            showNotification(`✅ Принудительно загружено ${cards.length} карт`, 'success');
+        } else {
+            showEmptyArchive();
+            showNotification('⚠️ Карты не найдены на сервере', 'warning');
+        }
+        
+    } catch (error) {
+        console.error('❌ Force reload error:', error);
+        showEmptyArchive();
+        showNotification('❌ Ошибка принудительного обновления', 'error');
+    }
+}
 
      // ЗАМЕНИТЬ функцию displayArchiveCards():
 function displayArchiveCards(cards) {
@@ -7620,4 +7746,3 @@ async function shareCard(cardId, shareUrl) {
  </script>
 </body>
 </html>
-
