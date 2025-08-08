@@ -46,6 +46,7 @@
   
   <!-- Подключение конфигурации и скриптов -->
   <script src="/js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <!-- ВСЕ ВАШИ СУЩЕСТВУЮЩИЕ СТИЛИ - БЕЗ ИЗМЕНЕНИЙ -->
 <style>
@@ -3688,6 +3689,49 @@ function sharePreviewDirectly(cardId, shareUrl) {
        ru: "🎉 Посмотрите на эту красивую открытку!", 
        ua: "🎉 Подивіться на цю красиву листівку!"
    };
+
+  // ЗАМЕНИТЬ функцию shareWithPreview():
+async function shareWithPreview(cardMetadata) {
+    try {
+        // Генерируем изображение из DOM
+        const preview = document.getElementById('cardPreview');
+        const canvas = await html2canvas(preview, {
+            scale: 2,
+            backgroundColor: '#000',
+            useCORS: true
+        });
+       
+        // Создаем blob
+        const blob = await new Promise(resolve =>
+            canvas.toBlob(resolve, 'image/jpeg', 0.8)
+        );
+       
+        if (blob) {
+            const file = new File([blob], `cardgift-${cardMetadata.cardId}.jpg`, {
+                type: 'image/jpeg'
+            });
+           
+            const shareUrl = `https://cardgift.bnb/api/save-card?id=${cardMetadata.cardId}`;
+           
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: 'CardGift',
+                    text: cardMetadata.greetingText || 'Посмотрите мою открытку!',
+                    url: shareUrl
+                });
+                showNotification('📱 Отправлено с превью!', 'success');
+            } else {
+                copyToClipboard(shareUrl);
+                showNotification('📋 Ссылка скопирована! Превью покажется при вставке', 'info');
+            }
+        }
+    } catch (error) {
+        console.error('Ошибка генерации превью:', error);
+        copyToClipboard(`https://cardgift.bnb/api/save-card?id=${cardMetadata.cardId}`);
+        showNotification('📋 Ссылка скопирована!', 'success');
+    }
+} 
    
    const message = `${messages[currentLanguage] || messages.ru} ${shareUrl}`;
    
@@ -4827,6 +4871,7 @@ window.sharePreviewDirectly = sharePreviewDirectly;
 window.shareToMessenger = shareToMessenger;
 window.shareToSocial = shareToSocial;
 window.copyToClipboard = copyToClipboard;
+window.shareWithPreview = shareWithPreview;
 
 // ==================== ✅ ОБРАБОТЧИКИ СОБЫТИЙ WEB3 ====================
 
