@@ -30,7 +30,10 @@ export default async function handler(req, res) {
                 clicks: 0
             });
 
-            console.log('✅ Card saved. Total cards:', cards.size);
+            // ✅ ДОБАВЛЕНА ПРОВЕРКА СОХРАНЕНИЯ:
+            console.log('💾 Card saved:', cardId);
+            console.log('📊 Total cards after save:', cards.size);
+            console.log('🔍 Can retrieve:', !!cards.get(cardId));
 
             const shareUrl = `https://cardgift.bnb/api/save-card?id=${cardId}`;
             const previewUrl = `https://cardgift.bnb/api/og-image?id=${cardId}`;
