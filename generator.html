@@ -3297,6 +3297,7 @@ function showWalletConnected(address) {
     }
 }
 
+
 // ✅ ОТКЛЮЧЕНИЕ КОШЕЛЬКА В ГЕНЕРАТОРЕ
 function disconnectWallet() {
     if (confirm('Disconnect wallet?')) {
@@ -3318,76 +3319,247 @@ function disconnectWallet() {
     }
 }
 
-// ==================== ✅ СОЗДАНИЕ КАРТЫ С ИСПРАВЛЕНИЯМИ LOCALSTORAGE ====================
-
+// ==================== ✅ СОЗДАНИЕ КАРТЫ С ПРАВИЛЬНЫМИ УРОВНЯМИ ====================
 async function createCard() {
-   console.log('🎨 Starting card creation...');
+    console.log('🎨 Starting card creation...');
+    
+    // ✅ ПРОВЕРЯЕМ СЕТЬ opBNB ПЕРЕД СОЗДАНИЕМ
+    if (window.ethereum) {
+        try {
+            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+            const currentChainId = parseInt(chainId, 16);
+            
+            if (currentChainId !== 204) {
+                console.log('❌ Wrong network! Current:', currentChainId, 'Need: 204 (opBNB)');
+                
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: '0xCC' }] // 204 в hex
+                    });
+                    notificationManager.show('✅ Switched to opBNB!', 'success');
+                } catch (switchError) {
+                    if (switchError.code === 4902) {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{
+                                chainId: '0xCC',
+                                chainName: 'opBNB Mainnet',
+                                nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+                                rpcUrls: ['https://opbnb-mainnet-rpc.bnbchain.org'],
+                                blockExplorerUrls: ['https://mainnet.opbnbscan.com/']
+                            }]
+                        });
+                        notificationManager.show('✅ opBNB network added!', 'success');
+                    } else {
+                        notificationManager.show('❌ Switch to opBNB network manually!', 'error');
+                        return;
+                    }
+                }
+            } else {
+                console.log('✅ Already on opBNB network');
+            }
+        } catch (error) {
+            console.error('Network check failed:', error);
+            notificationManager.show('❌ Please switch to opBNB network', 'error');
+            return;
+        }
+    }
 
-   // ✅ ПРОВЕРЯЕМ СЕТЬ opBNB ПЕРЕД СОЗДАНИЕМ
-   if (window.ethereum) {
-       try {
-           const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-           const currentChainId = parseInt(chainId, 16);
-           
-           if (currentChainId !== 204) {
-               console.log('❌ Wrong network! Current:', currentChainId, 'Need: 204 (opBNB)');
-               
-               try {
-                   await window.ethereum.request({
-                       method: 'wallet_switchEthereumChain',
-                       params: [{ chainId: '0xCC' }] // 204 в hex
-                   });
-                   notificationManager.show('✅ Switched to opBNB!', 'success');
-               } catch (switchError) {
-                   if (switchError.code === 4902) {
-                       await window.ethereum.request({
-                           method: 'wallet_addEthereumChain',
-                           params: [{
-                               chainId: '0xCC',
-                               chainName: 'opBNB Mainnet',
-                               nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
-                               rpcUrls: ['https://opbnb-mainnet-rpc.bnbchain.org'],
-                               blockExplorerUrls: ['https://mainnet.opbnbscan.com/']
-                           }]
-                       });
-                       notificationManager.show('✅ opBNB network added!', 'success');
-                   } else {
-                       notificationManager.show('❌ Switch to opBNB network manually!', 'error');
-                       return;
-                   }
-               }
-           } else {
-               console.log('✅ Already on opBNB network');
-           }
-       } catch (error) {
-           console.error('Network check failed:', error);
-           notificationManager.show('❌ Please switch to opBNB network', 'error');
-           return;
-       }
-   }
+    // ✅ ОПРЕДЕЛЯЕМ ПРАВИЛЬНЫЙ userId В ЗАВИСИМОСТИ ОТ УРОВНЯ
+    const userLevel = currentUser?.level || 0;
+    const userWalletAddress = userWalletManager.getAddress();
+    
+    let cardUserId;
+    let cardOwnerLevel = userLevel;
+    
+    // Логика определения владельца карты
+    if (userLevel === 0) {
+        // GUEST - карты сохраняются у спонсора
+        const sponsorId = getSponsorId();
+        cardUserId = sponsorId || currentUser?.userId || `GUEST_${userWalletAddress?.substring(2, 8)}`;
+        console.log('👤 GUEST card - saving to sponsor:', cardUserId);
+    } else {
+        // Все остальные уровни - карты сохраняются под собственным ID
+        cardUserId = currentUser?.userId || `USER_${userWalletAddress?.substring(2, 8)}`;
+        console.log('👑 Level', userLevel, 'card - saving to own account:', cardUserId);
+    }
 
-   const greetingText = document.getElementById('greetingText').value.trim();
-   const videoUrl = document.getElementById('videoUrl').value.trim();
+    // ✅ ПРОВЕРЯЕМ ЛИМИТЫ КАРТ
+    const cardLimits = {
+        0: 5,      // GUEST - 5 карт у спонсора
+        1: 20,     // USER
+        2: 100,    // MINI_ADMIN  
+        3: 200,    // ADMIN
+        4: 500,    // SUPER_ADMIN
+        5: 1000,   // MANAGER
+        6: -1      // AUTHOR - безлимит
+    };
 
-   // ✅ Проверка лимитов по уровню пользователя
-   if (!levelManager.canCreateCard(currentUser.level, currentUser.cardCount || 0)) {
-       const levelInfo = levelManager.getLevelInfo(currentUser.level);
-       notificationManager.show(
-           currentLanguage === 'en' ? `Card limit reached (${levelInfo.cardLimit}). Upgrade your account.` :
-           currentLanguage === 'ru' ? `Достигнут лимит карт (${levelInfo.cardLimit}). Улучшите аккаунт.` :
-           `Досягнуто ліміт карт (${levelInfo.cardLimit}). Покращте акаунт.`,
-           'warning', 5000
-       );
-       return;
-   }
+    const limit = cardLimits[userLevel];
+    if (limit !== -1) {
+        // Проверяем лимит (в реальной версии здесь будет запрос к серверу)
+        const createdCards = await getUserCardCount(cardUserId);
+        if (createdCards >= limit) {
+            notificationManager.show(`❌ Достигнут лимит карт (${limit}) для уровня ${getUserLevelName(userLevel)}`, 'error');
+            return;
+        }
+        console.log(`📊 Card limit check: ${createdCards}/${limit} for level ${userLevel}`);
+    }
 
-   // Проверка контента
-   const contentCheck = checkContent(greetingText);
-   if (!contentCheck.isClean) {
-       console.warn('🚫 Контент заблокирован:', contentCheck.badWords);
-       showContentBlockedModal();
-       return;
-   }
+    // ✅ ПОЛУЧАЕМ И ПРОВЕРЯЕМ КОНТЕНТ
+    const greetingText = document.getElementById('greetingText')?.value?.trim() || '';
+    const videoUrl = document.getElementById('videoUrl')?.value?.trim() || '';
+
+    // ✅ ПРОВЕРКА КОНТЕНТА НА БЕЗОПАСНОСТЬ
+    const contentCheck = checkContent(greetingText);
+    if (!contentCheck.isClean) {
+        console.warn('🚫 Контент заблокирован:', contentCheck.badWords);
+        showContentBlockedModal();
+        return;
+    }
+
+    console.log('🎨 Creating Web3 card...');
+    
+    // ✅ СОБИРАЕМ ДАННЫЕ КАРТЫ С ПРАВИЛЬНЫМИ ПОЛЯМИ
+    const cardData = {
+        // Основные данные
+        cardId: generateUniqueCardId(),
+        userId: cardUserId,                    // ✅ Кому принадлежит карта
+        actualCreator: currentUser?.userId,    // ✅ Кто реально создал
+        creatorLevel: userLevel,               // ✅ Уровень создателя
+        walletAddress: userWalletAddress,
+        
+        // Содержимое карты
+        greetingText: greetingText,
+        userName: document.getElementById('userName')?.value || '',
+        style: currentStyle || 'classic',
+        
+        // Медиа контент
+        backgroundImage: document.getElementById('backgroundImage')?.src || null,
+        videoUrl: document.getElementById('videoFile')?.src || videoUrl || null,
+        
+        // Настройки анимации
+        greetingDelay: parseInt(document.getElementById('greetingDelay')?.value) || 1000,
+        buttonDelay: parseInt(document.getElementById('buttonDelay')?.value) || 3000,
+        bannerDelay: parseInt(document.getElementById('bannerDelay')?.value) || 5000,
+        
+        // Дополнительные элементы
+        marqueeText: document.getElementById('marqueeText')?.value || '',
+        bannerHTML: document.getElementById('bannerHTML')?.value || '',
+        ctaButtonText: document.getElementById('ctaButtonText')?.value || '',
+        ctaButtonURL: document.getElementById('ctaButtonURL')?.value || '',
+        ctaPosition: document.getElementById('ctaPosition')?.value || 'bottom-center',
+        
+        // Мета данные
+        createdAt: Date.now(),
+        lastModified: Date.now(),
+        views: 0,
+        clicks: 0,
+        isTemplate: false
+    };
+
+    console.log('📡 Отправляем данные карты на сервер...');
+    console.log('🎯 Card data preview:', {
+        cardId: cardData.cardId,
+        userId: cardData.userId,
+        actualCreator: cardData.actualCreator,
+        creatorLevel: cardData.creatorLevel,
+        greetingText: cardData.greetingText?.substring(0, 50) + '...'
+    });
+
+    try {
+        // ✅ ОТПРАВЛЯЕМ НА СЕРВЕР
+        const response = await fetch('/api/save-card', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-User-Level': userLevel.toString(),
+                'X-Wallet-Address': userWalletAddress || ''
+            },
+            body: JSON.stringify({
+                cardId: cardData.cardId,
+                cardData: cardData
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        console.log('✅ Карта успешно создана на сервере:', cardData.cardId);
+        console.log('🧾 Карта создана с данными:', {
+            cardId: cardData.cardId,
+            userId: cardData.userId,
+            actualCreator: cardData.actualCreator,
+            creatorLevel: cardData.creatorLevel,
+            walletAddress: cardData.walletAddress
+        });
+
+        // ✅ ПОКАЗЫВАЕМ РЕЗУЛЬТАТ
+        showCardResult({
+            cardId: cardData.cardId,
+            shareUrl: result.shareUrl || `${window.location.origin}/api/save-card?id=${cardData.cardId}`,
+            previewImageUrl: result.previewImageUrl || `${window.location.origin}/api/og-image?id=${cardData.cardId}`,
+            greetingText: cardData.greetingText,
+            userName: cardData.userName,
+            userLevel: userLevel,
+            createdFor: cardUserId !== cardData.actualCreator ? cardUserId : null
+        });
+
+        // ✅ ОБНОВЛЯЕМ СЧЕТЧИК КАРТ
+        updateCardCounter(userLevel, cardUserId);
+
+        return result;
+
+    } catch (error) {
+        console.error('❌ Ошибка создания карты:', error);
+        notificationManager.show(`❌ Ошибка создания карты: ${error.message}`, 'error');
+        throw error;
+    }
+}
+
+// ✅ ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+function getSponsorId() {
+    // Получаем спонсора из реферальной ссылки или localStorage
+    const referralId = localStorage.getItem('referralId') || 
+                      localStorage.getItem('sponsorId') || 
+                      new URLSearchParams(window.location.search).get('ref');
+    
+    console.log('🔍 Looking for sponsor ID:', referralId);
+    return referralId || 'DEFAULT_SPONSOR';
+}
+
+function getUserLevelName(level) {
+    const names = {
+        0: 'Guest', 1: 'User', 2: 'Mini Admin', 
+        3: 'Admin', 4: 'Super Admin', 5: 'Manager', 6: 'Author'
+    };
+    return names[level] || 'Unknown';
+}
+
+async function getUserCardCount(userId) {
+    try {
+        const response = await fetch(`/api/user-cards?userId=${userId}&countOnly=true`);
+        const data = await response.json();
+        return data.total || 0;
+    } catch (error) {
+        console.error('Error getting card count:', error);
+        return 0;
+    }
+}
+
+function updateCardCounter(userLevel, cardUserId) {
+    // Обновляем счетчик в интерфейсе
+    const levelName = getUserLevelName(userLevel);
+    notificationManager.show(`✅ Карта создана для уровня: ${levelName}`, 'success');
+    
+    // Если карта создана для спонсора, уведомляем об этом
+    if (userLevel === 0) {
+        notificationManager.show(`📤 Карта сохранена у вашего спонсора: ${cardUserId}`, 'info');
+    }
+}
 
    // Проверка видео
    if (videoUrl) {
@@ -3454,7 +3626,7 @@ async function createCard() {
        if (result.success) {
            console.log('✅ Карта успешно создана на сервере:', cardMetadata.cardId);
 
-        // После успешного создания карты
+           // После успешного создания карты
            console.log('🧾 Карта создана с данными:', {
                cardId: cardMetadata.cardId,
                userId: currentUser.userId,
@@ -5071,6 +5243,3 @@ console.log(`
 </script>
 </body>
 </html>
-
-
-
