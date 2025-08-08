@@ -3454,6 +3454,13 @@ async function createCard() {
        if (result.success) {
            console.log('✅ Карта успешно создана на сервере:', cardMetadata.cardId);
 
+        // После успешного создания карты
+           console.log('🧾 Карта создана с данными:', {
+               cardId: cardData.cardId,
+               userId: currentUser.userId,
+               walletAddress: currentUser.walletAddress
+           });
+
            // ✅ ПОКАЗЫВАЕМ ПРЕВЬЮ СРАЗУ ЗДЕСЬ
            const canvas = document.getElementById('cardCanvas');
            if (canvas) {
@@ -5063,3 +5070,4 @@ console.log(`
 </script>
 </body>
 </html>
+
