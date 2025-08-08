@@ -4882,7 +4882,58 @@ window.sharePreviewDirectly = sharePreviewDirectly;
 window.shareToMessenger = shareToMessenger;
 window.shareToSocial = shareToSocial;
 window.copyToClipboard = copyToClipboard;
-window.shareWithPreview = shareWithPreview;
+window.shareWithPreview = async function(cardMetadata) {
+    try {
+        // Ищем подходящий элемент для скриншота
+        const preview = document.getElementById('previewContainer') || 
+                       document.getElementById('mediaPreview') || 
+                       document.getElementById('renderCanvas') ||
+                       document.querySelector('.preview-container');
+        
+        if (!preview) {
+            console.error('Не найден элемент для создания превью');
+            throw new Error('Элемент превью не найден');
+        }
+        
+        // Генерируем изображение из DOM
+        const canvas = await html2canvas(preview, {
+            scale: 2,
+            backgroundColor: '#000',
+            useCORS: true
+        });
+       
+        // Создаем blob
+        const blob = await new Promise(resolve =>
+            canvas.toBlob(resolve, 'image/jpeg', 0.8)
+        );
+       
+        if (blob) {
+            const file = new File([blob], `cardgift-${cardMetadata.cardId}.jpg`, {
+                type: 'image/jpeg'
+            });
+           
+            const shareUrl = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
+           
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: 'CardGift',
+                    text: cardMetadata.greetingText || 'Посмотрите мою открытку!',
+                    url: shareUrl
+                });
+                showNotification('📱 Отправлено с превью!', 'success');
+            } else {
+                copyToClipboard(shareUrl);
+                showNotification('📋 Ссылка скопирована! Превью покажется при вставке', 'info');
+            }
+        }
+    } catch (error) {
+        console.error('Ошибка генерации превью:', error);
+        const shareUrl = `${window.location.origin}/api/card/${cardMetadata.cardId}`;
+        copyToClipboard(shareUrl);
+        showNotification('📋 Ссылка скопирована!', 'success');
+    }
+};
 
 // ==================== ✅ ОБРАБОТЧИКИ СОБЫТИЙ WEB3 ====================
 
