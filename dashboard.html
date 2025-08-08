@@ -5144,116 +5144,59 @@ const translations = {
          loadUserArchive();
      }
 
-     // ✅ ИСПРАВЛЕНО: ЗАГРУЗКА АРХИВА С СЕРВЕРА
+     // ЗАМЕНИТЬ функцию loadUserArchive():
      async function loadUserArchive() {
-         if (currentUser.level === 0) {
-             showEmptyArchive();
-             return;
-         }
-         
          try {
-             console.log('📁 Loading user archive from server...');
-             
-             // ✅ ЗАПРОС К СЕРВЕРУ ДЛЯ ПОЛУЧЕНИЯ КАРТ ПОЛЬЗОВАТЕЛЯ
-             const response = await fetch(`/api/user-cards?userId=${currentUser.userId}`, {
-                 method: 'GET',
-                 headers: {
-                     'Content-Type': 'application/json'
-                 }
-             });
-             
-             if (response.ok) {
-                 const serverCards = await response.json();
-                 console.log('✅ Cards loaded from server:', serverCards);
-                 
-                 displayArchiveCards(serverCards || []);
-                 
-                 const usedSlotsElement = document.getElementById('usedSlots');
-                 if (usedSlotsElement) {
-                     usedSlotsElement.textContent = serverCards ? serverCards.length : 0;
-                 }
+             showLoadingState();
+            
+             const response = await fetch('/api/user-cards');
+             const data = await response.json();
+            
+             if (data.success && data.cards) {
+                 displayArchiveCards(data.cards);
+                 updateArchiveStats(data.total);
              } else {
-                 console.log('⚠️ Server cards not available, checking localStorage...');
-                 
-                 // ✅ FALLBACK: ПРОВЕРЯЕМ LOCALSTORAGE КАК РЕЗЕРВ
-                 const savedArchive = localStorage.getItem(`archive_${currentUser.userId}`);
-                 const archive = savedArchive ? JSON.parse(savedArchive) : { cards: [] };
-                 
-                 displayArchiveCards(archive.cards || []);
-                 
-                 const usedSlotsElement = document.getElementById('usedSlots');
-                 if (usedSlotsElement) {
-                     usedSlotsElement.textContent = archive.cards ? archive.cards.length : 0;
-                 }
+                 showEmptyArchive();
              }
-             
+            
          } catch (error) {
-             console.error('❌ Error loading archive:', error);
-             
-             // ✅ FALLBACK: ИСПОЛЬЗУЕМ LOCALSTORAGE
-             const savedArchive = localStorage.getItem(`archive_${currentUser.userId}`);
-             const archive = savedArchive ? JSON.parse(savedArchive) : { cards: [] };
-             
-             displayArchiveCards(archive.cards || []);
-             
-             const usedSlotsElement = document.getElementById('usedSlots');
-             if (usedSlotsElement) {
-                 usedSlotsElement.textContent = archive.cards ? archive.cards.length : 0;
-             }
+             console.error('Ошибка загрузки архива:', error);
+             showEmptyArchive();
+             showNotification('❌ Ошибка загрузки архива с сервера', 'error');
          }
      }
 
-     function displayArchiveCards(cards) {
-         const cardsGrid = document.getElementById('cardsGrid');
-         const emptyArchive = document.getElementById('emptyArchive');
-         
-         if (!cardsGrid) return;
-         
-         if (!cards || cards.length === 0) {
-             cardsGrid.style.display = 'none';
-             if (emptyArchive) emptyArchive.style.display = 'block';
-             return;
-         }
-         
-         cardsGrid.style.display = 'grid';
-         if (emptyArchive) emptyArchive.style.display = 'none';
-         
-         let cardsHTML = '';
-         
-         cards.forEach((card, index) => {
-             // ✅ ПРАВИЛЬНОЕ ПОЛУЧЕНИЕ ID И PREVIEW
-             const cardId = card.cardId || card.id || index;
-             const cardTitle = card.title || card.cardTitle || 'Untitled Card';
-             const cardPreview = card.preview || card.previewUrl || card.thumbnailUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDI4MCAxNjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMTYwIiBmaWxsPSIjMzMzIi8+Cjx0ZXh0IHg9IjE0MCIgeT0iODAiIGZpbGw9IiM2NjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIwLjNlbSI+8J+HvyBObyBQcmV2aWV3PC90ZXh0Pgo8L3N2Zz4=';
-             const cardViews = card.views || card.viewCount || 0;
-             const cardClicks = card.clicks || card.clickCount || 0;
-             
-             cardsHTML += `
-                 <div class="archive-card" onclick="previewCard('${cardId}')">
-                     <div class="card-preview">
-                         <img src="${cardPreview}" alt="Card preview" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDI4MCAxNjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMTYwIiBmaWxsPSIjMzMzIi8+Cjx0ZXh0IHg9IjE0MCIgeT0iODAiIGZpbGw9IiM2NjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIwLjNlbSI+8J+HvyBObyBQcmV2aWV3PC90ZXh0Pgo8L3N2Zz4='">
-                         <div class="card-overlay">
-                             <div class="card-stats">
-                                 <span>👁 ${cardViews}</span>
-                                 <span>🖱 ${cardClicks}</span>
-                             </div>
-                         </div>
-                     </div>
-                     <div class="card-info">
-                         <h4 class="card-title">${cardTitle}</h4>
-                         <div class="card-actions">
-                             <button class="card-action-btn" onclick="event.stopPropagation(); shareCard('${cardId}')" title="Share">📤</button>
-                             <button class="card-action-btn" onclick="event.stopPropagation(); editCard('${cardId}')" title="Edit">✏️</button>
-                             <button class="card-action-btn" onclick="event.stopPropagation(); duplicateCard('${cardId}')" title="Duplicate">📋</button>
-                             <button class="card-action-btn" onclick="event.stopPropagation(); deleteCard('${cardId}')" title="Delete">🗑️</button>
-                         </div>
-                     </div>
-                 </div>
-             `;
-         });
-         
-         cardsGrid.innerHTML = cardsHTML;
-     }
+     // ДОБАВИТЬ функцию отображения карт:
+function displayArchiveCards(cards) {
+    const container = document.getElementById('archiveCards');
+    if (!container) return;
+   
+    if (cards.length === 0) {
+        showEmptyArchive();
+        return;
+    }
+   
+    container.innerHTML = cards.map(card => `
+        <div class="archive-card" data-card-id="${card.cardId}">
+            <div class="card-preview">
+                <img src="${card.preview}" alt="${card.title}" loading="lazy">
+                <div class="card-overlay">
+                    <button onclick="shareCard('${card.cardId}', '${card.shareUrl}')" class="btn-share">📤</button>
+                    <button onclick="openCard('${card.shareUrl}')" class="btn-open">👁️</button>
+                </div>
+            </div>
+            <div class="card-info">
+                <h3>${card.title}</h3>
+                <div class="card-stats">
+                    <span>👁️ ${card.views}</span>
+                    <span>🎨 ${card.style}</span>
+                    ${card.hasMedia ? '<span>📸</span>' : ''}
+                </div>
+                <div class="card-date">${new Date(card.createdAt).toLocaleDateString()}</div>
+            </div>
+        </div>
+    `).join('');
+}
 
      function showEmptyArchive() {
          const cardsGrid = document.getElementById('cardsGrid');
@@ -5276,41 +5219,29 @@ const translations = {
          window.open(previewUrl, '_blank');
      }
 
-     // ✅ ИСПРАВЛЕНО: ФУНКЦИЯ ПОДЕЛИТЬСЯ КАРТОЙ
-     function shareCard(cardId) {
-         try {
-             console.log('📤 Sharing card:', cardId);
-             
-             // ✅ ГЕНЕРИРУЕМ ПРАВИЛЬНУЮ ССЫЛКУ НА КАРТУ
-             const shareUrl = `${window.location.origin}/api/card/${cardId}`;
-             const cardTitle = `CardGift - Beautiful Greeting Card`;
-             const shareText = '🎉 Look at this beautiful greeting card created with CardGift!';
-             
-             // ✅ ИСПОЛЬЗУЕМ NATIVE SHARE API ЕСЛИ ДОСТУПЕН
-             if (navigator.share) {
-                 navigator.share({
-                     title: cardTitle,
-                     text: shareText,
-                     url: shareUrl
-                 }).then(() => {
-                     showNotification('📱 Card shared successfully!', 'success');
-                     console.log('✅ Card shared via native API');
-                 }).catch((error) => {
-                     console.log('⚠️ Native share failed, using clipboard:', error);
-                     copyToClipboard(shareUrl);
-                     showNotification('📋 Link copied! Preview will show in messengers', 'success');
-                 });
-             } else {
-                 // ✅ FALLBACK: КОПИРУЕМ В БУФЕР ОБМЕНА
-                 copyToClipboard(shareUrl);
-                 showNotification('📋 Link copied! Preview will show when pasted in messenger', 'success');
-             }
-             
-         } catch (error) {
-             console.error('❌ Share error:', error);
-             showNotification('Error sharing card', 'error');
-         }
-     }
+     // ДОБАВИТЬ функции действий:
+async function shareCard(cardId, shareUrl) {
+    try {
+        if (navigator.share) {
+            await navigator.share({
+                title: 'CardGift',
+                text: 'Посмотрите мою открытку!',
+                url: shareUrl
+            });
+        } else {
+            copyToClipboard(shareUrl);
+            showNotification('📋 Ссылка скопирована!', 'success');
+        }
+    } catch (error) {
+        copyToClipboard(shareUrl);
+        showNotification('📋 Ссылка скопирована!', 'success');
+    }
+}
+
+    function openCard(shareUrl) {
+        window.open(shareUrl, '_blank');
+    }
+    
 
      function copyToClipboard(text) {
          if (navigator.clipboard) {
