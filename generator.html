@@ -5111,9 +5111,116 @@ console.log(`
 🚀 Готов к работе БЕЗ проблем с памятью!
 `);
 
+// ✅ ДОБАВЬ ЭТИ НЕДОСТАЮЩИЕ ФУНКЦИИ:
+
+function generateUniqueCardId() {
+    const timestamp = Date.now();
+    const randomSuffix = Math.random().toString(36).substring(2, 8);
+    const cardId = `card_${timestamp}_${randomSuffix}`;
+    console.log('🆔 Generated UNIQUE card ID:', cardId);
+    return cardId;
+}
+
+async function prepareCardMetadata() {
+    const timestamp = Date.now();
+    const randomSuffix = Math.random().toString(36).substring(2, 8);
+    const cardId = `card_${timestamp}_${randomSuffix}`;
+    
+    console.log('🆔 Generated UNIQUE card ID:', cardId);
+    
+    const greetingText = sanitizeInput(document.getElementById('greetingText')?.value?.trim() || '');
+    const videoUrl = sanitizeInput(document.getElementById('videoUrl')?.value?.trim() || '');
+
+    const metadata = {
+        cardId: cardId,
+        userId: currentUser?.userId || generateUserId(),
+        userLevel: currentUser?.level || 0,
+        greeting: greetingText,
+        personalMessage: '',
+        videoUrl: videoUrl,
+        style: selectedStyle || 'classic',
+        textPosition: selectedTextPosition || 'center',
+        ctaEnabled: document.getElementById('ctaToggle')?.checked || false,
+        ctaTitle: sanitizeInput(document.getElementById('ctaTitle')?.value || ''),
+        ctaButton: sanitizeInput(document.getElementById('ctaButton')?.value || ''),
+        ctaUrl: sanitizeInput(document.getElementById('ctaUrl')?.value || ''),
+        ctaPosition: selectedCTAPosition || 'bottom-center',
+        marqueeEnabled: document.getElementById('marqueeToggle')?.checked || false,
+        marqueeText: sanitizeInput(document.getElementById('marqueeTextInput')?.value || ''),
+        marqueeUrl: sanitizeInput(document.getElementById('marqueeUrl')?.value || ''),
+        marqueeTimer: parseInt(document.getElementById('marqueeTimerInput')?.value) || 7,
+        bannerEnabled: document.getElementById('bannerToggle')?.checked || false,
+        bannerHtml: sanitizeInput(document.getElementById('bannerHtml')?.value || ''),
+        bannerUrl: sanitizeInput(document.getElementById('bannerUrl')?.value || ''),
+        timers: {
+            message: parseInt(document.getElementById('messageTimerInput')?.value) || 0,
+            button: parseInt(document.getElementById('buttonTimerInput')?.value) || 3,
+            banner: parseInt(document.getElementById('bannerTimerInput')?.value) || 5
+        },
+        createdAt: new Date().toISOString(),
+        viewCount: 0,
+        isArchived: false,
+        language: currentLanguage || 'en'
+    };
+
+    if (uploadedMedia && uploadedMedia.file) {
+        const mediaBase64 = await fileToBase64(uploadedMedia.file);
+        metadata.mediaType = uploadedMedia.type;
+        metadata.mediaUrl = mediaBase64;
+    }
+
+    if (videoUrl) {
+        const videoData = videoProcessor.parseVideoUrl(videoUrl);
+        if (videoData.isValid) {
+            metadata.videoData = videoData;
+            metadata.mediaType = 'video';
+            metadata.videoUrl = videoUrl;
+            metadata.embedUrl = videoData.embedUrl;
+            console.log('✅ Video URL обработан:', videoUrl);
+        }
+    }
+
+    return metadata;
+}
+
+function generateUserId() {
+    return 'USER_' + Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
+function sanitizeInput(input) {
+    if (!input) return '';
+    return input.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                .replace(/javascript:/gi, '')
+                .replace(/on\w+\s*=/gi, '');
+}
+
+async function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+function clearForm() {
+    // Очищаем основные поля
+    const greetingInput = document.getElementById('greetingText');
+    if (greetingInput) greetingInput.value = '';
+    
+    const videoInput = document.getElementById('videoUrl');
+    if (videoInput) videoInput.value = '';
+    
+    // Очищаем загруженные медиа
+    uploadedMedia = null;
+    
+    console.log('🧹 Form cleared');
+}
+ 
 </script>
 </body>
 </html>
+
 
 
 
