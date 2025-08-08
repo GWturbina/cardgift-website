@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title id="pageTitle">CardGift - Greeting Card</title>
-	
-	<!-- Favicon fix -->
+    
+    <!-- Favicon fix -->
    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
     
     <!-- ✅ УЛУЧШЕННЫЕ DYNAMIC OPEN GRAPH для превью в мессенджерах -->
@@ -27,8 +27,8 @@
     <!-- ✅ WEB3 библиотеки для интеграции -->
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-	
-	<script>
+    
+    <script>
 // ✅ УЛУЧШЕННЫЙ VideoProcessor с поддержкой всех платформ
 class EnhancedVideoProcessor {
     constructor() {
@@ -294,7 +294,17 @@ class CardNotificationSystem {
             pointer-events: none;
             max-width: 90vw;
         `;
-        document.body.appendChild(container);
+        
+        // Проверяем готовность DOM перед добавлением
+        if (document.body) {
+            document.body.appendChild(container);
+        } else {
+            // Отложенное добавление, когда DOM будет готов
+            document.addEventListener('DOMContentLoaded', () => {
+                document.body.appendChild(container);
+            });
+        }
+        
         return container;
     }
 
@@ -334,33 +344,43 @@ class CardNotificationSystem {
         }
 
         notification.textContent = message;
-        this.container.appendChild(notification);
-
-        // Анимация появления
-        setTimeout(() => {
-            notification.style.opacity = '1';
-            notification.style.transform = 'translateY(0)';
-        }, 100);
-
-        // Автоудаление
-        const timeoutId = setTimeout(() => {
-            this.remove(notification);
-        }, duration);
-
-        // Удаление по клику
-        notification.addEventListener('click', () => {
-            clearTimeout(timeoutId);
-            this.remove(notification);
-        });
-
-        return notification;
+        
+        // Проверяем, что контейнер существует перед добавлением
+        if (this.container && this.container.appendChild) {
+            this.container.appendChild(notification);
+            
+            // Анимация появления
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // Автоудаление
+            const timeoutId = setTimeout(() => {
+                this.remove(notification);
+            }, duration);
+            
+            // Удаление по клику
+            notification.addEventListener('click', () => {
+                clearTimeout(timeoutId);
+                this.remove(notification);
+            });
+            
+            return notification;
+        } else {
+            // Если контейнер недоступен, просто логируем сообщение
+            console.log(`${type}: ${message}`);
+            return null;
+        }
     }
 
     remove(notification) {
+        if (!notification) return;
+        
         notification.style.opacity = '0';
         notification.style.transform = 'translateY(-20px)';
         setTimeout(() => {
-            if (notification.parentNode) {
+            if (notification && notification.parentNode) {
                 notification.parentNode.removeChild(notification);
             }
         }, 400);
@@ -593,8 +613,8 @@ const levelManager = new UserLevelManager();
             z-index: 1;
             transition: all 0.5s ease;
         }
-		
-		/* ✅ УЛУЧШЕННЫЕ СТИЛИ ДЛЯ ВИДЕО КОНТЕЙНЕРОВ */
+        
+        /* ✅ УЛУЧШЕННЫЕ СТИЛИ ДЛЯ ВИДЕО КОНТЕЙНЕРОВ */
         .video-container {
             position: absolute;
             top: 0;
@@ -1696,10 +1716,10 @@ const levelManager = new UserLevelManager();
               // Скрываем экран загрузки
               document.getElementById('loadingScreen').classList.add('hidden');
               document.getElementById('mainCard').classList.remove('hidden');
-        	   
-        	   // ✅ ОБНОВЛЯЕМ META-ТЕГИ С УЛУЧШЕНИЯМИ
+               
+               // ✅ ОБНОВЛЯЕМ META-ТЕГИ С УЛУЧШЕНИЯМИ
               updateMetaTags(data);
-        	   
+               
               // ✅ Применяем стиль фона
               const cardArea = document.getElementById('cardArea');
               if (data.style) {
@@ -2392,28 +2412,30 @@ const levelManager = new UserLevelManager();
           console.log('🐛 Debug mode enabled. Use cardViewerDebug object for debugging.');
           console.log('Available debug commands:', Object.keys(window.cardViewerDebug));
       }
-<script>
-// ✅ ИСПРАВЛЯЕМ ОШИБКИ ИНИЦИАЛИЗАЦИИ В САМОМ НАЧАЛЕ
-window.levelManager = {
-    getLevelInfo: () => ({ cardLimit: 1000 }),
-    updateUserInterface: () => {},
-    canCreateCard: () => true
-};
-
-window.cardNotifications = {
-    show: (message, type) => console.log(`${type}: ${message}`),
-    createContainer: () => document.createElement('div')
-};
-
-// ВСЕ ОСТАЛЬНЫЕ СКРИПТЫ ИДУТ ПОСЛЕ...
-<script>
-// Исправляем ошибку levelManager
-if (typeof levelManager === 'undefined') {
-    window.levelManager = { getLevelInfo: () => ({}) };
-}
-if (typeof cardNotifications === 'undefined') {
-    window.cardNotifications = { show: () => {} };
-}
+      <script>
+      // ✅ ИСПРАВЛЯЕМ ОШИБКИ ИНИЦИАЛИЗАЦИИ В САМОМ НАЧАЛЕ
+      window.levelManager = {
+          getLevelInfo: () => ({ cardLimit: 1000 }),
+          updateUserInterface: () => {},
+          canCreateCard: () => true
+      };
+      
+      window.cardNotifications = {
+          show: (message, type) => console.log(`${type}: ${message}`),
+          createContainer: () => document.createElement('div')
+      };
+      // ВСЕ ОСТАЛЬНЫЕ СКРИПТЫ ИДУТ ПОСЛЕ...
+      </script>
+      
+      <!-- Исправляем ошибку дублирования скрипта -->
+      <script>
+      // Исправляем ошибку levelManager, если первый скрипт не загрузился
+      if (typeof levelManager === 'undefined') {
+          window.levelManager = { getLevelInfo: () => ({}) };
+      }
+      if (typeof cardNotifications === 'undefined') {
+          window.cardNotifications = { show: () => {} };
+      }
 </script>
 </body>
 </html>
