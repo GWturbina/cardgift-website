@@ -5147,7 +5147,8 @@ const translations = {
      // ЗАМЕНИТЬ функцию loadUserArchive():
      async function loadUserArchive() {
          try {
-             showLoadingState();
+             // Заменяем вызов showLoadingState на простой лог
+             console.log('📁 Loading archive...');
             
              const response = await fetch('/api/user-cards');
              const data = await response.json();
@@ -5167,14 +5168,14 @@ const translations = {
      }
 
      // ДОБАВИТЬ функцию отображения карт:
-function displayArchiveCards(cards) {
-    const container = document.getElementById('archiveCards');
-    if (!container) return;
-   
-    if (cards.length === 0) {
-        showEmptyArchive();
-        return;
-    }
+     function displayArchiveCards(cards) {
+         const container = document.getElementById('archiveCards');
+         if (!container) return;
+        
+         if (cards.length === 0) {
+             showEmptyArchive();
+             return;
+         }
    
     container.innerHTML = cards.map(card => `
         <div class="archive-card" data-card-id="${card.cardId}">
@@ -5241,7 +5242,7 @@ async function shareCard(cardId, shareUrl) {
     function openCard(shareUrl) {
         window.open(shareUrl, '_blank');
     }
-    
+
 
      function copyToClipboard(text) {
          if (navigator.clipboard) {
