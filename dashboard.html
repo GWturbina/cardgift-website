@@ -5155,7 +5155,12 @@ const translations = {
             
              if (data.success && data.cards) {
                  displayArchiveCards(data.cards);
-                 updateArchiveStats(data.total);
+                 
+                 // Обновление статистики без использования updateArchiveStats
+                 const usedSlotsElement = document.getElementById('usedSlots');
+                 if (usedSlotsElement) {
+                     usedSlotsElement.textContent = data.cards ? data.cards.length : 0;
+                 }
              } else {
                  showEmptyArchive();
              }
@@ -7567,3 +7572,4 @@ async function shareCard(cardId, shareUrl) {
  </script>
 </body>
 </html>
+
