@@ -4996,7 +4996,8 @@ if (window.ethereum) {
        localStorage.setItem('currentUser', JSON.stringify(currentUser));
    }
    
-   console.log('🧹 Cleanup completed');
+   // ИСПРАВЛЕНО: Удалена строка очистки памяти, которая вызывала проблему с исчезновением карт
+   // console.log('🧹 Cleanup completed');
 
 // ✅ ЕДИНСТВЕННАЯ ФУНКЦИЯ ПРЕВЬЮ
 function displayCardPreview(cardData, shareUrl, previewUrl) {
@@ -5070,5 +5071,6 @@ console.log(`
 </script>
 </body>
 </html>
+
 
 
