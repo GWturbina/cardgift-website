@@ -2360,83 +2360,86 @@ const levelManager = new UserLevelManager();
       });
 
       // ✅ ОЧИСТКА РЕСУРСОВ ПРИ ЗАКРЫТИИ
-      window.addEventListener('beforeunload', function() {
-          trackEvent('page_unload', {
-              totalViewDuration: Date.now() - viewStartTime
-          });
-          
-          // Очищаем временные ресурсы
-          const videos = document.querySelectorAll('video');
-          videos.forEach(video => {
-              video.pause();
-              video.src = '';
-          });
-          
-          console.log('🧹 Resources cleaned up');
-      });
+window.addEventListener('beforeunload', function() {
+    trackEvent('page_unload', {
+        totalViewDuration: Date.now() - viewStartTime
+    });
+    
+    // Очищаем временные ресурсы
+    const videos = document.querySelectorAll('video');
+    videos.forEach(video => {
+        video.pause();
+        video.src = '';
+    });
+    
+    console.log('🧹 Resources cleaned up');
+});
 
-      // ✅ ИНИЦИАЛИЗАЦИЯ WEB3 ПРИ ЗАГРУЗКЕ
-      setTimeout(() => {
-          initWeb3();
-      }, 2000);
+// ✅ ИНИЦИАЛИЗАЦИЯ WEB3 ПРИ ЗАГРУЗКЕ
+setTimeout(() => {
+    initWeb3();
+}, 2000);
 
-      console.log('📱 CardGift Enhanced Card Viewer v3.0 загружен успешно');
-      console.log('💡 Горячие клавиши: Ctrl+S (поделиться), Ctrl+F (полноэкран), Space (пауза видео)');
-      
-      // ✅ ФИНАЛЬНАЯ ОТЛАДОЧНАЯ ИНФОРМАЦИЯ
-      if (window.location.search.includes('debug=true')) {
-          window.cardViewerDebug = {
-              cardData: () => cardData,
-              currentLanguage: () => currentLanguage,
-              trackEvent: trackEvent,
-              showNotification: (msg, type) => cardNotifications.show(msg, type || 'info'),
-              changeLanguage: changeLanguage,
-              reloadCard: loadAndDisplayCard,
-              analytics: () => JSON.parse(localStorage.getItem('cardGift_analytics') || '[]'),
-              clearAnalytics: () => localStorage.removeItem('cardGift_analytics'),
-              version: 'CardGift Card Viewer v3.0',
-              features: [
-                  'Enhanced video support (YouTube, TikTok, Instagram)',
-                  'Multi-level user system integration',
-                  'Advanced analytics tracking',
-                  'Improved notification system',
-                  'Web3 integration with opBNB',
-                  'Better error handling',
-                  'Mobile-first responsive design',
-                  'Multi-language support',
-                  'Keyboard shortcuts',
-                  'Social sharing capabilities'
-              ]
-          };
-          
-          console.log('🐛 Debug mode enabled. Use cardViewerDebug object for debugging.');
-          console.log('Available debug commands:', Object.keys(window.cardViewerDebug));
-      }
-      <script>
-      // ✅ ИСПРАВЛЯЕМ ОШИБКИ ИНИЦИАЛИЗАЦИИ В САМОМ НАЧАЛЕ
-      window.levelManager = {
-          getLevelInfo: () => ({ cardLimit: 1000 }),
-          updateUserInterface: () => {},
-          canCreateCard: () => true
-      };
-      
-      window.cardNotifications = {
-          show: (message, type) => console.log(`${type}: ${message}`),
-          createContainer: () => document.createElement('div')
-      };
-      // ВСЕ ОСТАЛЬНЫЕ СКРИПТЫ ИДУТ ПОСЛЕ...
-      </script>
-      
-      <!-- Исправляем ошибку дублирования скрипта -->
-      <script>
-      // Исправляем ошибку levelManager, если первый скрипт не загрузился
-      if (typeof levelManager === 'undefined') {
-          window.levelManager = { getLevelInfo: () => ({}) };
-      }
-      if (typeof cardNotifications === 'undefined') {
-          window.cardNotifications = { show: () => {} };
-      }
+console.log('📱 CardGift Enhanced Card Viewer v3.0 загружен успешно');
+console.log('💡 Горячие клавиши: Ctrl+S (поделиться), Ctrl+F (полноэкран), Space (пауза видео)');
+
+// ✅ ФИНАЛЬНАЯ ОТЛАДОЧНАЯ ИНФОРМАЦИЯ
+if (window.location.search.includes('debug=true')) {
+    window.cardViewerDebug = {
+        cardData: () => cardData,
+        currentLanguage: () => currentLanguage,
+        trackEvent: trackEvent,
+        showNotification: (msg, type) => cardNotifications.show(msg, type || 'info'),
+        changeLanguage: changeLanguage,
+        reloadCard: loadAndDisplayCard,
+        analytics: () => JSON.parse(localStorage.getItem('cardGift_analytics') || '[]'),
+        clearAnalytics: () => localStorage.removeItem('cardGift_analytics'),
+        version: 'CardGift Card Viewer v3.0',
+        features: [
+            'Enhanced video support (YouTube, TikTok, Instagram)',
+            'Multi-level user system integration',
+            'Advanced analytics tracking',
+            'Improved notification system',
+            'Web3 integration with opBNB',
+            'Better error handling',
+            'Mobile-first responsive design',
+            'Multi-language support',
+            'Keyboard shortcuts',
+            'Social sharing capabilities'
+        ]
+    };
+    
+    console.log('🐛 Debug mode enabled. Use cardViewerDebug object for debugging.');
+    console.log('Available debug commands:', Object.keys(window.cardViewerDebug));
+}
+</script>
+
+<script>
+// ✅ ИСПРАВЛЯЕМ ОШИБКИ ИНИЦИАЛИЗАЦИИ В САМОМ НАЧАЛЕ
+window.levelManager = {
+    getLevelInfo: () => ({ cardLimit: 1000 }),
+    updateUserInterface: () => {},
+    canCreateCard: () => true
+};
+
+window.cardNotifications = {
+    show: (message, type) => console.log(`${type}: ${message}`),
+    createContainer: () => document.createElement('div')
+};
+// ВСЕ ОСТАЛЬНЫЕ СКРИПТЫ ИДУТ ПОСЛЕ...
+</script>
+
+<!-- Исправляем ошибку дублирования скрипта -->
+<script>
+// Исправляем ошибку levelManager, если первый скрипт не загрузился
+if (typeof levelManager === 'undefined') {
+    window.levelManager = { getLevelInfo: () => ({}) };
+}
+if (typeof cardNotifications === 'undefined') {
+    window.cardNotifications = { show: () => {} };
+}
 </script>
 </body>
 </html>
+
 
