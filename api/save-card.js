@@ -20,6 +20,8 @@ export default async function handler(req, res) {
                 return res.status(400).json({ error: 'Missing cardId or cardData' });
             }
 
+            console.log('💾 Saving card:', cardId, 'for user:', cardData.userId);
+
             // Сохраняем карту с полными данными
             cards.set(cardId, {
                 ...cardData,
@@ -27,6 +29,8 @@ export default async function handler(req, res) {
                 views: 0,
                 clicks: 0
             });
+
+            console.log('✅ Card saved. Total cards:', cards.size);
 
             const shareUrl = `https://cardgift.bnb/api/save-card?id=${cardId}`;
             const previewUrl = `https://cardgift.bnb/api/og-image?id=${cardId}`;
