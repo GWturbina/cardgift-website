@@ -3368,7 +3368,38 @@ async function createCard() {
 
     // ✅ ОПРЕДЕЛЯЕМ ПРАВИЛЬНЫЙ userId В ЗАВИСИМОСТИ ОТ УРОВНЯ
     const userLevel = currentUser?.level || 0;
-    const userWalletAddress = userWalletManager.getAddress();
+    const userWalletAddress = (() => {
+    // 1. Приоритет SafePal
+    if (window.safepal && window.safepal.ethereum && window.safepal.ethereum.selectedAddress) {
+        return window.safepal.ethereum.selectedAddress;
+    }
+    if (window.safePal && window.safePal.ethereum && window.safePal.ethereum.selectedAddress) {
+        return window.safePal.ethereum.selectedAddress;
+    }
+    
+    // 2. Проверяем ethereum с SafePal флагом
+    if (window.ethereum && window.ethereum.isSafePal && window.ethereum.selectedAddress) {
+        return window.ethereum.selectedAddress;
+    }
+    
+    // 3. Глобальные переменные
+    if (typeof walletAddress !== 'undefined' && walletAddress) {
+        return walletAddress;
+    }
+    
+    // 4. currentUser
+    if (currentUser && currentUser.walletAddress) {
+        return currentUser.walletAddress;
+    }
+    
+    // 5. Обычный ethereum (MetaMask)
+    if (window.ethereum && window.ethereum.selectedAddress) {
+        return window.ethereum.selectedAddress;
+    }
+    
+    console.log('⚠️ No wallet address found');
+    return null;
+})();
     
     let cardUserId;
     let cardOwnerLevel = userLevel;
@@ -5083,6 +5114,7 @@ console.log(`
 </script>
 </body>
 </html>
+
 
 
 
