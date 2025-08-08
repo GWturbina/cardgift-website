@@ -3503,7 +3503,7 @@ async function createCard() {
             // Содержимое карты
             greetingText: greetingText,
             userName: document.getElementById('userName')?.value || '',
-            style: currentStyle || 'classic',
+            style: selectedStyle || currentStyle || 'classic',
             
             // Медиа контент
             backgroundImage: document.getElementById('backgroundImage')?.src || null,
@@ -5220,6 +5220,7 @@ function clearForm() {
 </script>
 </body>
 </html>
+
 
 
 
