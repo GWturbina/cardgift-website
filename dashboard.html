@@ -5181,14 +5181,17 @@ async function loadUserArchive() {
         console.log('archiveCards exists:', !!document.getElementById('archiveCards'));
         console.log('cardsGrid exists:', !!document.getElementById('cardsGrid'));
         
-        // Добавляем идентификатор пользователя в запрос
+        // ✅ ДОБАВЛЯЕМ УРОВЕНЬ ПОЛЬЗОВАТЕЛЯ В ЗАПРОС
         const userId = currentUser?.userId || 'guest';
         const walletAddress = currentUser?.walletAddress || '';
+        const userLevel = currentUser?.level || 0;
+        
         console.log('🆔 Using user ID for archive:', userId);
         console.log('💼 Using wallet address:', walletAddress);
+        console.log('👑 Using user level:', userLevel);
         
-        // Пробуем разные варианты URL
-        const url = `/api/user-cards?userId=${userId}&walletAddress=${walletAddress}`;
+        // ✅ ПЕРЕДАЕМ УРОВЕНЬ В API ЗАПРОС
+        const url = `/api/user-cards?userId=${userId}&walletAddress=${walletAddress}&level=${userLevel}`;
         console.log('🔗 Requesting cards from:', url);
         
         const response = await fetch(url);
@@ -5231,7 +5234,9 @@ async function loadUserArchive() {
             console.log(`Card ${index + 1}:`, {
                 id: card.cardId || card.id,
                 title: card.title,
-                preview: card.preview || card.previewUrl
+                preview: card.preview || card.previewUrl,
+                userId: card.userId,
+                actualCreator: card.actualCreator
             });
         });
         
@@ -7746,3 +7751,4 @@ async function shareCard(cardId, shareUrl) {
  </script>
 </body>
 </html>
+
