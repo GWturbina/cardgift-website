@@ -1,36 +1,31 @@
 // js/config.js - Настройки смарт-контракта
+
 const CONTRACT_CONFIG = {
-    // Ваш задеплоенный контракт
-    CONTRACT_ADDRESS: "0xBb8A0c28A91f8D6B6c4175c0D497164dFC846618",
-    
-    // opBNB сеть (приоритет)
+    CONTRACT_ADDRESS: process.env.CONTRACT_ADDRESS || "0xBb8A0c28A91f8D6B6c4175c0D497164dFC846618",
     CHAIN_ID: 204,
     CHAIN_NAME: "opBNB Mainnet", 
     RPC_URL: "https://opbnb-mainnet-rpc.bnbchain.org",
     BLOCK_EXPLORER: "https://mainnet.opbnbscan.com",
     CURRENCY_SYMBOL: "BNB",
     CURRENCY_DECIMALS: 18,
-    
-    // Цены активации (из контракта)
+
     PRICES: {
-    ACTIVATION: "2500000000000000",     // Позиция 1: 0.0025 BNB (Кандидат)
-    MINI_ADMIN: "50000000000000000",    // Позиция 2: 0.05 BNB (Мини Админ)
-    ADMIN: "150000000000000000",        // Позиция 3: 0.15 BNB (Админ)
-    SUPER_ADMIN: "250000000000000000"   // Позиция 4: 0.25 BNB (Супер Админ)
-},
-    
-    // Лимиты по уровням
+        ACTIVATION: "2500000000000000",
+        MINI_ADMIN: "50000000000000000",
+        ADMIN: "150000000000000000",
+        SUPER_ADMIN: "250000000000000000"
+    },
+
     STORAGE_LIMITS: {
-    FREE: 5,           // Гости: 5 открыток
-    ACTIVATED: 20,     // Кандидат: 20 открыток
-    MINI_ADMIN: 50,    // Мини Админ: 50 открыток
-    ADMIN: 100,        // Админ: 100 открыток
-    SUPER_ADMIN: 200,  // Супер Админ: 200 открыток
-    MANAGER: 500,      // Соавторы: 500 открыток
-    AUTHOR: -1         // Автор: безлимит
-},
-    
-    // Приоритет кошельков (SafePal первый)
+        FREE: 5,
+        ACTIVATED: 20,
+        MINI_ADMIN: 50,
+        ADMIN: 100,
+        SUPER_ADMIN: 200,
+        MANAGER: 500,
+        AUTHOR: -1
+    },
+
     WALLET_PRIORITY: ['SafePal', 'Trust Wallet', 'MetaMask'],
     
     // ABI контракта (ваш полный ABI)
@@ -955,5 +950,34 @@ const CONTRACT_CONFIG = {
 ]
 };
 
-// Глобальная доступность
-window.CONTRACT_CONFIG = CONTRACT_CONFIG;
+// Экспорт для Node.js и браузера
+if (typeof window !== 'undefined') {
+    window.CONTRACT_CONFIG = CONTRACT_CONFIG;
+}
+module.exports = CONTRACT_CONFIG;
+
+// Универсальная система доменов  
+const DOMAIN_CONFIG = {
+    BASE_URL: typeof window !== 'undefined' ? window.location.origin : 'https://cardgift-website.vercel.app',
+    API: {
+        SAVE_CARD: '/api/save-card',
+        USER_CARDS: '/api/user-cards', 
+        OG_IMAGE: '/api/og-image',
+        CARD_VIEW: '/api/card'
+    },
+    PAGES: {
+        HOME: '/index.html',
+        GENERATOR: '/generator.html',
+        DASHBOARD: '/dashboard.html',
+        VIEWER: '/card-viewer.html',
+        PREVIEW: '/preview.html'
+    }
+};
+
+if (typeof window !== 'undefined') {
+    window.DOMAIN_CONFIG = DOMAIN_CONFIG;
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { CONTRACT_CONFIG, DOMAIN_CONFIG };
+}
