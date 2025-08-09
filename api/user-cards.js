@@ -1,14 +1,17 @@
+const { DOMAIN_CONFIG } = require('../js/config.js');
+const { getCard, formatCard } = require('../js/cardService.js');
+
+// Глобальное хранилище карт
 const cards = global.cards || (global.cards = new Map());
 
-export default function handler(req, res) {
-    // CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
+module.exports = function handler(req, res) {
+    // CORS настройки
+    res.setHeader('Access-Control-Allow-Origin', DOMAIN_CONFIG.BASE_URL);
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     
     if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
+        return res.status(200).end();
     }
 
     try {
@@ -105,32 +108,9 @@ export default function handler(req, res) {
             cardsInSystem: 0
         });
     }
-}
+};
 
-function formatCard(id, data) {
-    const greeting = data.greetingText?.split('\n')[0] || 'Открытка';
-    const title = greeting.length > 50 ? greeting.substring(0, 50) + '...' : greeting;
-    
-    return {
-        cardId: id,
-        id: id, // Дублируем для совместимости
-        title: title,
-        preview: `https://cardgift.bnb/api/og-image?id=${id}`,
-        previewUrl: `https://cardgift.bnb/api/og-image?id=${id}`,
-        shareUrl: `https://cardgift.bnb/api/save-card?id=${id}`,
-        style: data.style || 'classic',
-        hasMedia: !!(data.backgroundImage || data.videoUrl),
-        views: data.views || 0,
-        clicks: data.clicks || 0,
-        createdAt: data.createdAt || Date.now(),
-        greetingText: data.greetingText || '',
-        userId: data.userId,
-        actualCreator: data.actualCreator,
-        creatorLevel: data.creatorLevel || 0,
-        walletAddress: data.walletAddress
-    };
-}
-
+// Вспомогательные функции
 function isInTeam(creatorId, managerId) {
     // Логика проверки команды - упрощенная версия
     // В реальности здесь будет проверка реферальной структуры
