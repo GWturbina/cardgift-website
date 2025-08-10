@@ -4672,124 +4672,408 @@ const translations = {
         }
     }
 
-    async function connectSafePal() {
-        try {
-            console.log('🛡️ Attempting SafePal connection...');
+// ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ connectSafePal - ПОДДЕРЖКА МОБИЛЬНЫХ
+async function connectSafePal() {
+    try {
+        console.log('🛡️ Attempting SafePal connection...');
+        
+        // ✅ ОПРЕДЕЛЯЕМ ПЛАТФОРМУ
+        const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        
+        console.log('📱 Platform detected:', { isMobile, isIOS, isAndroid });
+        
+        if (isMobile) {
+            // ✅ МОБИЛЬНАЯ ЛОГИКА
+            console.log('📱 Mobile detected - using app deep links');
             
-            let provider = null;
+            showNotification('Opening SafePal app...', 'info');
             
-            // Проверяем разные варианты SafePal
-            if (window.safepal && window.safepal.ethereum) {
-                provider = window.safepal.ethereum;
-                console.log('✅ Found window.safepal.ethereum');
-            } else if (window.safePal && window.safePal.ethereum) {
-                provider = window.safePal.ethereum;
-                console.log('✅ Found window.safePal.ethereum');
-            } else if (window.ethereum && window.ethereum.isSafePal) {
-                provider = window.ethereum;
-                console.log('✅ Found SafePal via window.ethereum');
-            } else if (window.ethereum) {
-                provider = window.ethereum;
-                console.log('⚠️ Using fallback ethereum provider');
-            }
+            // Создаем deep link для SafePal
+            const currentUrl = encodeURIComponent(window.location.href);
+            const safePalDeepLink = isIOS 
+                ? `safepalwallet://wc?uri=${currentUrl}`
+                : `safepalwallet://dapp/${window.location.host}`;
             
-            if (!provider) {
-                showNotification('SafePal wallet not detected. Please refresh the page and try again.', 'error');
-                return;
-            }
+            console.log('🔗 Deep link:', safePalDeepLink);
             
-            showNotification('Connecting to SafePal...', 'info');
+            // Пытаемся открыть приложение
+            window.location.href = safePalDeepLink;
             
-            const accounts = await provider.request({ method: 'eth_requestAccounts' });
-            userWalletAddress = accounts[0];
-            web3 = new Web3(provider);
+            // Если через 3 секунды приложение не открылось - предлагаем установить
+            const installTimer = setTimeout(() => {
+                if (confirm('SafePal app not found.\n\nDo you want to install SafePal Wallet?')) {
+                    const storeUrl = isIOS 
+                        ? 'https://apps.apple.com/app/safepal-wallet/id1548297139'
+                        : 'https://play.google.com/store/apps/details?id=io.safepal.wallet';
+                    window.open(storeUrl, '_blank');
+                }
+            }, 3000);
             
-            await checkUserAccess();
-            updateUserInterface();
+            // Если пользователь вернулся на страницу - отменяем таймер
+            window.addEventListener('focus', () => {
+                clearTimeout(installTimer);
+                // Пытаемся подключиться через обычный способ
+                setTimeout(connectViaProvider, 1000);
+            }, { once: true });
             
-            showNotification('SafePal connected successfully!', 'success');
-            console.log('✅ SafePal connected:', userWalletAddress);
-            
-        } catch (error) {
-            console.error('❌ SafePal connection error:', error);
-            showNotification('Wallet connection failed: ' + error.message, 'error');
+            return;
         }
+        
+        // ✅ ДЕСКТОПНАЯ ЛОГИКА
+        await connectViaProvider();
+        
+    } catch (error) {
+        console.error('❌ SafePal connection error:', error);
+        showNotification('SafePal connection failed: ' + error.message, 'error');
     }
+}
 
-    async function connectMetaMask() {
-        try {
-            if (!window.ethereum) {
-                showNotification('MetaMask not found. Please install MetaMask extension.', 'error');
-                return;
-            }
-
-            showNotification('Connecting to MetaMask...', 'info');
+// ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ connectMetaMask - ПОДДЕРЖКА МОБИЛЬНЫХ
+async function connectMetaMask() {
+    try {
+        console.log('🦊 Attempting MetaMask connection...');
+        
+        const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        
+        if (isMobile) {
+            console.log('📱 Mobile detected - using MetaMask deep link');
             
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            userWalletAddress = accounts[0];
-            web3 = new Web3(window.ethereum);
+            showNotification('Opening MetaMask app...', 'info');
             
-            await checkUserAccess();
-            updateUserInterface();
+            // MetaMask mobile deep link
+            const deepLink = `metamask://dapp/${window.location.host}${window.location.pathname}`;
+            console.log('🔗 MetaMask deep link:', deepLink);
             
-            showNotification('MetaMask connected successfully!', 'success');
-            console.log('✅ MetaMask connected:', userWalletAddress);
+            window.location.href = deepLink;
             
-        } catch (error) {
-            console.error('❌ MetaMask connection error:', error);
-            showNotification('MetaMask connection failed: ' + error.message, 'error');
+            // Если приложение не открылось - предлагаем установить
+            const installTimer = setTimeout(() => {
+                if (confirm('MetaMask app not found.\n\nInstall MetaMask Mobile?')) {
+                    const storeUrl = isIOS 
+                        ? 'https://apps.apple.com/app/metamask/id1438144202'
+                        : 'https://play.google.com/store/apps/details?id=io.metamask';
+                    window.open(storeUrl, '_blank');
+                }
+            }, 3000);
+            
+            // Если пользователь вернулся - пытаемся подключиться
+            window.addEventListener('focus', () => {
+                clearTimeout(installTimer);
+                setTimeout(connectViaProvider, 1000);
+            }, { once: true });
+            
+            return;
         }
+        
+        // Десктопная логика
+        if (!window.ethereum) {
+            throw new Error('MetaMask not found. Please install MetaMask extension.');
+        }
+        
+        await connectViaProvider();
+        
+    } catch (error) {
+        console.error('❌ MetaMask connection error:', error);
+        showNotification('MetaMask connection failed: ' + error.message, 'error');
     }
+}
 
-    async function connectWalletConnect() {
-        try {
-            showNotification('Connecting via WalletConnect...', 'info');
+// ✅ НОВАЯ ФУНКЦИЯ connectWalletConnect - УНИВЕРСАЛЬНАЯ ДЛЯ МОБИЛЬНЫХ
+async function connectWalletConnect() {
+    try {
+        console.log('🔗 Attempting universal wallet connection...');
+        
+        const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+            // Показываем выбор мобильных кошельков
+            showMobileWalletOptions();
+            return;
+        }
+        
+        // На десктопе пытаемся подключиться к любому доступному кошельку
+        if (window.ethereum) {
+            await connectViaProvider();
+        } else {
+            showNotification('Please install a Web3 wallet (SafePal, MetaMask, etc.)', 'error');
+        }
+        
+    } catch (error) {
+        console.error('❌ WalletConnect error:', error);
+        showNotification('Wallet connection failed: ' + error.message, 'error');
+    }
+}
+
+// ✅ ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ПОДКЛЮЧЕНИЯ ЧЕРЕЗ ПРОВАЙДЕР
+async function connectViaProvider() {
+    let provider = null;
+    
+    // Ищем SafePal провайдер
+    if (window.safepal && window.safepal.ethereum) {
+        provider = window.safepal.ethereum;
+        console.log('✅ Found window.safepal.ethereum');
+    } else if (window.safePal && window.safePal.ethereum) {
+        provider = window.safePal.ethereum;
+        console.log('✅ Found window.safePal.ethereum');
+    } else if (window.ethereum && window.ethereum.isSafePal) {
+        provider = window.ethereum;
+        console.log('✅ Found SafePal via window.ethereum');
+    } else if (window.ethereum) {
+        // Используем обычный ethereum провайдер
+        provider = window.ethereum;
+        console.log('⚠️ Using generic ethereum provider');
+    } else {
+        throw new Error('No Web3 provider found. Please install SafePal or MetaMask extension.');
+    }
+    
+    showNotification('Connecting to wallet...', 'info');
+    
+    // Запрашиваем подключение
+    const accounts = await provider.request({ method: 'eth_requestAccounts' });
+    userWalletAddress = accounts[0];
+    web3 = new Web3(provider);
+    
+    // Проверяем и переключаем на opBNB если нужно
+    await ensureOpBNBNetwork(provider);
+    
+    await checkUserAccess();
+    updateUserInterface();
+    
+    const walletType = provider.isSafePal ? 'SafePal' : 
+                      provider.isMetaMask ? 'MetaMask' : 'Web3 Wallet';
+    
+    showNotification(`${walletType} connected successfully!`, 'success');
+    console.log('✅ Wallet connected:', userWalletAddress);
+}
+
+// ✅ НОВАЯ ФУНКЦИЯ - ПОКАЗАТЬ ОПЦИИ МОБИЛЬНЫХ КОШЕЛЬКОВ
+function showMobileWalletOptions() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+        background: rgba(0,0,0,0.95); z-index: 5000; display: flex; 
+        align-items: center; justify-content: center; padding: 20px;
+        backdrop-filter: blur(10px);
+    `;
+    
+    modal.innerHTML = `
+        <div style="background: linear-gradient(135deg, #1a1a1a, #0a0a0a); 
+                    border: 2px solid #FFD700; border-radius: 20px; 
+                    padding: 30px; text-align: center; max-width: 400px; width: 100%;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
             
-            // Проверяем наличие Web3
-            if (typeof window.ethereum !== 'undefined') {
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                userWalletAddress = accounts[0];
-                web3 = new Web3(window.ethereum);
+            <h2 style="color: #FFD700; margin-bottom: 10px; font-size: 24px;">
+                📱 Connect Mobile Wallet
+            </h2>
+            <p style="color: #CCC; margin-bottom: 25px; font-size: 14px;">
+                Choose your preferred wallet app
+            </p>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <button onclick="openSafePalApp()" 
+                        style="background: linear-gradient(45deg, #4CAF50, #45a049); color: white; 
+                               border: none; border-radius: 12px; padding: 15px 20px; 
+                               cursor: pointer; font-weight: bold; font-size: 16px;
+                               transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    🛡️ SafePal Wallet
+                </button>
                 
-                await checkUserAccess();
-                updateUserInterface();
+                <button onclick="openMetaMaskApp()" 
+                        style="background: linear-gradient(45deg, #FF6B35, #F57C00); color: white; 
+                               border: none; border-radius: 12px; padding: 15px 20px; 
+                               cursor: pointer; font-weight: bold; font-size: 16px;
+                               transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    🦊 MetaMask
+                </button>
                 
-                showNotification('Wallet connected successfully!', 'success');
-                console.log('✅ Wallet connected:', userWalletAddress);
-            } else {
-                showNotification('No Web3 wallet found. Please install MetaMask or SafePal.', 'error');
-            }
+                <button onclick="openTrustWalletApp()" 
+                        style="background: linear-gradient(45deg, #2196F3, #1976D2); color: white; 
+                               border: none; border-radius: 12px; padding: 15px 20px; 
+                               cursor: pointer; font-weight: bold; font-size: 16px;
+                               transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    💙 Trust Wallet
+                </button>
+                
+                <button onclick="openBinanceWalletApp()" 
+                        style="background: linear-gradient(45deg, #F3BA2F, #E0A800); color: #000; 
+                               border: none; border-radius: 12px; padding: 15px 20px; 
+                               cursor: pointer; font-weight: bold; font-size: 16px;
+                               transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    🟡 Binance Wallet
+                </button>
+            </div>
             
-        } catch (error) {
-            console.error('❌ WalletConnect error:', error);
-            showNotification('Wallet connection failed: ' + error.message, 'error');
-        }
-    }
+            <p style="color: #888; font-size: 12px; margin: 20px 0 15px 0; line-height: 1.4;">
+                After tapping a wallet, you'll be redirected to the app. Return to this page to complete connection.
+            </p>
+            
+            <button onclick="closeMobileModal()" 
+                    style="background: rgba(255,68,68,0.2); color: #FF4444; 
+                           border: 2px solid #FF4444; border-radius: 8px; 
+                           padding: 10px 20px; cursor: pointer; font-weight: bold;">
+                ✕ Close
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    window.mobileWalletModal = modal;
+}
 
-    // ✅ ФУНКЦИЯ ОТКЛЮЧЕНИЯ КОШЕЛЬКА
-    function disconnectWallet() {
-        if (confirm('Disconnect wallet? You will need to reconnect.')) {
-            // Очищаем все данные
-            userWalletAddress = null;
-            web3 = null;
-            currentUser = {
-                userId: 'NOT_CONNECTED',
-                level: 0,
-                isActive: false,
-                walletAddress: null
-            };
-            
-            // Очищаем сохраненное состояние
-            walletState.clear();
-            
-            // Обновляем интерфейс
-            updateUserInterface();
-            updateConnectionStatus();
-            
-            showNotification('Wallet disconnected successfully!', 'success');
-            console.log('🚪 Wallet disconnected');
+// ✅ ФУНКЦИИ ОТКРЫТИЯ МОБИЛЬНЫХ ПРИЛОЖЕНИЙ
+function openSafePalApp() {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const currentUrl = encodeURIComponent(window.location.href);
+    
+    const deepLink = isIOS 
+        ? `safepalwallet://wc?uri=${currentUrl}`
+        : `safepalwallet://dapp/${window.location.host}`;
+    
+    window.location.href = deepLink;
+    
+    setTimeout(() => {
+        if (confirm('SafePal app not installed?\n\nDownload SafePal Wallet?')) {
+            const storeUrl = isIOS 
+                ? 'https://apps.apple.com/app/safepal-wallet/id1548297139'
+                : 'https://play.google.com/store/apps/details?id=io.safepal.wallet';
+            window.open(storeUrl, '_blank');
         }
+    }, 2000);
+}
+
+function openMetaMaskApp() {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const deepLink = `metamask://dapp/${window.location.host}${window.location.pathname}`;
+    
+    window.location.href = deepLink;
+    
+    setTimeout(() => {
+        if (confirm('MetaMask app not installed?\n\nDownload MetaMask?')) {
+            const storeUrl = isIOS 
+                ? 'https://apps.apple.com/app/metamask/id1438144202'
+                : 'https://play.google.com/store/apps/details?id=io.metamask';
+            window.open(storeUrl, '_blank');
+        }
+    }, 2000);
+}
+
+function openTrustWalletApp() {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const currentUrl = encodeURIComponent(window.location.href);
+    const deepLink = `trust://wc?uri=${currentUrl}`;
+    
+    window.location.href = deepLink;
+    
+    setTimeout(() => {
+        if (confirm('Trust Wallet app not installed?\n\nDownload Trust Wallet?')) {
+            const storeUrl = isIOS 
+                ? 'https://apps.apple.com/app/trust-crypto-bitcoin-wallet/id1288339409'
+                : 'https://play.google.com/store/apps/details?id=com.wallet.crypto.trustapp';
+            window.open(storeUrl, '_blank');
+        }
+    }, 2000);
+}
+
+function openBinanceWalletApp() {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const deepLink = `bnc://app.binance.com/cedefi/wallet-connect`;
+    
+    window.location.href = deepLink;
+    
+    setTimeout(() => {
+        if (confirm('Binance app not installed?\n\nDownload Binance?')) {
+            const storeUrl = isIOS 
+                ? 'https://apps.apple.com/app/binance-buy-bitcoin-crypto/id1436799971'
+                : 'https://play.google.com/store/apps/details?id=com.binance.dev';
+            window.open(storeUrl, '_blank');
+        }
+    }, 2000);
+}
+
+function closeMobileModal() {
+    if (window.mobileWalletModal) {
+        document.body.removeChild(window.mobileWalletModal);
+        window.mobileWalletModal = null;
     }
+}
+
+// ✅ ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ НА opBNB СЕТЬ
+async function ensureOpBNBNetwork(provider) {
+    try {
+        const chainId = await provider.request({ method: 'eth_chainId' });
+        const currentChainId = parseInt(chainId, 16);
+        
+        if (currentChainId !== 204) {
+            console.log('🔄 Switching to opBNB network...');
+            
+            try {
+                await provider.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0xCC' }] // 204 в hex
+                });
+                
+                showNotification('✅ Switched to opBNB network!', 'success');
+                
+            } catch (switchError) {
+                if (switchError.code === 4902) {
+                    // Сеть не добавлена, добавляем
+                    await provider.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: '0xCC',
+                            chainName: 'opBNB Mainnet',
+                            nativeCurrency: {
+                                name: 'BNB',
+                                symbol: 'BNB',
+                                decimals: 18
+                            },
+                            rpcUrls: ['https://opbnb-mainnet-rpc.bnbchain.org'],
+                            blockExplorerUrls: ['https://opbnbscan.com']
+                        }]
+                    });
+                    
+                    showNotification('✅ opBNB network added successfully!', 'success');
+                } else {
+                    throw switchError;
+                }
+            }
+        } else {
+            console.log('✅ Already on opBNB network');
+        }
+        
+    } catch (error) {
+        console.warn('⚠️ Network switch failed:', error);
+        showNotification('Please switch to opBNB network manually', 'warning');
+    }
+}
+
+// ✅ ФУНКЦИЯ ОТКЛЮЧЕНИЯ КОШЕЛЬКА (НЕ ИЗМЕНЯЕМ)
+function disconnectWallet() {
+    if (confirm('Disconnect wallet? You will need to reconnect.')) {
+        // Очищаем все данные
+        userWalletAddress = null;
+        web3 = null;
+        currentUser = {
+            userId: 'NOT_CONNECTED',
+            level: 0,
+            isActive: false,
+            walletAddress: null
+        };
+        
+        // Очищаем сохраненное состояние
+        walletState.clear();
+        
+        // Обновляем интерфейс
+        updateUserInterface();
+        updateConnectionStatus();
+        
+        showNotification('Wallet disconnected successfully!', 'success');
+        console.log('🚪 Wallet disconnected');
+    }
+}
 
     // ✅ ПРОВЕРКА ДОСТУПА ПОЛЬЗОВАТЕЛЯ
     async function checkUserAccess() {
