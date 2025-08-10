@@ -362,25 +362,47 @@ async connectWallet() {
             };
         }
 
-        // ✅ ПРОВЕРЯЕМ СОАВТОРОВ
-        const coauthors = [
-            '0xAB17aDbe29c4E1d695C239206682B02ebdB3f707',
-            '0xB5986B808dad481ad86D63DF152cC0ad7B473e48',
-            '0xa3496caCC8523421Dd151f1d92A456c2daFa28c2',
-            '0x8af1BC6B4a5aACED37889CC06bed4569A6B64044',
-            '0x0AB97e3934b1Afc9F1F6447CCF676E4f1D8B9639',
-            '0x03284A899147f5a07F82C622F34DF92198671635',
-            '0xb0E256cA055937a8FD9CA1F5e3D8A6bD44146d50'
-        ];
+        // ✅ ИСПРАВЛЕННЫЕ АДРЕСА ОСНОВАТЕЛЕЙ СОГЛАСНО СМАРТ-КОНТРАКТУ
+const CENTRAL_FOUNDER = '0x0099188030174e381e7a7ee36d2783ecc31b6728'; // АВТОР
+
+const ALL_FOUNDERS = [
+    '0x0099188030174e381e7a7ee36d2783ecc31b6728', // АВТОР (уровень 6)
+    '0xAB17aDbe29c4E1d695C239206682B02ebdB3f707', // СОАВТОР 1 (уровень 5)
+    '0xB5986B808dad481ad86D63DF152cC0ad7B473e48', // СОАВТОР 2 (уровень 5)
+    '0xa3496caCC8523421Dd151f1d92A456c2daFa28c2', // СОАВТОР 3 (уровень 5)
+    '0x8af1BC6B4a5aACED37889CC06bed4569A6B64044', // СОАВТОР 4 (уровень 5)
+    '0x0AB97e3934b1Afc9F1F6447CCF676E4f1D8B9639', // СОАВТОР 5 (уровень 5)
+    '0x03284A899147f5a07F82C622F34DF92198671635', // СОАВТОР 6 (уровень 5)
+    '0xb0E256cA055937a8FD9CA1F5e3D8A6bD44146d50'  // СОАВТОР 7 (уровень 5)
+];
+
+        // ✅ ПРОВЕРЯЕМ ЦЕНТРАЛЬНОГО АВТОРА
+        if (userId.toLowerCase() === CENTRAL_FOUNDER.toLowerCase()) {
+            console.log('👑 Central founder detected - full access granted');
+            return {
+                userId: "AUTHOR",
+                wallet: userId,
+                level: 6,
+                referrerId: "",
+                registrationTime: Date.now(),
+                isActive: true,
+                cardCount: 0,
+                totalEarned: 0
+            };
+        }
         
-        const isCoauthor = coauthors.some(addr => 
+        // ✅ ПРОВЕРЯЕМ ВСЕХ СОАВТОРОВ
+        const isCoauthor = ALL_FOUNDERS.slice(1).some(addr => 
             addr.toLowerCase() === userId.toLowerCase()
         );
         
         if (isCoauthor) {
-            console.log('🤝 Co-author detected - manager access granted');
+            const founderIndex = ALL_FOUNDERS.findIndex(addr => 
+                addr.toLowerCase() === userId.toLowerCase()
+            );
+            console.log(`🤝 Co-author ${founderIndex} detected - manager access granted`);
             return {
-                userId: "COAUTHOR",
+                userId: `COAUTHOR_${founderIndex}`,
                 wallet: userId,
                 level: 5,
                 referrerId: "",
@@ -390,7 +412,7 @@ async connectWallet() {
                 totalEarned: 0
             };
         }
-
+        
         // ✅ ОБЫЧНАЯ ПРОВЕРКА ПОЛЬЗОВАТЕЛЕЙ
         const result = await this.contract.methods.users(userId).call();
         
