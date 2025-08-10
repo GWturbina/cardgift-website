@@ -135,72 +135,132 @@ class CardGiftAPI {
         };
     }
     
-    // ✅ НОВОЕ: Проверка лимитов пользователя
-    async checkUserLimit(userId) {
-    console.log('🔍 Начинаем проверку лимитов для userId:', userId);
+    // ✅ ИСПРАВЛЕННЫЕ АДРЕСА ОСНОВАТЕЛЕЙ СОГЛАСНО СМАРТ-КОНТРАКТУ
+const CENTRAL_FOUNDER = '0x0099188030174e381e7a7ee36d2783ecc31b6728'; // АВТОР
+
+const ALL_FOUNDERS = [
+    '0x0099188030174e381e7a7ee36d2783ecc31b6728', // АВТОР (уровень 6)
+    '0xa3496caCC8523421Dd151f1d92A456c2daFa28c2', // СОАВТОР 1 (уровень 5)
+    '0x0AB97e3934b1Afc9F1F6447CCF676E4f1D8B9639', // СОАВТОР 2 (уровень 5)
+    '0xb0E256cA055937a8FD9CA1F5e3D8A6bD44146d50', // СОАВТОР 3 (уровень 5)
+    '0xAB17aDbe29c4E1d695C239206682B02ebdB3f707', // СОАВТОР 4 (уровень 5)
+    '0xB5986B808dad481ad86D63DF152cC0ad7B473e48', // СОАВТОР 5 (уровень 5)
+    '0x8af1BC6B4a5aACED37889CC06bed4569A6B64044', // СОАВТОР 6 (уровень 5)
+    '0x03284A899147f5a07F82C622F34DF92198671635', // СОАВТОР 7 (уровень 5)
+];
+
+// ✅ ДОПОЛНИТЕЛЬНЫЕ АДМИНЫ (если нужны для серверной логики)
+const ADDITIONAL_ADMINS = [
+    '0x9446dc62A3FA7f187FF1b9b0b64dDD8D9C16453b' // Дополнительный админ
+];
+
+// ✅ ИСПРАВЛЕННАЯ СЕРВЕРНАЯ ФУНКЦИЯ: Проверка лимитов пользователя
+async checkUserLimit(userId) {
+    console.log('🔍 [API] Начинаем проверку лимитов для userId:', userId);
     
-    // СНАЧАЛА ПРОВЕРЯЕМ КОШЕЛЕК АДМИНА
+    // Получаем wallet address из заголовков запроса или userId
     let currentWallet = null;
     
     try {
-        if (walletManager && walletManager.currentAccount) {
-            currentWallet = walletManager.currentAccount.toLowerCase();
-        } else if (window.ethereum && window.ethereum.selectedAddress) {
-            currentWallet = window.ethereum.selectedAddress.toLowerCase();
+        // В API мы получаем wallet из headers или userId
+        if (this.req && this.req.headers['x-wallet-address']) {
+            currentWallet = this.req.headers['x-wallet-address'].toLowerCase();
+        } else if (userId && userId.startsWith('0x')) {
+            currentWallet = userId.toLowerCase();
         }
         
-        console.log('🔍 Текущий кошелек:', currentWallet);
+        console.log('🔍 [API] Проверяем кошелек:', currentWallet);
         
-        // ТВОЙ ГЛАВНЫЙ КОШЕЛЕК - БЕЗЛИМИТНЫЙ ДОСТУП
-        if (currentWallet === '0x7a58c0be72be218b41c608b7fe7c5bb630736c71') {
-            console.log('🔥 ГЛАВНЫЙ АДМИН ОБНАРУЖЕН - безлимитный доступ!');
+        if (!currentWallet) {
+            console.log('⚠️ [API] Кошелек не определен, даем базовый лимит');
             return {
                 canCreate: true,
                 currentCount: 0,
-                limit: 999999,
-                userLevel: 'SUPER_ADMIN',
-                remaining: 999999
+                limit: 5,
+                userLevel: 'GUEST',
+                remaining: 5
             };
         }
         
-        // Центральный основатель тоже безлимитный
-        if (currentWallet === '0x0099188030174e381e7a7ee36d2783ecc31b6728') {
-            console.log('🔥 ЦЕНТРАЛЬНЫЙ ОСНОВАТЕЛЬ - безлимитный доступ!');
+        // ✅ ПРОВЕРКА ЦЕНТРАЛЬНОГО ОСНОВАТЕЛЯ (АВТОРА)
+        if (currentWallet === CENTRAL_FOUNDER.toLowerCase()) {
+            console.log('👑 [API] ЦЕНТРАЛЬНЫЙ АВТОР - безлимитный доступ!');
             return {
                 canCreate: true,
                 currentCount: 0,
-                limit: 999999,
-                userLevel: 'SUPER_ADMIN',
-                remaining: 999999
+                limit: -1,
+                userLevel: 'AUTHOR',
+                remaining: -1
             };
         }
+        
+        // ✅ ПРОВЕРКА ВСЕХ СОАВТОРОВ
+        const isCoFounder = ALL_FOUNDERS.slice(1).some(addr => 
+            addr.toLowerCase() === currentWallet
+        );
+        
+        if (isCoFounder) {
+            const founderIndex = ALL_FOUNDERS.findIndex(addr => 
+                addr.toLowerCase() === currentWallet
+            );
+            console.log(`🤝 [API] СОАВТОР ${founderIndex} - расширенный доступ!`);
+            return {
+                canCreate: true,
+                currentCount: 0,
+                limit: 1000,
+                userLevel: 'COAUTHOR',
+                remaining: 1000
+            };
+        }
+        
+        // ✅ ПРОВЕРКА ДОПОЛНИТЕЛЬНЫХ АДМИНОВ
+        const isAdditionalAdmin = ADDITIONAL_ADMINS.some(addr => 
+            addr.toLowerCase() === currentWallet
+        );
+        
+        if (isAdditionalAdmin) {
+            console.log('🔥 [API] ДОПОЛНИТЕЛЬНЫЙ АДМИН - расширенный доступ!');
+            return {
+                canCreate: true,
+                currentCount: 0,
+                limit: 500,
+                userLevel: 'SUPER_ADMIN',
+                remaining: 500
+            };
+        }
+        
+        // ✅ Проверяем активированных пользователей в базе данных
+        // (здесь должна быть логика проверки БД для активированных аккаунтов)
         
     } catch (walletError) {
-        console.warn('⚠️ Ошибка получения кошелька:', walletError);
+        console.warn('⚠️ [API] Ошибка получения кошелька:', walletError);
     }
     
-    // Для всех остальных - стандартная проверка
+    // ✅ ДЛЯ ВСЕХ ОСТАЛЬНЫХ - СТАНДАРТНАЯ ПРОВЕРКА
     try {
-        // Даем базовый лимит для обычных пользователей
+        // Базовый лимит для обычных пользователей
+        console.log('📝 [API] Даем базовый лимит для пользователя');
         return {
             canCreate: true,
             currentCount: 0,
             limit: 5,
-            userLevel: 'FREE',
+            userLevel: 'GUEST',
             remaining: 5
         };
         
     } catch (error) {
-        console.error('❌ Общая ошибка проверки лимитов:', error);
+        console.error('❌ [API] Общая ошибка проверки лимитов:', error);
         
-        // ПОСЛЕДНЯЯ ПРОВЕРКА ДЛЯ ТВОЕГО КОШЕЛЬКА
-        if (currentWallet === '0x7a58c0be72be218b41c608b7fe7c5bb630736c71') {
+        // ✅ ПОСЛЕДНЯЯ ПРОВЕРКА ДЛЯ ОСНОВАТЕЛЕЙ
+        if (currentWallet && ALL_FOUNDERS.some(addr => addr.toLowerCase() === currentWallet)) {
+            console.log('🔄 [API] Fallback для основателя');
+            const isAuthor = currentWallet === CENTRAL_FOUNDER.toLowerCase();
             return {
                 canCreate: true,
                 currentCount: 0,
-                limit: 999999,
-                userLevel: 'SUPER_ADMIN',
-                remaining: 999999
+                limit: isAuthor ? -1 : 1000,
+                userLevel: isAuthor ? 'AUTHOR' : 'COAUTHOR',
+                remaining: isAuthor ? -1 : 1000
             };
         }
         
@@ -208,75 +268,75 @@ class CardGiftAPI {
             canCreate: false,
             currentCount: 0,
             limit: 5,
-            userLevel: 'FREE',
+            userLevel: 'GUEST',
             remaining: 0
         };
     }
 }
+
+// Rate limiting проверка
+checkRateLimit(action) {
+    const now = Date.now();
+    const minute = Math.floor(now / 60000);
+    const key = `${action}_${minute}`;
     
-    // Rate limiting проверка
-    checkRateLimit(action) {
-        const now = Date.now();
-        const minute = Math.floor(now / 60000);
-        const key = `${action}_${minute}`;
-        
-        const current = this.rateLimits.get(key) || 0;
-        if (current >= this.maxRequestsPerMinute) {
-            throw new Error(`Превышен лимит запросов для ${action}`);
-        }
-        
-        this.rateLimits.set(key, current + 1);
-        
-        // Очистка старых записей
-        for (const [limitKey, _] of this.rateLimits) {
-            const keyMinute = parseInt(limitKey.split('_').pop());
-            if (keyMinute < minute - 2) {
-                this.rateLimits.delete(limitKey);
-            }
-        }
+    const current = this.rateLimits.get(key) || 0;
+    if (current >= this.maxRequestsPerMinute) {
+        throw new Error(`Превышен лимит запросов для ${action}`);
     }
     
-    // Безопасное шифрование данных
-    async encryptData(data, password = null) {
-        try {
-            if (!this.sessionKey && !password) {
-                return this.legacyEncrypt(data);
-            }
-            
-            const textData = JSON.stringify(data);
-            const encodedData = new TextEncoder().encode(textData);
-            
-            const salt = window.crypto.getRandomValues(new Uint8Array(16));
-            const iv = window.crypto.getRandomValues(new Uint8Array(this.cryptoConfig.ivLength));
-            
-            let key = this.sessionKey;
-            
-            if (password) {
-                const passwordKey = await this.deriveKeyFromPassword(password, salt);
-                key = passwordKey;
-            }
-            
-            const encrypted = await window.crypto.subtle.encrypt(
-                {
-                    name: this.cryptoConfig.algorithm,
-                    iv: iv
-                },
-                key,
-                encodedData
-            );
-            
-            const result = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
-            result.set(salt, 0);
-            result.set(iv, salt.length);
-            result.set(new Uint8Array(encrypted), salt.length + iv.length);
-            
-            return this.arrayBufferToBase64(result);
-            
-        } catch (error) {
-            console.error('Ошибка шифрования:', error);
+    this.rateLimits.set(key, current + 1);
+    
+    // Очистка старых записей
+    for (const [limitKey, _] of this.rateLimits) {
+        const keyMinute = parseInt(limitKey.split('_').pop());
+        if (keyMinute < minute - 2) {
+            this.rateLimits.delete(limitKey);
+        }
+    }
+}
+
+// Безопасное шифрование данных
+async encryptData(data, password = null) {
+    try {
+        if (!this.sessionKey && !password) {
             return this.legacyEncrypt(data);
         }
+        
+        const textData = JSON.stringify(data);
+        const encodedData = new TextEncoder().encode(textData);
+        
+        const salt = window.crypto.getRandomValues(new Uint8Array(16));
+        const iv = window.crypto.getRandomValues(new Uint8Array(this.cryptoConfig.ivLength));
+        
+        let key = this.sessionKey;
+        
+        if (password) {
+            const passwordKey = await this.deriveKeyFromPassword(password, salt);
+            key = passwordKey;
+        }
+        
+        const encrypted = await window.crypto.subtle.encrypt(
+            {
+                name: this.cryptoConfig.algorithm,
+                iv: iv
+            },
+            key,
+            encodedData
+        );
+        
+        const result = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+        result.set(salt, 0);
+        result.set(iv, salt.length);
+        result.set(new Uint8Array(encrypted), salt.length + iv.length);
+        
+        return this.arrayBufferToBase64(result);
+        
+    } catch (error) {
+        console.error('Ошибка шифрования:', error);
+        return this.legacyEncrypt(data);
     }
+}
     
     // Безопасная расшифровка данных
     async decryptData(encryptedData, password = null) {
