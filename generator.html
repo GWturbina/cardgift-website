@@ -2088,8 +2088,14 @@ const ACTIVATION_PRICES = {
 
 // ✅ ИСПРАВЛЕННЫЕ АДРЕСА ОСНОВАТЕЛЕЙ
 const FOUNDERS_ADDRESSES = [
-   '0x0099188030174e381e7a7ee36d2783ecc31b6728', // АВТОР
-   '0x742B27A4E99C9c48Eb26aE88c04F1f52E1735b78'  // СОАВТОР
+    '0x0099188030174e381e7a7ee36d2783ecc31b6728', // АВТОР (уровень 6)
+    '0xa3496caCC8523421Dd151f1d92A456c2daFa28c2', // СОАВТОР 1 (уровень 5)
+    '0x0AB97e3934b1Afc9F1F6447CCF676E4f1D8B9639', // СОАВТОР 2 (уровень 5)
+    '0xb0E256cA055937a8FD9CA1F5e3D8A6bD44146d50', // СОАВТОР 3 (уровень 5)
+    '0xAB17aDbe29c4E1d695C239206682B02ebdB3f707', // СОАВТОР 4 (уровень 5)
+    '0xB5986B808dad481ad86D63DF152cC0ad7B473e48', // СОАВТОР 5 (уровень 5)
+    '0x8af1BC6B4a5aACED37889CC06bed4569A6B64044', // СОАВТОР 6 (уровень 5)
+    '0x03284A899147f5a07F82C622F34DF92198671635', // СОАВТОР 7 (уровень 5)
 ];
 
 // 🛡️ УЛУЧШЕННАЯ СИСТЕМА ФИЛЬТРАЦИИ КОНТЕНТА
@@ -3255,53 +3261,86 @@ async function connectWallet() {
  }
 }
 
+// ✅ ИСПРАВЛЕННЫЕ АДРЕСА ОСНОВАТЕЛЕЙ СОГЛАСНО СМАРТ-КОНТРАКТУ
+const CENTRAL_FOUNDER = '0x0099188030174e381e7a7ee36d2783ecc31b6728'; // АВТОР
+
+const FOUNDERS_ADDRESSES = [
+    '0x0099188030174e381e7a7ee36d2783ecc31b6728', // АВТОР (уровень 6)
+    '0xa3496caCC8523421Dd151f1d92A456c2daFa28c2', // СОАВТОР 1 (уровень 5)
+    '0x0AB97e3934b1Afc9F1F6447CCF676E4f1D8B9639', // СОАВТОР 2 (уровень 5)
+    '0xb0E256cA055937a8FD9CA1F5e3D8A6bD44146d50', // СОАВТОР 3 (уровень 5)
+    '0xAB17aDbe29c4E1d695C239206682B02ebdB3f707', // СОАВТОР 4 (уровень 5)
+    '0xB5986B808dad481ad86D63DF152cC0ad7B473e48', // СОАВТОР 5 (уровень 5)
+    '0x8af1BC6B4a5aACED37889CC06bed4569A6B64044', // СОАВТОР 6 (уровень 5)
+    '0x03284A899147f5a07F82C622F34DF92198671635', // СОАВТОР 7 (уровень 5)
+];
+
 // ✅ WEB3: Синхронизация пользователя с блокчейном
 async function syncUserWithBlockchain(walletAddress) {
-  try {
-      // ✅ ИСПРАВЛЕННАЯ ПРОВЕРКА ОСНОВАТЕЛЕЙ СОГЛАСНО ТЗ
-      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-      const userAddress = accounts[0];
-      
-      // Проверяем основателей (Автор и Соавтор)
-      const isFounder = FOUNDERS_ADDRESSES.some(addr => 
-          addr.toLowerCase() === userAddress.toLowerCase()
-      );
-      
-      if (isFounder) {
-          console.log('👑 Founder detected - full access granted');
-          
-          // Автор = уровень 6, Соавтор = уровень 5
-          currentUser.level = userAddress.toLowerCase() === FOUNDERS_ADDRESSES[0].toLowerCase() ? 6 : 5;
-          currentUser.isActive = true;
-          currentUser.userId = userAddress.toLowerCase() === FOUNDERS_ADDRESSES[0].toLowerCase() ? 'AUTHOR' : 'COAUTHOR';
-          
-          levelManager.updateUserInterface(currentUser);
-          console.log('✅ Founder sync completed');
-          return;
-      }
+   try {
+       const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+       const userAddress = accounts[0];
+       
+       // ✅ ПРАВИЛЬНАЯ ПРОВЕРКА ВСЕХ 8 ОСНОВАТЕЛЕЙ
+       const isFounder = FOUNDERS_ADDRESSES.some(addr => 
+           addr.toLowerCase() === userAddress.toLowerCase()
+       );
+       
+       if (isFounder) {
+           console.log('👑 Founder detected - full access granted');
+           
+           // ✅ АВТОР = уровень 6, ВСЕ СОАВТОРЫ = уровень 5
+           if (userAddress.toLowerCase() === CENTRAL_FOUNDER.toLowerCase()) {
+               currentUser.level = 6; // АВТОР
+               currentUser.userId = 'AUTHOR';
+               console.log('👑 АВТОР подключен');
+           } else {
+               currentUser.level = 5; // СОАВТОР
+               const founderIndex = FOUNDERS_ADDRESSES.findIndex(addr => 
+                   addr.toLowerCase() === userAddress.toLowerCase()
+               );
+               currentUser.userId = `COAUTHOR_${founderIndex}`;
+               console.log(`🤝 СОАВТОР ${founderIndex} подключен`);
+           }
+           
+           currentUser.isActive = true;
+           currentUser.walletAddress = userAddress;
+           
+           // Сохраняем в walletState
+           walletState.save({
+               address: userAddress,
+               userId: currentUser.userId,
+               level: currentUser.level,
+               isActive: currentUser.isActive
+           });
+           
+           levelManager.updateUserInterface(currentUser);
+           console.log('✅ Founder sync completed');
+           return;
+       }
 
-      if (!currentUser || !currentUser.userId) {
-          console.warn('⚠️ No current user to sync');
-          return;
-      }
-
-if (typeof walletManager !== 'undefined' && walletManager.getUser) {
-    const web3User = await walletManager.getUser(currentUser.userId);
-    
-    if (web3User && web3User.wallet) {
-        currentUser = { ...currentUser, ...web3User };
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        levelManager.updateUserInterface(currentUser);
-        checkArchiveAccess();
-        console.log('✅ User synced with blockchain');
-    } else {
-        console.log('ℹ️ User not found in blockchain');
-    }
-}
-
-} catch (error) {
-console.warn('⚠️ Could not sync user with blockchain:', error);
-}
+       if (!currentUser || !currentUser.userId) {
+           console.warn('⚠️ No current user to sync');
+           return;
+       }
+ 
+       if (typeof walletManager !== 'undefined' && walletManager.getUser) {
+           const web3User = await walletManager.getUser(currentUser.userId);
+           
+           if (web3User && web3User.wallet) {
+               currentUser = { ...currentUser, ...web3User };
+               localStorage.setItem('currentUser', JSON.stringify(currentUser));
+               levelManager.updateUserInterface(currentUser);
+               checkArchiveAccess();
+               console.log('✅ User synced with blockchain');
+           } else {
+               console.log('ℹ️ User not found in blockchain');
+           }
+       }
+       
+   } catch (error) {
+       console.warn('⚠️ Could not sync user with blockchain:', error);
+   }
 }
 
 // ✅ WEB3: Показать подключенный кошелек
@@ -5036,7 +5075,14 @@ console.log(`
 
 ✅ ОСНОВАТЕЛИ:
 👑 АВТОР: 0x0099188030174e381e7a7ee36d2783ecc31b6728
-🤝 СОАВТОР: 0x742B27A4E99C9c48Eb26aE88c04F1f52E1735b78
+🤝 СОАВТОР: 0xa3496caCC8523421Dd151f1d92A456c2daFa28c2
+🤝 СОАВТОР: 0x03284A899147f5a07F82C622F34DF92198671635
+🤝 СОАВТОР: 0x0AB97e3934b1Afc9F1F6447CCF676E4f1D8B9639
+🤝 СОАВТОР: 0xb0E256cA055937a8FD9CA1F5e3D8A6bD44146d50
+🤝 СОАВТОР: 0xB5986B808dad481ad86D63DF152cC0ad7B473e48
+🤝 СОАВТОР: 0x9446dc62A3FA7f187FF1b9b0b64dDD8D9C16453b
+🤝 СОАВТОР: 0x8af1BC6B4a5aACED37889CC06bed4569A6B64044
+🤝 СОАВТОР: 0xAB17aDbe29c4E1d695C239206682B02ebdB3f707
 
 ✅ WEB3 ИНТЕГРАЦИЯ:
 🔗 SafePal/MetaMask подключение
